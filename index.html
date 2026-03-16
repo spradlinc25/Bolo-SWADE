@@ -86,6 +86,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .tab{padding:10px;}
   .card{padding:10px;}
   .mb{margin-bottom:10px;}
+  /* 3-col → 1-col on mobile */
+  .char-top-grid{grid-template-columns:1fr !important;}
   /* Attrs/Skills — tighter rows */
   .attr-table td{padding:2px 0;}
   .aname{font-size:13px;min-width:90px;}
@@ -108,9 +110,9 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 /* ATTRS / SKILLS */
 .attr-table{width:100%;border-collapse:collapse;}
-.attr-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 6px 7px 0;text-align:left;}
-.attr-table td{padding:3px 0;}
-.aname{font-weight:700;font-size:15px;color:var(--heading);min-width:110px;}
+.attr-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 6px 5px 0;text-align:left;}
+.attr-table td{padding:1px 0;}
+.aname{font-weight:700;font-size:14px;color:var(--heading);min-width:90px;}
 .die-cells{display:flex;gap:3px;align-items:center;}
 .die-dot{width:20px;height:20px;border-radius:3px;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
 .die-dot.filled{background:var(--accent);border-color:var(--accent);color:white;font-weight:bold;}
@@ -436,7 +438,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 <div id="tab-sheet" class="tab active">
   <div id="sheet-loading" class="loading"><span class="loading-spinner"></span>Loading character data from Google Sheets...</div>
   <div id="sheet-content" style="display:none">
-    <div class="grid-2 mb">
+    <!-- TOP ROW: Attrs | Skills | Hindrances+Edges -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 280px;gap:16px;margin-bottom:16px;" class="char-top-grid">
       <div class="card"><div class="section-header">Attributes</div>
         <table class="attr-table"><thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="attr-body"></tbody></table>
@@ -444,6 +447,10 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
       <div class="card"><div class="section-header">Skills</div>
         <table class="attr-table"><thead><tr><th>Skill</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="skill-body"></tbody></table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card" style="flex:1"><div class="section-header">Hindrances</div><div id="hindrances-list"></div></div>
+        <div class="card" style="flex:1"><div class="section-header">Edges</div><div id="edges-list"></div></div>
       </div>
     </div>
     <div class="card mb">
@@ -473,10 +480,6 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
     <div class="card mb">
       <div class="section-header">Weapons</div>
       <div id="weapons-table"></div>
-    </div>
-    <div class="grid-2 mb">
-      <div class="card"><div class="section-header">Hindrances</div><div id="hindrances-list"></div></div>
-      <div class="card"><div class="section-header">Edges</div><div id="edges-list"></div></div>
     </div>
     <div class="card mb">
       <div class="section-header">Armor</div>
