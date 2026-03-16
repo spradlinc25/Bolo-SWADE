@@ -422,11 +422,23 @@ async function fetchSheet(name) {
   const rows = parseCSV(text);
   if (rows.length < 2) return [];
 
-  // Our sheets have a merged title row (row 1) then a header row (row 2).
-  // Detect this: if row 0 has only 1 non-empty cell, it's a title row — skip it.
+  // Title row detection: our sheets have "BOLO — TAB NAME" as row 1, real headers as row 2.
+  // A title row typically has: few non-empty cells OR first cell contains "—" OR "BOLO"
+  // A header row has short lowercase/mixed words like "name", "tier", "effect" etc.
   let headerIdx = 0;
-  const row0NonEmpty = rows[0].filter(c => c && c.trim()).length;
-  if (row0NonEmpty <= 1 && rows.length > 2) headerIdx = 1;
+  if (rows.length > 2) {
+    const row0 = rows[0];
+    const row0text = row0.join(' ').toLowerCase();
+    const row0NonEmpty = row0.filter(c => c && c.trim()).length;
+    const looksLikeTitle = 
+      row0NonEmpty <= 1 ||                          // single merged cell
+      row0text.includes('bolo') ||                  // contains "bolo"
+      row0text.includes(' — ') ||                   // contains em-dash separator
+      row0text.includes('swade') ||                 // contains "swade"
+      row0text.includes('super powers') ||          // tab title text
+      row0text.includes('savage worlds');           // tab title text
+    if (looksLikeTitle) headerIdx = 1;
+  }
 
   const headers = rows[headerIdx].map(h => h.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''));
   console.log(`[${name}] headerIdx=${headerIdx}, headers:`, headers);
@@ -990,20 +1002,72 @@ function renderDiceButtons() {
   w.onclick=()=>rollDie(6,true); row.appendChild(w);
 }
 
-function rollDie(sides,forceWild=false) {
-  const mod=parseInt(document.getElementById('roll-modifier').value)||0;
-  const useWild=forceWild||document.getElementById('wild-toggle').checked;
-  function roll(s){let r=Math.floor(Math.random()*s)+1,t=r,x=0;while(r===s&&x<10){r=Math.floor(Math.random()*s)+1;t+=r;x++;}return{total:t,aced:x>0};}
-  const main=roll(sides); const fm=main.total+mod;
-  let detail=`d${sides}: ${main.total}${main.aced?' (Aced!)':''}`;
-  let fr=fm,wi='';
-  if(useWild&&!forceWild){const w=roll(6);const fw=w.total+mod;wi=` | Wild d6: ${w.total}${w.aced?' (Aced!)':''}`;if(fw>fm){fr=fw;wi+=' ← used';}}
-  if(mod!==0) detail+=` ${mod>=0?'+':''}${mod}`;
-  let st='Failure',sc='fail';
-  if(fr>=4){const r=Math.floor((fr-4)/4);st=r>0?`Success with ${r} Raise${r>1?'s':''}!`:'Success!';sc=r>0?'raise':'success';}
-  const re=document.getElementById('roll-result');
-  re.style.display='flex';
-  re.innerHTML=`<div class="roll-num">${fr}</div><div><div class="roll-suc ${sc}">${st}</div><div class="roll-det">${detail}${wi}</div></div>`;
+function rollDie(sides, forceWild=false) {
+  const mod = parseInt(document.getElementById('roll-modifier').value)||0;
+  const useWild = forceWild || document.getElementById('wild-toggle').checked;
+
+  function roll(s) {
+    const rolls = [];
+    let r = Math.floor(Math.random()*s)+1;
+    rolls.push(r);
+    let x = 0;
+    while (r === s && x < 10) {
+      r = Math.floor(Math.random()*s)+1;
+      rolls.push(r);
+      x++;
+    }
+    const total = rolls.reduce((a,b)=>a+b,0);
+    return { total, rolls, aced: x > 0, aceCount: x };
+  }
+
+  const main = roll(sides);
+  const fm = main.total + mod;
+
+  // Build roll breakdown string e.g. "6+6+3=15"
+  function breakdown(r, s) {
+    if (r.rolls.length === 1) return `${r.rolls[0]}`;
+    return `${r.rolls.join('+')} = ${r.total}`;
+  }
+
+  const aceLabel = main.aceCount >= 2 ? ` (${main.aceCount}× Ace!)` : main.aceCount === 1 ? ' (Ace!)' : '';
+  let detailParts = [`d${sides}: ${breakdown(main)}${aceLabel}`];
+  if (mod !== 0) detailParts.push(`mod ${mod >= 0 ? '+' : ''}${mod}`);
+
+  let fr = fm;
+  let wildInfo = '';
+
+  if (useWild && !forceWild) {
+    const w = roll(6);
+    const fw = w.total + mod;
+    const wAceLabel = w.aceCount >= 2 ? ` (${w.aceCount}× Ace!)` : w.aceCount === 1 ? ' (Ace!)' : '';
+    const wBreak = breakdown(w, 6);
+    if (fw > fm) {
+      fr = fw;
+      wildInfo = `Wild d6: ${wBreak}${wAceLabel} ← used`;
+      detailParts[0] += ' (not used)';
+    } else {
+      wildInfo = `Wild d6: ${wBreak}${wAceLabel}`;
+    }
+  }
+
+  if (mod !== 0) {
+    const usedTotal = useWild && !forceWild ? (fr - mod) : main.total;
+    detailParts = detailParts.filter(p => !p.startsWith('mod'));
+    // show final calc
+  }
+
+  const finalDetail = detailParts.join(' · ') + (wildInfo ? ` · ${wildInfo}` : '') + (mod !== 0 ? ` · total with mod: ${fr}` : '');
+
+  let st = 'Failure', sc = 'fail';
+  if (fr >= 4) {
+    const raises = Math.floor((fr - 4) / 4);
+    st = raises > 0 ? `Success with ${raises} Raise${raises > 1 ? 's' : ''}!` : 'Success!';
+    sc = raises > 0 ? 'raise' : 'success';
+  }
+
+  const re = document.getElementById('roll-result');
+  re.style.display = 'flex';
+  re.innerHTML = `<div class="roll-num">${fr}</div><div><div class="roll-suc ${sc}">${st}</div><div class="roll-det">${finalDetail}</div></div>`;
 }
 
 function renderSkillQuickRef() {
