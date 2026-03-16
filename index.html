@@ -69,10 +69,32 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 /* MOBILE */
 @media(max-width:768px){
+  /* Nav — hide subtitle, compress sync area */
   .nav-sub{display:none;}
+  nav{padding:0 6px;}
+  .nav-title{font-size:17px;padding-right:6px;margin-right:4px;}
+  .nav-tabs{flex:1;min-width:0;}
+  nav button{font-size:11px;padding:10px 7px;letter-spacing:0;}
+  /* Hide text labels on sync/export/reset, show only icons */
+  #save-indicator{display:none;}
+  .nav-right{gap:3px;}
+  /* Stat bar collapse */
   .stat-bar-toggle{display:block;}
   .stat-bar-inner.sb-collapsed{display:none;}
   .stat-pill{border-right:none;}
+  /* Tighten tab content padding */
+  .tab{padding:10px;}
+  .card{padding:10px;}
+  .mb{margin-bottom:10px;}
+  /* Attrs/Skills — tighter rows */
+  .attr-table td{padding:2px 0;}
+  .aname{font-size:13px;min-width:90px;}
+  .die-dot{width:17px;height:17px;font-size:7px;}
+  .die-val{font-size:16px;min-width:36px;}
+  .grid-2{grid-template-columns:1fr;}
+  /* Progressions */
+  .prog-row{grid-template-columns:32px 1fr;}
+  .prog-eff,.prog-tbadge{display:none;}
 }
 
 /* TABS */
@@ -210,7 +232,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .incap-warn{background:#1a0505;border:2px solid var(--red);border-radius:6px;padding:10px 14px;color:var(--red);font-weight:700;text-align:center;margin-top:10px;font-size:15px;display:none;letter-spacing:1px;}
 .incap-warn.show{display:block;}
 
-@media(max-width:700px){.grid-2{grid-template-columns:1fr;}.prog-row{grid-template-columns:32px 1fr;}.prog-eff,.prog-tbadge{display:none;}}
+
 
 /* HINDRANCES / EDGES */
 .hindrance-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
@@ -326,7 +348,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 @keyframes spin{to{transform:rotate(360deg)}}
 .error-msg{background:#1a0a0a;border:1px solid var(--red);border-radius:4px;padding:12px 16px;color:var(--red);font-size:13px;margin-bottom:12px;}
 
-@media(max-width:700px){.grid-2{grid-template-columns:1fr;}.prog-row{grid-template-columns:32px 1fr;}.prog-eff,.prog-tbadge{display:none;}}
+
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
