@@ -438,8 +438,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   <div id="sheet-loading" class="loading"><span class="loading-spinner"></span>Loading character data from Google Sheets...</div>
   <div id="sheet-content" style="display:none">
     <!-- TOP ROW: Attrs+Skills combined | Hindrances+Edges -->
-    <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;margin-bottom:16px;" class="char-top-grid">
-      <div class="card">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:16px;margin-bottom:16px;" class="char-top-grid">
+      <div class="card" style="width:360px;flex-shrink:0;">
         <div class="section-header">Attributes</div>
         <table class="attr-table"><thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="attr-body"></tbody></table>
