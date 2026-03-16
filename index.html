@@ -421,10 +421,18 @@ async function fetchSheet(name) {
   const text = await resp.text();
   const rows = parseCSV(text);
   if (rows.length < 2) return [];
-  const headers = rows[0].map(h => h.toLowerCase().replace(/\s+/g,'_'));
-  return rows.slice(1).filter(r => r.some(c => c)).map(r => {
+
+  // Our sheets have a merged title row (row 1) then a header row (row 2).
+  // Detect this: if row 0 has only 1 non-empty cell, it's a title row — skip it.
+  let headerIdx = 0;
+  const row0NonEmpty = rows[0].filter(c => c && c.trim()).length;
+  if (row0NonEmpty <= 1 && rows.length > 2) headerIdx = 1;
+
+  const headers = rows[headerIdx].map(h => h.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''));
+  console.log(`[${name}] headerIdx=${headerIdx}, headers:`, headers);
+  return rows.slice(headerIdx + 1).filter(r => r.some(c => c && c.trim())).map(r => {
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = r[i] || ''; });
+    headers.forEach((h, i) => { if (h) obj[h] = (r[i] || '').trim(); });
     return obj;
   });
 }
@@ -470,23 +478,23 @@ function hasEdge(name) { return !!state.progressions.find(p=>p.checked && p.sele
 function hasStart(name){ return !!state.starting.find(s=>s.on && s.name===name); }
 
 function computeAttrLevel(name) {
-  const a = state.attrs.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  const a = state.attrs.find(x=>x.name && x.name.toLowerCase()===name.toLowerCase());
   if(!a) return 1;
   let lvl = parseInt(a.base)||1;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    if(p.type==='Attribute' && p.selection.toLowerCase().includes(name.toLowerCase())) lvl++;
+    if(p.type==='Attribute' && p.selection && p.selection.toLowerCase().includes(name.toLowerCase())) lvl++;
   });
   return Math.min(5,lvl);
 }
 
 function computeSkillLevel(name) {
-  const s = state.skills.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  const s = state.skills.find(x=>x.name && x.name.toLowerCase()===name.toLowerCase());
   if(!s) return 1;
   let lvl = parseInt(s.base)||1;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    if((p.type==='Skill'||p.type==='Skill x2') && p.selection.toLowerCase().includes(name.toLowerCase()))
+    if((p.type==='Skill'||p.type==='Skill x2') && p.selection && p.selection.toLowerCase().includes(name.toLowerCase()))
       lvl += (p.type==='Skill x2') ? 2 : 1;
   });
   return Math.min(5,lvl);
