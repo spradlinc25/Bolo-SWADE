@@ -11,16 +11,16 @@
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;}
 
 /* NAV — sticky, slim, always visible */
-nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 10px;flex-wrap:nowrap;min-height:40px;}
-.nav-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);letter-spacing:3px;padding-right:10px;border-right:1px solid var(--border);margin-right:6px;white-space:nowrap;line-height:40px;}
-.nav-sub{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding-right:10px;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap;}
+nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 10px;flex-wrap:wrap;min-height:40px;}
+.nav-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);letter-spacing:3px;padding-right:10px;border-right:1px solid var(--border);margin-right:6px;white-space:nowrap;line-height:40px;flex-shrink:0;}
+.nav-sub{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding-right:10px;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap;flex-shrink:0;}
 #nav-rank-display{color:var(--accent2);font-weight:700;}
-.nav-tabs{display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;flex:1;}
+.nav-tabs{display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;}
 .nav-tabs::-webkit-scrollbar{display:none;}
 nav button{background:none;border:none;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:11px 9px;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;position:relative;top:1px;white-space:nowrap;}
 nav button:hover{color:var(--text);}
 nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:4px;padding-left:6px;flex-shrink:0;}
+.nav-right{display:flex;align-items:center;gap:4px;padding:4px 0 4px 6px;flex-shrink:0;}
 #save-indicator{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;}
 .reset-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:3px;cursor:pointer;white-space:nowrap;}
 .reset-btn:hover{border-color:var(--red);color:var(--red);}
@@ -69,15 +69,14 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 /* MOBILE */
 @media(max-width:768px){
-  /* Nav — hide subtitle, compress sync area */
+  /* Nav — tabs on row 1 full width, sync buttons wrap to row 2 */
   .nav-sub{display:none;}
   nav{padding:0 6px;}
-  .nav-title{font-size:17px;padding-right:6px;margin-right:4px;}
-  .nav-tabs{flex:1;min-width:0;}
-  nav button{font-size:11px;padding:10px 7px;letter-spacing:0;}
-  /* Hide text labels on sync/export/reset, show only icons */
-  #save-indicator{display:none;}
-  .nav-right{gap:3px;}
+  .nav-title{font-size:16px;padding-right:6px;margin-right:4px;}
+  .nav-tabs{width:100%;order:1;overflow-x:auto;border-bottom:none;}
+  nav button{font-size:11px;padding:9px 7px;letter-spacing:0;}
+  .nav-right{order:2;width:100%;border-top:1px solid var(--border);padding:3px 0;background:#0d0f13;justify-content:flex-end;}
+  #save-indicator{display:inline;}
   /* Stat bar collapse */
   .stat-bar-toggle{display:block;}
   .stat-bar-inner.sb-collapsed{display:none;}
@@ -86,7 +85,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .tab{padding:10px;}
   .card{padding:10px;}
   .mb{margin-bottom:10px;}
-  /* 3-col → 1-col on mobile */
+  /* 2-col → 1-col on mobile */
   .char-top-grid{grid-template-columns:1fr !important;}
   /* Attrs/Skills — tighter rows */
   .attr-table td{padding:2px 0;}
@@ -438,13 +437,14 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 <div id="tab-sheet" class="tab active">
   <div id="sheet-loading" class="loading"><span class="loading-spinner"></span>Loading character data from Google Sheets...</div>
   <div id="sheet-content" style="display:none">
-    <!-- TOP ROW: Attrs | Skills | Hindrances+Edges -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 280px;gap:16px;margin-bottom:16px;" class="char-top-grid">
-      <div class="card"><div class="section-header">Attributes</div>
+    <!-- TOP ROW: Attrs+Skills combined | Hindrances+Edges -->
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;margin-bottom:16px;" class="char-top-grid">
+      <div class="card">
+        <div class="section-header">Attributes</div>
         <table class="attr-table"><thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="attr-body"></tbody></table>
-      </div>
-      <div class="card"><div class="section-header">Skills</div>
+        <div style="border-top:1px solid var(--border);margin:12px 0 10px;"></div>
+        <div class="section-header">Skills</div>
         <table class="attr-table"><thead><tr><th>Skill</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="skill-body"></tbody></table>
       </div>
