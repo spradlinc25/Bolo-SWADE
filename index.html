@@ -9,6 +9,8 @@
 :root{--bg:#0a0c0f;--surface:#111418;--surface2:#181c22;--border:#2a3040;--accent:#e85d26;--accent2:#f4a436;--green:#3ddc84;--blue:#4dabf7;--red:#ff4444;--muted:#4a5568;--text:#c8d3e0;--text-dim:#7a8aa0;--heading:#ffffff;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;}
+
+/* NAV */
 nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 16px;flex-wrap:wrap;}
 .nav-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent);letter-spacing:3px;padding:10px 16px 10px 0;border-right:1px solid var(--border);margin-right:8px;}
 .nav-sub{font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding-right:16px;border-right:1px solid var(--border);margin-right:8px;}
@@ -20,6 +22,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 #save-indicator{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);}
 .reset-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:3px;cursor:pointer;}
 .reset-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* STATUS BAR */
 .status-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
 .stat-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 12px;}
 .spl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;}
@@ -32,6 +36,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .benny.spent::after{color:var(--muted);}
 .btn-tiny{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;cursor:pointer;margin-left:5px;}
 .btn-tiny:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* TABS */
 .tab{display:none;padding:16px;max-width:1400px;margin:0 auto;}
 .tab.active{display:block;}
 .section-header{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:3px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
@@ -39,6 +45,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .mb{margin-bottom:16px;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;}
+
+/* ATTRS / SKILLS */
 .attr-table{width:100%;border-collapse:collapse;}
 .attr-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 6px 7px 0;text-align:left;}
 .attr-table td{padding:3px 0;}
@@ -47,6 +55,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .die-dot{width:20px;height:20px;border-radius:3px;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
 .die-dot.filled{background:var(--accent);border-color:var(--accent);color:white;font-weight:bold;}
 .die-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent2);letter-spacing:1px;min-width:46px;text-align:right;}
+
+/* COMBAT TRACK */
 .track-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .track-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;margin-bottom:7px;}
 .track-boxes{display:flex;gap:5px;flex-wrap:wrap;}
@@ -64,10 +74,12 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .incap-warn{background:#1a0505;border:2px solid var(--red);border-radius:6px;padding:10px 14px;color:var(--red);font-weight:700;text-align:center;margin-top:10px;font-size:15px;display:none;letter-spacing:1px;}
 .incap-warn.show{display:block;}
 
+/* HINDRANCES / EDGES */
 .hindrance-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
 .hindrance-item.minor{border-left-color:var(--accent2);}
 .edge-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
-/* SUPER POWERS */
+
+/* SUPER POWERS SUMMARY */
 .sp-section{background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;overflow:hidden;}
 .sp-section-header{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);cursor:pointer;}
 .sp-section-header:hover{background:#1e2530;}
@@ -82,6 +94,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .sp-name{font-weight:700;}
 .sp-detail{font-size:11px;color:var(--text-dim);}
 .sp-spp{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);white-space:nowrap;}
+
 /* WEAPONS */
 .weapon-table{width:100%;border-collapse:collapse;}
 .weapon-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 10px 8px 0;text-align:left;}
@@ -94,6 +107,19 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .wtag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:1px 5px;border-radius:3px;border:1px solid var(--accent);color:var(--accent);margin-right:3px;margin-bottom:2px;}
 .wtag.heavy{border-color:var(--red);color:var(--red);}
 .wtag.natural{border-color:var(--blue);color:var(--blue);}
+
+/* GEAR TABLE */
+.gear-table{width:100%;border-collapse:collapse;font-size:13px;}
+.gear-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 8px 7px 0;text-align:left;}
+.gear-table td{padding:6px 8px 6px 0;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
+.gear-table tr:last-child td{border-bottom:none;}
+.gear-table tr:hover td{background:var(--surface2);}
+.gear-check{cursor:pointer;width:20px;height:20px;border:2px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.15s;}
+.gear-check.on{background:var(--green);border-color:var(--green);color:var(--bg);}
+.book-tag{font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:1px 5px;border-radius:3px;display:inline-block;}
+.book-tag.swade{border:1px solid var(--blue);color:var(--blue);}
+.book-tag.spc{border:1px solid var(--accent2);color:var(--accent2);}
+
 /* PROGRESSIONS */
 .prog-tier{margin-bottom:20px;}
 .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
@@ -109,11 +135,11 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tbadge{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:2px 7px;border:1px solid var(--border);border-radius:3px;text-align:center;color:var(--text-dim);}
 .prog-tbadge.attribute{border-color:var(--blue);color:var(--blue);}.prog-tbadge.skill{border-color:var(--accent2);color:var(--accent2);}.prog-tbadge.edge{border-color:var(--accent);color:var(--accent);}.prog-tbadge.open{border-color:#cc44ff;color:#cc44ff;}
 .prog-eff{font-size:12px;color:var(--text-dim);}
-/* STARTING TOGGLES */
 .starting-row{display:grid;grid-template-columns:36px 1fr 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .starting-row:hover{border-color:var(--accent2);}
 .starting-row.checked{background:#0f150f;border-color:var(--green);}
 .starting-row.checked .prog-sel{color:var(--green);}
+
 /* POWER TIERS */
 .power-tier{margin-bottom:20px;}
 .pt-header{background:var(--surface2);border:1px solid var(--border);border-radius:6px 6px 0 0;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background 0.2s;}
@@ -134,6 +160,16 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .col-c{font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center;color:var(--text);}
 .col-spp{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;color:var(--accent2);font-weight:bold;}
 .col-h{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);text-align:center;}
+
+/* REFERENCE TABS */
+.ref-search{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;padding:8px 14px;border-radius:4px;margin-bottom:12px;outline:none;}
+.ref-search:focus{border-color:var(--accent2);}
+.ref-table{width:100%;border-collapse:collapse;font-size:13px;}
+.ref-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:6px 10px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;}
+.ref-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
+.ref-table tr:hover td{background:var(--surface2);}
+.ref-wrap{max-height:600px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;}
+
 /* DICE */
 .dice-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px;}
 .dice-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
@@ -145,6 +181,13 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .roll-suc{font-size:15px;font-weight:700;}
 .roll-suc.success{color:var(--green);}.roll-suc.raise{color:var(--accent2);}.roll-suc.fail{color:var(--red);}
 .roll-det{font-size:12px;color:var(--text-dim);}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--text-dim);font-size:13px;letter-spacing:1px;}
+.loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:10px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-msg{background:#1a0a0a;border:1px solid var(--red);border-radius:4px;padding:12px 16px;color:var(--red);font-size:13px;margin-bottom:12px;}
+
 @media(max-width:700px){.grid-2{grid-template-columns:1fr;}.prog-row{grid-template-columns:32px 1fr;}.prog-eff,.prog-tbadge{display:none;}}
 </style>
 </head>
@@ -156,19 +199,20 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   <button class="active" onclick="showTab('sheet',this)">Character</button>
   <button onclick="showTab('progressions',this)">Progressions</button>
   <button onclick="showTab('powers',this)">Power Tiers</button>
+  <button onclick="showTab('reference',this)">Reference</button>
   <button onclick="showTab('roller',this)">Dice Roller</button>
   <div class="nav-right">
-    <span id="save-indicator">Auto-saves locally</span>
+    <span id="save-indicator">Loading...</span>
     <button class="reset-btn" onclick="clearSave()">↺ Reset</button>
   </div>
 </nav>
 
 <div class="status-bar">
-  <div class="stat-pill"><span class="spl">Rank</span><span class="spv" id="sb-rank">Novice</span></div>
-  <div class="stat-pill"><span class="spl">Parry</span><span class="spv" id="sb-parry">7</span></div>
-  <div class="stat-pill"><span class="spl">Toughness</span><span class="spv green" id="sb-toughness">9(2)</span></div>
+  <div class="stat-pill"><span class="spl">Rank</span><span class="spv" id="sb-rank">—</span></div>
+  <div class="stat-pill"><span class="spl">Parry</span><span class="spv" id="sb-parry">—</span></div>
+  <div class="stat-pill"><span class="spl">Toughness</span><span class="spv green" id="sb-toughness">—</span></div>
   <div class="stat-pill"><span class="spl">Pace</span><span class="spv">6</span></div>
-  <div class="stat-pill"><span class="spl">Carry</span><span class="spv">75 lbs</span></div>
+  <div class="stat-pill"><span class="spl">Carry</span><span class="spv" id="sb-carry">—</span></div>
   <div class="stat-pill">
     <span class="spl">Bennies</span>
     <div class="bennies-track" id="bennies-track"></div>
@@ -179,108 +223,142 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 <!-- CHARACTER TAB -->
 <div id="tab-sheet" class="tab active">
-  <div class="grid-2 mb">
-    <div class="card">
-      <div class="section-header">Attributes</div>
-      <table class="attr-table">
-        <thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
-        <tbody id="attr-body"></tbody>
-      </table>
+  <div id="sheet-loading" class="loading"><span class="loading-spinner"></span>Loading character data from Google Sheets...</div>
+  <div id="sheet-content" style="display:none">
+    <div class="grid-2 mb">
+      <div class="card"><div class="section-header">Attributes</div>
+        <table class="attr-table"><thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
+        <tbody id="attr-body"></tbody></table>
+      </div>
+      <div class="card"><div class="section-header">Skills</div>
+        <table class="attr-table"><thead><tr><th>Skill</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
+        <tbody id="skill-body"></tbody></table>
+      </div>
     </div>
-    <div class="card">
-      <div class="section-header">Skills</div>
-      <table class="attr-table">
-        <thead><tr><th>Skill</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
-        <tbody id="skill-body"></tbody>
-      </table>
+    <div class="card mb">
+      <div class="section-header">Active Super Powers</div>
+      <div id="sp-summary"></div>
     </div>
-  </div>
-
-  <!-- SUPER POWERS SUMMARY -->
-  <div class="card mb">
-    <div class="section-header">Active Super Powers</div>
-    <div id="sp-summary"></div>
-  </div>
-
-  <!-- COMBAT STATUS -->
-  <div class="card mb">
-    <div class="section-header">Combat Status</div>
-    <div class="track-grid">
-      <div>
-        <div class="track-label" id="wound-track-label">Wounds (Max 3 before Incap)</div>
-        <div class="track-boxes" id="wound-boxes"></div>
-        <div class="pen-display">
-          <div>
-            <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Wound Penalty</div>
-            <div id="nos-indicator" style="display:none;font-size:11px;margin-top:3px;"></div>
+    <div class="card mb">
+      <div class="section-header">Combat Status</div>
+      <div class="track-grid">
+        <div>
+          <div class="track-label" id="wound-track-label">Wounds (Max 3 before Incap)</div>
+          <div class="track-boxes" id="wound-boxes"></div>
+          <div class="pen-display">
+            <div>
+              <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Wound Penalty</div>
+              <div id="nos-indicator" style="display:none;font-size:11px;margin-top:3px;"></div>
+            </div>
+            <span class="pval ok" id="wound-pen-display">0</span>
           </div>
-          <span class="pval ok" id="wound-pen-display">0</span>
+          <div class="incap-warn" id="incap-warning">⚠ INCAPACITATED — VIGOR ROLL OR DIE</div>
         </div>
-        <div class="incap-warn" id="incap-warning">⚠ INCAPACITATED — VIGOR ROLL OR DIE</div>
+        <div>
+          <div class="track-label">Fatigue (Max 2 before Incap)</div>
+          <div class="track-boxes">
+            <div class="tbox fatigue" onclick="toggleFatigue(0)" id="fatigue-0"><span class="pen">-1</span><span style="font-size:9px">Fatigue</span></div>
+            <div class="tbox fatigue" onclick="toggleFatigue(1)" id="fatigue-1"><span class="pen">-2</span><span style="font-size:9px">Fatigue</span></div>
+            <div class="tbox incap" onclick="toggleFatigueIncap()" id="fatigue-incap"><span style="font-size:13px;font-weight:900">✕</span><span style="font-size:9px">INCAP</span></div>
+          </div>
+          <div class="pen-display">
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Fatigue Penalty</div>
+            <span class="pval ok" id="fatigue-pen-display">0</span>
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="track-label">Fatigue (Max 2 before Incap)</div>
-        <div class="track-boxes">
-          <div class="tbox fatigue" onclick="toggleFatigue(0)" id="fatigue-0"><span class="pen">-1</span><span style="font-size:9px">Fatigue</span></div>
-          <div class="tbox fatigue" onclick="toggleFatigue(1)" id="fatigue-1"><span class="pen">-2</span><span style="font-size:9px">Fatigue</span></div>
-          <div class="tbox incap" onclick="toggleFatigueIncap()" id="fatigue-incap"><span style="font-size:13px;font-weight:900">✕</span><span style="font-size:9px">INCAP</span></div>
-        </div>
-        <div class="pen-display">
-          <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Fatigue Penalty</div>
-          <span class="pval ok" id="fatigue-pen-display">0</span>
-        </div>
-      </div>
     </div>
-
-  </div>
-
-  <!-- WEAPONS -->
-  <div class="card mb">
-    <div class="section-header">Weapons</div>
-    <div id="weapons-table"></div>
-  </div>
-
-  <div class="grid-2 mb">
-    <div class="card">
-      <div class="section-header">Hindrances</div>
-      <div class="hindrance-item"><strong>Alien Form (Major)</strong> — True form is inhuman; -4 Healing; can't use standard gear</div>
-      <div class="hindrance-item"><strong>Wanted (Major)</strong> — Hunted by powerful authorities across the galaxy</div>
-      <div class="hindrance-item minor"><strong>Outsider (Minor/Racial)</strong> — -2 Persuasion with most civilized species</div>
+    <div class="card mb">
+      <div class="section-header">Weapons</div>
+      <div id="weapons-table"></div>
     </div>
-    <div class="card">
-      <div class="section-header">Edges</div>
-      <div id="edges-list"></div>
+    <div class="grid-2 mb">
+      <div class="card"><div class="section-header">Hindrances</div><div id="hindrances-list"></div></div>
+      <div class="card"><div class="section-header">Edges</div><div id="edges-list"></div></div>
     </div>
-  </div>
-
-  <div class="card mb">
-    <div class="section-header">Armor</div>
-    <table class="attr-table"><thead><tr><th>Location</th><th>Armor</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td class="aname">(Unarmored)</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">0</td><td></td></tr>
-      <tr><td class="aname">Head</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
-      <tr><td class="aname">Torso</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
-      <tr><td class="aname">Arms</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
-      <tr><td class="aname">Legs</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
-    </tbody></table>
+    <div class="card mb">
+      <div class="section-header">Armor</div>
+      <table class="attr-table"><thead><tr><th>Location</th><th>Armor</th><th>Notes</th></tr></thead>
+      <tbody id="armor-body"></tbody></table>
+    </div>
+    <div class="card mb">
+      <div class="section-header">Gear &amp; Inventory</div>
+      <div id="gear-section"></div>
+    </div>
   </div>
 </div>
 
 <!-- PROGRESSIONS TAB -->
 <div id="tab-progressions" class="tab">
-  <div class="section-header" style="margin-bottom:16px">Advance-by-Advance Roadmap</div>
-  <!-- STARTING section at top -->
-  <div class="prog-tier">
-    <div class="tier-badge" style="border-color:var(--text-dim);color:var(--text-dim)">Starting (Toggle to Test)</div>
-    <div id="starting-list"></div>
+  <div id="prog-loading" class="loading"><span class="loading-spinner"></span>Loading progressions...</div>
+  <div id="prog-content" style="display:none">
+    <div class="section-header" style="margin-bottom:16px">Advance-by-Advance Roadmap</div>
+    <div class="prog-tier">
+      <div class="tier-badge" style="border-color:var(--text-dim);color:var(--text-dim)">Starting (Toggle to Test)</div>
+      <div id="starting-list"></div>
+    </div>
+    <div id="prog-list"></div>
   </div>
-  <div id="prog-list"></div>
 </div>
 
 <!-- POWERS TAB -->
 <div id="tab-powers" class="tab">
-  <div class="section-header" style="margin-bottom:16px">Power Tier Progressions</div>
-  <div id="power-list-container"></div>
+  <div id="powers-loading" class="loading"><span class="loading-spinner"></span>Loading power tiers...</div>
+  <div id="powers-content" style="display:none">
+    <div class="section-header" style="margin-bottom:16px">Power Tier Progressions</div>
+    <div id="power-list-container"></div>
+  </div>
+</div>
+
+<!-- REFERENCE TAB -->
+<div id="tab-reference" class="tab">
+  <div id="ref-loading" class="loading"><span class="loading-spinner"></span>Loading reference data...</div>
+  <div id="ref-content" style="display:none">
+    <div class="grid-2 mb">
+      <div>
+        <div class="section-header">Edges Library</div>
+        <input class="ref-search" id="edge-search" placeholder="Search edges..." oninput="filterTable('edge-search','edges-ref-table')">
+        <div class="ref-wrap"><table class="ref-table" id="edges-ref-table">
+          <thead><tr><th>Edge</th><th>Category</th><th>Prereq</th><th>Effect</th><th>Book</th></tr></thead>
+          <tbody id="edges-ref-body"></tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="section-header">Hindrances Library</div>
+        <input class="ref-search" id="hind-search" placeholder="Search hindrances..." oninput="filterTable('hind-search','hindrances-ref-table')">
+        <div class="ref-wrap"><table class="ref-table" id="hindrances-ref-table">
+          <thead><tr><th>Hindrance</th><th>Severity</th><th>Effect</th><th>Book</th></tr></thead>
+          <tbody id="hindrances-ref-body"></tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="mb">
+      <div class="section-header">Super Powers Library</div>
+      <input class="ref-search" id="sp-search" placeholder="Search powers..." oninput="filterTable('sp-search','sp-ref-table')">
+      <div class="ref-wrap"><table class="ref-table" id="sp-ref-table">
+        <thead><tr><th>Power</th><th>Cost</th><th>Type</th><th>Summary</th><th>Notes</th><th>Source</th></tr></thead>
+        <tbody id="sp-ref-body"></tbody>
+      </table></div>
+    </div>
+    <div class="grid-2 mb">
+      <div>
+        <div class="section-header">Weapons Library</div>
+        <input class="ref-search" id="weap-search" placeholder="Search weapons..." oninput="filterTable('weap-search','weapons-ref-table')">
+        <div class="ref-wrap"><table class="ref-table" id="weapons-ref-table">
+          <thead><tr><th>Weapon</th><th>Damage</th><th>Skill</th><th>Notes</th><th>Book</th></tr></thead>
+          <tbody id="weapons-ref-body"></tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="section-header">Armor Library</div>
+        <input class="ref-search" id="armor-search" placeholder="Search armor..." oninput="filterTable('armor-search','armor-ref-table')">
+        <div class="ref-wrap"><table class="ref-table" id="armor-ref-table">
+          <thead><tr><th>Armor</th><th>Value</th><th>Wt</th><th>Notes</th><th>Book</th></tr></thead>
+          <tbody id="armor-ref-body"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ROLLER TAB -->
@@ -306,132 +384,120 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 <script>
 // ============================================================
+// SHEET ID & CSV FETCH
+// ============================================================
+const SHEET_ID = '1f67_HPOwE7BQ82ihH7YVM-QuNnZStdF3Y-GWqnIfH5Q';
+
+function csvUrl(sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function parseCSV(text) {
+  // RFC-4180 CSV parser
+  const rows = [];
+  let row = [], field = '', inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuote) {
+      if (ch === '"') {
+        if (text[i+1] === '"') { field += '"'; i++; }
+        else inQuote = false;
+      } else { field += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === ',') { row.push(field.trim()); field = ''; }
+      else if (ch === '\n') { row.push(field.trim()); rows.push(row); row = []; field = ''; }
+      else if (ch === '\r') {}
+      else { field += ch; }
+    }
+  }
+  if (field || row.length) { row.push(field.trim()); rows.push(row); }
+  return rows;
+}
+
+async function fetchSheet(name) {
+  const resp = await fetch(csvUrl(name));
+  if (!resp.ok) throw new Error(`Failed to fetch ${name}: ${resp.status}`);
+  const text = await resp.text();
+  const rows = parseCSV(text);
+  if (rows.length < 2) return [];
+  const headers = rows[0].map(h => h.toLowerCase().replace(/\s+/g,'_'));
+  return rows.slice(1).filter(r => r.some(c => c)).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = r[i] || ''; });
+    return obj;
+  });
+}
+
+// ============================================================
 // STATE
 // ============================================================
 const state = {
-  // Starting toggleable edges/abilities (for testing purposes)
-  starting: [
-    {on:true,  name:'Brawler (Racial)',    type:'edge', effect:'Fists = Str+d4; +1 Toughness'},
-    {on:true,  name:'Infravision (Racial)',type:'edge', effect:'Halve illumination penalties vs warm targets'},
-    {on:true,  name:'Martial Artist',      type:'edge', effect:'Fists = Natural Weapon; +1 Parry unarmed; fist d4→d6'},
-    {on:true,  name:'Super Powers',        type:'edge', effect:'10 SPP, Rising Stars (Tier 1)'},
-  ],
-  progressions: [
-    {checked:false,rank:'Novice',   adv:1,  type:'Attribute', sel:'Vigor d10',               prereq:'N/A',                   effect:'Toughness 12(2); better Soak'},
-    {checked:false,rank:'Novice',   adv:2,  type:'Skill',     sel:'Fighting d10',             prereq:'Agi d6',                effect:'Parry 7+; offense + defense'},
-    {checked:false,rank:'Novice',   adv:3,  type:'Edge',      sel:'Nerves of Steel',          prereq:'Vigor d8+',             effect:'Ignore 1 Wound penalty'},
-    {checked:false,rank:'Novice',   adv:4,  type:'Edge',      sel:'Iron Jaw',                 prereq:'Vigor d8+',             effect:'+2 to Soak and KO rolls'},
-    {checked:false,rank:'Seasoned', adv:5,  type:'Edge',      sel:'Imp. Nerves of Steel',     prereq:'Nerves of Steel',       effect:'Ignore 2 Wound penalties'},
-    {checked:false,rank:'Seasoned', adv:6,  type:'Edge',      sel:'Bruiser',                  prereq:'S, Brawler',            effect:'Fist d6→d8; +1 Toughness'},
-    {checked:false,rank:'Seasoned', adv:7,  type:'Edge',      sel:'Take the Hit',             prereq:'S, Iron Jaw, Vig d10+', effect:'Free Soak reroll'},
-    {checked:false,rank:'Seasoned', adv:8,  type:'Attribute', sel:'Spirit d8',                prereq:'N/A',                   effect:'Focus/Power Down; Chameleon'},
-    {checked:false,rank:'Veteran',  adv:9,  type:'Edge',      sel:'Martial Warrior',          prereq:'S, Martial Artist',     effect:'Fist d8→d10; +2 Fighting unarmed'},
-    {checked:false,rank:'Veteran',  adv:10, type:'Attribute', sel:'Smarts d8',                prereq:'N/A',                   effect:'Unlocks Level Headed'},
-    {checked:false,rank:'Veteran',  adv:11, type:'Edge',      sel:'Level Headed',             prereq:'S, Smarts d8+',         effect:'Draw 2 Action Cards, keep best'},
-    {checked:false,rank:'Veteran',  adv:12, type:'Edge',      sel:'Frenzy',                   prereq:'S, Fighting d8+',       effect:'Extra Fighting die, 1 atk/turn'},
-    {checked:false,rank:'Heroic',   adv:13, type:'Attribute', sel:'Spirit d10',               prereq:'N/A',                   effect:'Stronger Focus / Power Down'},
-    {checked:false,rank:'Heroic',   adv:14, type:'Edge',      sel:'Sweep',                    prereq:'Str d8+, Fight d8+',    effect:'Hit all adjacent at -2'},
-    {checked:false,rank:'Heroic',   adv:15, type:'Edge',      sel:'Imp. Frenzy',              prereq:'V, Frenzy',             effect:'Extra Fighting die, 2 atks/turn'},
-    {checked:false,rank:'Heroic',   adv:16, type:'Skill x2',  sel:'Science d6 + Piloting d6', prereq:'Below linked',          effect:'Genius + pilot online'},
-    {checked:false,rank:'Legendary',adv:17, type:'Edge',      sel:'Tough as Nails',           prereq:'L, Vigor d8+',          effect:'4 Wounds before Incap'},
-    {checked:false,rank:'Legendary',adv:18, type:'Edge',      sel:'Tougher than Nails',       prereq:'L, TaN, Vig d12',       effect:'5 Wounds before Incap'},
-    {checked:false,rank:'Legendary',adv:19, type:'Attribute', sel:'Str or Vig raise',         prereq:'L: every other adv',    effect:'Push toward d12+2'},
-    {checked:false,rank:'Legendary',adv:20, type:'Open',      sel:'Campaign pick',            prereq:'N/A',                   effect:'Imp. Sweep, Hard to Kill, etc.'},
-  ],
-  // Each tier only lists powers that are NEW or UPGRADED vs previous tier.
-  // Base powers (Armor, Chameleon, Force Field, Scan) live only in Tier 1.
-  // getActivePower() resolves the effective version by scanning tiers high→low.
-  powerTiers: [
-    {title:'TIER 1: THE TECH-HUNTER', spp:'10 SPP, Power Limit 5', active:true, powers:[
-      {active:true,  name:'Armor',        mod:'Device',          base:1, adj:-1, spp:0,  effect:'+2 Armor (GM negotiated, required)'},
-      {active:true,  name:'Chameleon',    mod:'Device',          base:3, adj:-1, spp:2,  effect:'Assume appearance of beings within 2 Size.'},
-      {active:true,  name:'Force Field',  mod:'Device',          base:2, adj:-1, spp:1,  effect:'Reduce incoming damage by 2. Powers Down if Shaken.'},
-      {active:true,  name:'Scan',         mod:'Tracker, Device', base:2, adj:0,  spp:2,  effect:'Biological targets 1mi. Sense passing within 1wk.'},
-      {active:true,  name:'Melee Attack', mod:'Heavy Weapon',    base:2, adj:1,  spp:3,  effect:'+d6 to melee damage (stacks with MA/Brawler). Heavy Weapon.'},
-      {active:true,  name:'Toughness',    mod:'None',            base:2, adj:0,  spp:2,  effect:'+2 Toughness (ignores AP).'},
-    ]},
-    {title:'TIER 2: HEALING FACTOR AWAKENS', spp:'+5 SPP → 15 total, Power Limit 5', active:false, powers:[
-      {active:false, name:'Regeneration', mod:'None',            base:5, adj:0,  spp:5,  effect:'Heal 1 Wound/hour on Focus roll. Czarnian DNA awakens.'},
-    ]},
-    {title:'TIER 3: CZARNIAN AWAKENING', spp:'+15 SPP → 30 total, Power Limit 10', active:false, powers:[
-      {active:false, name:'Melee Attack ↑',    mod:'Heavy Weapon', base:4, adj:1,  spp:4,  effect:'+2d6 to melee damage. Heavy Weapon. (Replaces Tier 1)'},
-      {active:false, name:'Toughness ↑',       mod:'None',         base:4, adj:0,  spp:4,  effect:'+4 Toughness. (Replaces Tier 1)'},
-      {active:false, name:'Super Attr: Str',   mod:'None',         base:4, adj:0,  spp:4,  effect:'Strength +2 die types (d8→d12).'},
-      {active:false, name:'Super Attr: Vig',   mod:'None',         base:4, adj:0,  spp:4,  effect:'Vigor +2 die types (d10→d12+1).'},
-      {active:false, name:'Hardy',             mod:'None',         base:2, adj:0,  spp:2,  effect:"2nd Shaken doesn't cause a Wound."},
-      {active:false, name:'Banked',            mod:'N/A',          base:0, adj:0,  spp:1,  effect:'Reserved for utility upgrades.'},
-    ]},
-    {title:'TIER 4: THE MAIN MAN', spp:'+15 SPP → 45 total, Power Limit 15', active:false, powers:[
-      {active:false, name:'Melee Attack ↑↑',   mod:'Heavy Weapon', base:6, adj:1,  spp:6,  effect:'+3d6 to melee damage. Heavy Weapon. (Replaces Tier 3)'},
-      {active:false, name:'Toughness ↑↑',      mod:'None',         base:5, adj:0,  spp:5,  effect:'+5 Toughness. (Replaces Tier 3)'},
-      {active:false, name:'Regeneration ↑',    mod:'Regrowth',     base:10,adj:2,  spp:12, effect:'Heal 1 Wound/ROUND + Regrow limbs. (Replaces Tier 2)'},
-      {active:false, name:'Super Attr: Str ↑', mod:'None',         base:6, adj:0,  spp:6,  effect:'Strength +3 die types (d8→d12+1). (Replaces Tier 3)'},
-      {active:false, name:'Hardy',             mod:'None',         base:2, adj:0,  spp:2,  effect:"2nd Shaken doesn't cause a Wound."},
-      {active:false, name:'Super Attr: Vig',   mod:'None',         base:4, adj:0,  spp:4,  effect:'Vigor +2 die types (d10→d12+1).'},
-      {active:false, name:'Fearless',          mod:'None',         base:2, adj:0,  spp:2,  effect:'Immune to Fear checks.'},
-      {active:false, name:'Banked',            mod:'N/A',          base:0, adj:0,  spp:1,  effect:'Available for utility (Genius, Scan, etc.).'},
-    ]},
-  ],
-  bennies:3, maxBennies:3,
-  wounds:[false,false,false,false,false],
-  woundIncap:false,
-  fatigue:[false,false],
-  fatigueIncap:false
+  // These get populated from sheets on load
+  attrs: [],        // [{name, base}]
+  skills: [],       // [{name, base, linkedattr}]
+  starting: [],     // [{name, type, effect, defaulton}] + .on
+  progressions: [], // [{adv, rank, type, selection, prereq, effect}] + .checked
+  powerTiers: [],   // [{tier, title, spplabel, defaultactive}]
+  powers: [],       // [{tier, name, mod, base, adj, spp, effect, upgrades}] + .active
+  hindrances: [],   // [{name, severity, effect, bolohad, source}]
+  allEdges: [],     // reference only
+  allWeapons: [],   // [{name, damage, skill, tags, notes, source, dynamic, acquired, book}] + .equipped
+  allArmor: [],     // [{location, armorvalue, weight, notes, equipped, category, minstr, book}] + .equipped
+  allGear: [],      // [{name, weight, cost, notes, category, acquired, book}] + .equipped
+  edgesRef: [],
+  hindrancesRef: [],
+  spPowers: [],
+  weaponsRef: [],
+  armorRef: [],
+
+  // Session state
+  bennies: 3, maxBennies: 3,
+  wounds: [false,false,false,false,false],
+  woundIncap: false,
+  fatigue: [false,false],
+  fatigueIncap: false,
+  loaded: false
 };
 
 // ============================================================
-// CONSTANTS
+// COMPUTED
 // ============================================================
 const DIE_NAMES = ['d4','d6','d8','d10','d12'];
-const ATTRS = [
-  {name:'Agility', base:2},{name:'Smarts',base:2},{name:'Spirit',base:2},
-  {name:'Strength',base:3},{name:'Vigor',base:3}
-];
-const SKILLS = [
-  {name:'Athletics',base:1},{name:'Com. Knowledge',base:1},{name:'Fighting',base:3},
-  {name:'Focus',base:2},{name:'Intimidation',base:2},{name:'Notice',base:2},
-  {name:'Persuasion',base:1},{name:'Piloting',base:1},{name:'Science',base:1},
-  {name:'Shooting',base:2},{name:'Stealth',base:1},{name:'Survival',base:2}
-];
-
-// ============================================================
-// HELPERS
-// ============================================================
-function dieFor(lvl)  { return DIE_NAMES[Math.min(lvl-1,4)]; }
-function dieVal(lvl)  { return [4,6,8,10,12][Math.min(lvl-1,4)]; }
-function hasEdge(name){ return !!state.progressions.find(p=>p.checked && p.sel===name); }
+function dieFor(lvl) { return DIE_NAMES[Math.min(lvl-1,4)]; }
+function dieVal(lvl) { return [4,6,8,10,12][Math.min(lvl-1,4)]; }
+function hasEdge(name) { return !!state.progressions.find(p=>p.checked && p.selection===name); }
 function hasStart(name){ return !!state.starting.find(s=>s.on && s.name===name); }
 
 function computeAttrLevel(name) {
-  const a = ATTRS.find(x=>x.name===name);
-  let lvl = a.base;
+  const a = state.attrs.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!a) return 1;
+  let lvl = parseInt(a.base)||1;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    if(p.type==='Attribute' && p.sel.toLowerCase().includes(name.toLowerCase())) lvl++;
+    if(p.type==='Attribute' && p.selection.toLowerCase().includes(name.toLowerCase())) lvl++;
   });
   return Math.min(5,lvl);
 }
+
 function computeSkillLevel(name) {
-  const s = SKILLS.find(x=>x.name===name);
+  const s = state.skills.find(x=>x.name.toLowerCase()===name.toLowerCase());
   if(!s) return 1;
-  let lvl = s.base;
+  let lvl = parseInt(s.base)||1;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    if((p.type==='Skill'||p.type==='Skill x2') && p.sel.toLowerCase().includes(name.toLowerCase()))
+    if((p.type==='Skill'||p.type==='Skill x2') && p.selection.toLowerCase().includes(name.toLowerCase()))
       lvl += (p.type==='Skill x2') ? 2 : 1;
   });
   return Math.min(5,lvl);
 }
-// getActivePower returns the highest-tier active version of a named power.
-// Upgrade entries use names like 'Melee Attack ↑' — strip arrows for base-name matching.
+
 function getActivePower(name) {
   let found = null;
-  state.powerTiers.forEach(t => {
-    t.powers.forEach(p => {
-      if(!p.active) return;
-      const baseName = p.name.replace(/\s*↑+$/,''); // strip upgrade arrows
-      if(baseName === name) found = p;
-    });
+  state.powers.forEach(p=>{
+    if(!p.active) return;
+    const base = p.name.replace(/\s*↑+$/,'');
+    if(base===name) found = p;
   });
   return found;
 }
@@ -439,8 +505,8 @@ function getActivePower(name) {
 function computeParry() {
   const fLvl = computeSkillLevel('Fighting');
   let p = 2 + Math.floor(dieVal(fLvl)/2);
-  if(hasStart('Martial Artist')) p += 1; // +1 Parry unarmed
-  if(hasEdge('Martial Warrior')) p += 1; // additional +1
+  if(hasStart('Martial Artist')) p += 1;
+  if(hasEdge('Martial Warrior'))  p += 1;
   return p;
 }
 
@@ -449,20 +515,32 @@ function computeToughness() {
   let t = 2 + Math.floor(dieVal(vigLvl)/2);
   if(hasStart('Brawler (Racial)')) t += 1;
   if(hasEdge('Bruiser')) t += 1;
-  // Toughness super power: base = SPP spent = +1 per level (per power list: 1/Level)
   const tp = getActivePower('Toughness');
-  if(tp) t += tp.base; // base 2 = +2, base 4 = +4, base 5 = +5
+  if(tp) t += parseInt(tp.base)||0;
   return t;
 }
 
-function computeArmorBonus() {
-  return getActivePower('Armor') ? 2 : 0;
+function computeArmorBonus() { return getActivePower('Armor') ? 2 : 0; }
+
+function computeCarryLimit() {
+  const strLvl = computeAttrLevel('Strength');
+  const strDie = dieVal(strLvl);
+  return (strDie / 4) * 20; // d4=20,d6=40,d8=60,d10=80,d12=100
 }
 
 function getWoundEdgeInfo() {
   const nosIgnore = hasEdge('Imp. Nerves of Steel') ? 2 : hasEdge('Nerves of Steel') ? 1 : 0;
   const maxWounds = hasEdge('Tougher than Nails') ? 5 : hasEdge('Tough as Nails') ? 4 : 3;
   return {nosIgnore, maxWounds};
+}
+
+function computeRank() {
+  const checked = state.progressions.filter(p=>p.checked).length;
+  if(checked>=16) return 'Legendary';
+  if(checked>=12) return 'Heroic';
+  if(checked>=8)  return 'Veteran';
+  if(checked>=4)  return 'Seasoned';
+  return 'Novice';
 }
 
 // ============================================================
@@ -473,18 +551,20 @@ function renderDieDots(lvl) {
   for(let i=1;i<=5;i++) h+=`<div class="die-dot${i===lvl?' filled':''}">${DIE_NAMES[i-1].replace('d','')}</div>`;
   return h+'</div>';
 }
+
 function renderAttrs() {
   const tb=document.getElementById('attr-body'); tb.innerHTML='';
-  ATTRS.forEach(a=>{
+  state.attrs.forEach(a=>{
     const lvl=computeAttrLevel(a.name);
     const tr=document.createElement('tr');
     tr.innerHTML=`<td class="aname">${a.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right">${dieFor(lvl)}</td>`;
     tb.appendChild(tr);
   });
 }
+
 function renderSkills() {
   const tb=document.getElementById('skill-body'); tb.innerHTML='';
-  SKILLS.forEach(s=>{
+  state.skills.forEach(s=>{
     const lvl=computeSkillLevel(s.name);
     const tr=document.createElement('tr');
     tr.innerHTML=`<td class="aname">${s.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right;font-size:18px">${dieFor(lvl)}</td>`;
@@ -493,33 +573,54 @@ function renderSkills() {
 }
 
 // ============================================================
-// RENDER: SUPER POWERS SUMMARY (Character Sheet)
+// RENDER: HINDRANCES & EDGES
+// ============================================================
+function renderHindrances() {
+  const el=document.getElementById('hindrances-list');
+  const bolo = state.hindrances.filter(h=>h.bolohad==='TRUE'||h.bolohad==='true');
+  if(!bolo.length){el.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No hindrances loaded.</div>';return;}
+  el.innerHTML = bolo.map(h=>{
+    const minor = h.severity && h.severity.toLowerCase().includes('minor') && !h.severity.toLowerCase().includes('major');
+    return `<div class="hindrance-item${minor?' minor':''}"><strong>${h.name}</strong> (${h.severity}) — ${h.effect}</div>`;
+  }).join('');
+}
+
+function renderEdges() {
+  const el=document.getElementById('edges-list');
+  let html='';
+  state.starting.forEach(s=>{
+    if(s.on) html+=`<div class="edge-item"><strong>${s.name}</strong> — ${s.effect}</div>`;
+  });
+  state.progressions.forEach(p=>{
+    if(p.checked && p.type==='Edge')
+      html+=`<div class="edge-item"><strong>${p.selection}</strong> — ${p.effect}</div>`;
+  });
+  el.innerHTML = html || '<div style="color:var(--text-dim);font-style:italic;font-size:13px">No active edges.</div>';
+}
+
+// ============================================================
+// RENDER: SUPER POWERS SUMMARY
 // ============================================================
 function renderSPSummary() {
-  const container = document.getElementById('sp-summary');
-  const allActive = [];
-  state.powerTiers.forEach((tier,ti)=>{
-    tier.powers.forEach((p,pi)=>{
-      if(p.active) allActive.push({...p, tierName:tier.title, ti, pi});
-    });
-  });
-  if(allActive.length===0){
+  const container=document.getElementById('sp-summary');
+  const active = state.powers.filter(p=>p.active);
+  if(!active.length){
     container.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No super powers active. Toggle tiers/powers in the Power Tiers tab.</div>';
     return;
   }
-  // Group by tier
-  const byTier = {};
-  allActive.forEach(p=>{ if(!byTier[p.tierName]) byTier[p.tierName]=[]; byTier[p.tierName].push(p); });
+  const byTier={};
+  active.forEach(p=>{
+    const tier=state.powerTiers.find(t=>t.tier===p.tier)||{title:`Tier ${p.tier}`};
+    const key=tier.title;
+    if(!byTier[key]){byTier[key]={title:key,powers:[]};}
+    byTier[key].powers.push(p);
+  });
   let html='';
-  Object.entries(byTier).forEach(([tierName, powers])=>{
-    const ti = powers[0].ti;
-    html+=`<div class="sp-section">
-      <div class="sp-section-header" onclick="showTab('powers',document.querySelector('nav button:nth-child(4)'))">
-        <span class="sp-section-title">${tierName}</span>
-        <span style="font-size:11px;color:var(--text-dim)">Click to manage →</span>
-      </div>`;
-    powers.forEach(p=>{
-      html+=`<div class="sp-row sp-on" onclick="togglePower(${p.ti},${p.pi});renderSPSummary()">
+  Object.values(byTier).forEach(group=>{
+    html+=`<div class="sp-section"><div class="sp-section-header"><span class="sp-section-title">${group.title}</span><span style="font-size:11px;color:var(--text-dim)">Click power to toggle →</span></div>`;
+    group.powers.forEach(p=>{
+      const idx = state.powers.indexOf(p);
+      html+=`<div class="sp-row sp-on" onclick="togglePowerByIdx(${idx});renderSPSummary()">
         <div class="sp-check">✓</div>
         <div><div class="sp-name">${p.name}</div><div class="sp-detail">${p.effect}</div></div>
         <div class="sp-spp">${p.spp} SPP</div>
@@ -531,103 +632,72 @@ function renderSPSummary() {
 }
 
 // ============================================================
-// RENDER: EDGES
-// ============================================================
-function renderEdges() {
-  const el=document.getElementById('edges-list');
-  let html='';
-  state.starting.forEach(s=>{
-    if(s.on) html+=`<div class="edge-item"><strong>${s.name}</strong> — ${s.effect}</div>`;
-  });
-  state.progressions.forEach(p=>{
-    if(p.checked && p.type==='Edge')
-      html+=`<div class="edge-item"><strong>${p.sel}</strong> — ${p.effect}</div>`;
-  });
-  el.innerHTML=html || '<div style="color:var(--text-dim);font-style:italic;font-size:13px">No active edges.</div>';
-}
-
-// ============================================================
 // RENDER: WEAPONS
-// Melee Attack power STACKS with Martial Artist / Brawler.
-// Rule: the power adds extra damage dice on top of base melee damage.
-// Tier 1: base=2 → adds 1d6  (2 SPP = 1 die step = 1d6 extra)
-// Tier 3: base=4 → adds 2d6
-// Tier 4: base=6 → adds 3d6
-// So at Tier 1 with MA: Str + d6 (MA fist) + d6 (power) = Str+2d6
 // ============================================================
 function computeWeapons() {
-  const strDie = dieFor(computeAttrLevel('Strength'));
-  const fDie   = dieFor(computeSkillLevel('Fighting'));
-  const hasBrawler = hasStart('Brawler (Racial)');
-  const hasMA      = hasStart('Martial Artist');
-  const hasBruiser = hasEdge('Bruiser');
-  const hasMW      = hasEdge('Martial Warrior');
-
-  // Fist base bonus die from edges
-  let fistBonus = null;
-  if(hasBrawler) fistBonus = 'd4';
-  if(hasMA)      fistBonus = 'd6'; // MA upgrades over Brawler
-  if(hasBruiser && fistBonus==='d6') fistBonus = 'd8';
-  if(hasMW      && fistBonus==='d8') fistBonus = 'd10';
-
-  const weapons = [];
-
-  // Basic fists
-  const fistDmg = fistBonus ? `${strDie}+${fistBonus}` : strDie;
-  const fistUpgraded = fistBonus && fistBonus !== 'd6';
-  weapons.push({
-    name: fistBonus ? 'Fists' : 'Unarmed',
-    damage: fistDmg,
-    skillLabel: `Fighting ${fDie}`,
-    tags: hasMA ? ['Natural Weapon'] : [],
-    notes: hasMA ? 'Martial Artist. AP 0.' : 'AP 0.',
-    upgraded: fistUpgraded,
-    source: 'Racial/Edges'
-  });
-
-  // Enhanced Fists — Melee Attack power STACKS with edge damage
-  const mp = getActivePower('Melee Attack');
-  if(mp) {
-    // Each 2 base = 1 extra d6 (per the tier design: base 2=1d6, 4=2d6, 6=3d6)
-    const extraDice = Math.floor(mp.base / 2);
-    const powerDice = Array(extraDice).fill('d6').join('+');
-    // Stack on top of edge fist bonus
-    let enhancedDmg;
-    if(fistBonus) {
-      enhancedDmg = `${strDie}+${fistBonus}+${powerDice}`;
-    } else {
-      enhancedDmg = `${strDie}+${powerDice}`;
-    }
-    weapons.push({
-      name: 'Enhanced Fists',
-      damage: enhancedDmg,
-      skillLabel: `Fighting ${fDie}`,
-      tags: ['Natural Weapon','Heavy Weapon'],
-      notes: mp.effect,
-      upgraded: true,
-      source: 'Melee Attack Power'
-    });
+  const strDie=dieFor(computeAttrLevel('Strength'));
+  const fDie=dieFor(computeSkillLevel('Fighting'));
+  const hasBrawler=hasStart('Brawler (Racial)');
+  const hasMA=hasStart('Martial Artist');
+  const hasBruiser=hasEdge('Bruiser');
+  const hasMW=hasEdge('Martial Warrior');
+  let fistBonus=null;
+  if(hasBrawler) fistBonus='d4';
+  if(hasMA)      fistBonus='d6';
+  if(hasBruiser&&fistBonus==='d6') fistBonus='d8';
+  if(hasMW&&fistBonus==='d8')      fistBonus='d10';
+  const computed=[];
+  computed.push({name:'Fists',damage:fistBonus?`${strDie}+${fistBonus}`:strDie,skillLabel:`Fighting ${fDie}`,tags:hasMA?['Natural Weapon']:[],notes:'AP 0.',upgraded:fistBonus&&fistBonus!=='d6',source:'Racial/Edges'});
+  const mp=getActivePower('Melee Attack');
+  if(mp){
+    const extraDice=Math.floor((parseInt(mp.base)||0)/2);
+    const pd=Array(extraDice).fill('d6').join('+');
+    computed.push({name:'Enhanced Fists',damage:fistBonus?`${strDie}+${fistBonus}+${pd}`:`${strDie}+${pd}`,skillLabel:`Fighting ${fDie}`,tags:['Natural Weapon','Heavy Weapon'],notes:mp.effect,upgraded:true,source:'Melee Attack Power'});
   }
-
-  return weapons;
+  // Add acquired non-dynamic weapons from sheet
+  state.allWeapons.filter(w=>w.dynamic!=='TRUE'&&w.acquired==='TRUE').forEach(w=>{
+    computed.push({name:w.name,damage:w.damage,skillLabel:`${w.skill} ${dieFor(computeSkillLevel(w.skill))}`,tags:(w.tags||'').split(',').filter(Boolean),notes:w.notes,upgraded:false,source:w.source});
+  });
+  return computed;
 }
 
 function renderWeapons() {
-  const weapons = computeWeapons();
-  let html = `<table class="weapon-table"><thead><tr>
-    <th>Weapon</th><th>Damage</th><th>Skill</th><th>Tags / Notes</th>
-  </tr></thead><tbody>`;
+  const weapons=computeWeapons();
+  let html=`<table class="weapon-table"><thead><tr><th>Weapon</th><th>Damage</th><th>Skill</th><th>Tags / Notes</th></tr></thead><tbody>`;
   weapons.forEach(w=>{
-    const tags = w.tags.map(t=>`<span class="wtag ${t==='Heavy Weapon'?'heavy':t==='Natural Weapon'?'natural':''}">${t}</span>`).join('');
-    html+=`<tr>
-      <td><div class="wname">${w.name}</div><span class="wsource">${w.source}</span></td>
-      <td><div class="wdmg${w.upgraded?' up':''}">${w.damage}</div></td>
-      <td><div style="font-size:13px;color:var(--text-dim)">${w.skillLabel}</div></td>
-      <td><div>${tags}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">${w.notes}</div></td>
-    </tr>`;
+    const tags=w.tags.map(t=>`<span class="wtag ${t==='Heavy Weapon'?'heavy':t==='Natural Weapon'?'natural':''}">${t}</span>`).join('');
+    html+=`<tr><td><div class="wname">${w.name}</div><span class="wsource">${w.source}</span></td><td><div class="wdmg${w.upgraded?' up':''}">${w.damage}</div></td><td><div style="font-size:13px;color:var(--text-dim)">${w.skillLabel}</div></td><td><div>${tags}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">${w.notes}</div></td></tr>`;
   });
   html+='</tbody></table>';
   document.getElementById('weapons-table').innerHTML=html;
+}
+
+// ============================================================
+// RENDER: ARMOR
+// ============================================================
+function renderArmor() {
+  const tb = document.getElementById('armor-body');
+  const equipped = state.allArmor.filter(a=>a.equipped==='TRUE');
+  const bolo = equipped.length ? equipped : state.allArmor.filter(a=>a.category==='Bolo');
+  tb.innerHTML = bolo.map(a=>`<tr><td class="aname">${a.location}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">${a.armorvalue||'—'}</td><td style="font-size:12px;color:var(--text-dim)">${a.notes||''}</td></tr>`).join('');
+}
+
+// ============================================================
+// RENDER: GEAR
+// ============================================================
+function renderGear() {
+  const el = document.getElementById('gear-section');
+  const acquired = state.allGear.filter(g=>g.acquired==='TRUE');
+  if(!acquired.length){
+    el.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No gear acquired yet. Mark items as acquired in the Google Sheet.</div>';
+    return;
+  }
+  let html=`<table class="gear-table"><thead><tr><th>Item</th><th>Wt</th><th>Cost</th><th>Notes</th><th>Category</th></tr></thead><tbody>`;
+  acquired.forEach(g=>{
+    html+=`<tr><td style="font-weight:700">${g.name}</td><td style="font-family:'Share Tech Mono',monospace">${g.weight||'—'}</td><td style="font-family:'Share Tech Mono',monospace">${g.cost||'—'}</td><td>${g.notes||''}</td><td style="color:var(--text-dim)">${g.category||''}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  el.innerHTML=html;
 }
 
 // ============================================================
@@ -638,7 +708,7 @@ function renderWoundTrack() {
   document.getElementById('wound-track-label').textContent=`Wounds (Max ${maxWounds} before Incap)`;
   const container=document.getElementById('wound-boxes'); container.innerHTML='';
   for(let i=0;i<maxWounds;i++){
-    const ignored = i < nosIgnore;
+    const ignored=i<nosIgnore;
     const box=document.createElement('div');
     box.id=`wound-${i}`;
     box.className=`tbox wound${state.wounds[i]?' checked':''}${ignored?' nos-ignored':''}`;
@@ -661,15 +731,12 @@ function updateWoundDisplay() {
   const ep=Math.max(0,wc-nosIgnore);
   const pen=ep>0?`-${ep}`:'0';
   const el=document.getElementById('wound-pen-display');
-  el.textContent=pen;
-  el.className='pval '+(wc>=maxWounds?'danger':ep>0?'warning':'ok');
+  el.textContent=pen; el.className='pval '+(wc>=maxWounds?'danger':ep>0?'warning':'ok');
   document.getElementById('sb-wound-pen').textContent=pen;
   document.getElementById('incap-warning').classList.toggle('show',state.woundIncap);
   const ni=document.getElementById('nos-indicator');
-  if(nosIgnore>0){
-    ni.style.display='block'; ni.style.color='var(--green)';
-    ni.textContent=nosIgnore===2?'★ Imp. NOS: first 2 penalties ignored':'★ NOS: first penalty ignored';
-  } else { ni.style.display='none'; }
+  if(nosIgnore>0){ni.style.display='block';ni.style.color='var(--green)';ni.textContent=nosIgnore===2?'★ Imp. NOS: first 2 penalties ignored':'★ NOS: first penalty ignored';}
+  else ni.style.display='none';
 }
 
 function updateFatigueDisplay() {
@@ -682,85 +749,66 @@ function updateFatigueDisplay() {
 }
 
 // ============================================================
-// STATUS BAR + RANK DISPLAY IN NAV
+// RENDER: STATUS BAR
 // ============================================================
-function computeRank() {
-  // Rank is determined by how many advances are checked
-  const checked = state.progressions.filter(p=>p.checked).length;
-  // SWADE: Novice 0-3 advances, Seasoned 4-7, Veteran 8-11, Heroic 12-15, Legendary 16+
-  if(checked >= 16) return 'Legendary';
-  if(checked >= 12) return 'Heroic';
-  if(checked >=  8) return 'Veteran';
-  if(checked >=  4) return 'Seasoned';
-  return 'Novice';
-}
-
 function updateStatusBar() {
-  const rank = computeRank();
-  document.getElementById('sb-rank').textContent  = rank;
-  document.getElementById('nav-rank-display').textContent = rank;
-  document.getElementById('sb-parry').textContent  = computeParry();
-  const t=computeToughness(), ar=computeArmorBonus();
-  document.getElementById('sb-toughness').textContent = ar>0 ? `${t+ar}(${ar})` : `${t}`;
+  const rank=computeRank();
+  document.getElementById('sb-rank').textContent=rank;
+  document.getElementById('nav-rank-display').textContent=rank;
+  document.getElementById('sb-parry').textContent=computeParry();
+  const t=computeToughness(),ar=computeArmorBonus();
+  document.getElementById('sb-toughness').textContent=ar>0?`${t+ar}(${ar})`:`${t}`;
+  document.getElementById('sb-carry').textContent=`${computeCarryLimit()} lbs`;
   updateWoundDisplay();
   renderWeapons();
   renderSPSummary();
   saveState();
 }
 
-
+// ============================================================
+// RENDER: BENNIES
+// ============================================================
 function renderBennies() {
   const track=document.getElementById('bennies-track'); track.innerHTML='';
   for(let i=0;i<state.maxBennies;i++){
     const b=document.createElement('div');
     b.className='benny'+(i>=state.bennies?' spent':'');
     b.title=i<state.bennies?'Click to spend':'Spent';
-    b.onclick=()=>{ if(i<state.bennies){state.bennies--;renderBennies();saveState();} };
+    b.onclick=()=>{if(i<state.bennies){state.bennies--;renderBennies();saveState();}};
     track.appendChild(b);
   }
 }
-function addBenny(){ state.maxBennies++;state.bennies++;renderBennies();saveState(); }
-
+function addBenny(){state.maxBennies++;state.bennies++;renderBennies();saveState();}
 
 // ============================================================
-// RENDER: PROGRESSIONS (starting + advances)
+// RENDER: PROGRESSIONS
 // ============================================================
 function renderStarting() {
-  const container=document.getElementById('starting-list');
-  container.innerHTML='';
+  const container=document.getElementById('starting-list'); container.innerHTML='';
   state.starting.forEach((s,i)=>{
     const row=document.createElement('div');
     row.className='starting-row'+(s.on?' checked':'');
-    row.innerHTML=`
-      <div class="prog-chk">${s.on?'✓':''}</div>
-      <div><div class="prog-sel">${s.name}</div><div class="prog-pre">${s.type}</div></div>
-      <div class="prog-eff">${s.effect}</div>`;
-    row.onclick=()=>{ state.starting[i].on=!state.starting[i].on; fullRefresh(); };
+    row.innerHTML=`<div class="prog-chk">${s.on?'✓':''}</div><div><div class="prog-sel">${s.name}</div><div class="prog-pre">${s.type}</div></div><div class="prog-eff">${s.effect}</div>`;
+    row.onclick=()=>{state.starting[i].on=!state.starting[i].on;fullRefresh();};
     container.appendChild(row);
   });
 }
 
 function renderProgressions() {
-  const container=document.getElementById('prog-list');
-  container.innerHTML='';
+  const container=document.getElementById('prog-list'); container.innerHTML='';
   const ranks=['Novice','Seasoned','Veteran','Heroic','Legendary'];
   ranks.forEach(rank=>{
     const items=state.progressions.filter(p=>p.rank===rank);
-    const tier=document.createElement('div');
-    tier.className='prog-tier';
+    if(!items.length) return;
+    const tier=document.createElement('div'); tier.className='prog-tier';
     tier.innerHTML=`<div class="tier-badge ${rank.toLowerCase()}">${rank}</div>`;
     items.forEach(p=>{
       const gi=state.progressions.indexOf(p);
       const tc=p.type==='Attribute'?'attribute':p.type.startsWith('Skill')?'skill':p.type==='Edge'?'edge':'open';
       const row=document.createElement('div');
       row.className='prog-row'+(p.checked?' checked':'');
-      row.innerHTML=`
-        <div class="prog-chk">${p.checked?'✓':''}</div>
-        <div><div class="prog-sel">${p.sel}</div><div class="prog-pre">${p.prereq}</div></div>
-        <div class="prog-tbadge ${tc}">${p.type}</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center">Adv #${p.adv}</div>
-        <div class="prog-eff">${p.effect}</div>`;
-      row.onclick=()=>{ state.progressions[gi].checked=!state.progressions[gi].checked; fullRefresh(); };
+      row.innerHTML=`<div class="prog-chk">${p.checked?'✓':''}</div><div><div class="prog-sel">${p.selection}</div><div class="prog-pre">${p.prereq}</div></div><div class="prog-tbadge ${tc}">${p.type}</div><div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center">Adv #${p.adv}</div><div class="prog-eff">${p.effect}</div>`;
+      row.onclick=()=>{state.progressions[gi].checked=!state.progressions[gi].checked;fullRefresh();};
       tier.appendChild(row);
     });
     container.appendChild(tier);
@@ -771,53 +819,105 @@ function renderProgressions() {
 // RENDER: POWER TIERS
 // ============================================================
 function renderPowerTiers() {
-  const container=document.getElementById('power-list-container');
-  container.innerHTML='';
-  state.powerTiers.forEach((tier,ti)=>{
-    const totalSPP=tier.powers.reduce((s,p)=>s+p.spp,0);
-    const div=document.createElement('div');
-    div.className='power-tier';
+  const container=document.getElementById('power-list-container'); container.innerHTML='';
+  state.powerTiers.forEach(tier=>{
+    const tierNum=tier.tier;
+    const tierPowers=state.powers.filter(p=>p.tier===tierNum);
+    const totalSPP=tierPowers.reduce((s,p)=>s+(parseInt(p.spp)||0),0);
+    const tierActive=tierPowers.length&&tierPowers.every(p=>p.active);
+    const div=document.createElement('div'); div.className='power-tier';
     div.innerHTML=`
-      <div class="pt-header${tier.active?' tier-on':''}" onclick="toggleTierActive(${ti})">
-        <div><div class="pt-title">${tier.title}</div><div style="font-size:12px;color:var(--text-dim);margin-top:2px">${tier.spp}</div></div>
-        <div style="display:flex;align-items:center;gap:14px">
-          <span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2)">Total: ${totalSPP} SPP</span>
-          <span style="font-size:20px;color:var(--text-dim)">${tier.active?'●':'○'}</span>
-        </div>
+      <div class="pt-header${tierActive?' tier-on':''}" onclick="toggleTierActive('${tierNum}')">
+        <div><div class="pt-title">${tier.title}</div><div style="font-size:12px;color:var(--text-dim);margin-top:2px">${tier.spplabel}</div></div>
+        <div style="display:flex;align-items:center;gap:14px"><span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2)">Total: ${totalSPP} SPP</span><span style="font-size:20px;color:var(--text-dim)">${tierActive?'●':'○'}</span></div>
       </div>
       <div class="pt-list">
-        <div class="pt-colhdr">
-          <div></div><div class="col-h" style="text-align:left">Power / Trapping</div>
-          <div class="col-h">Modifier</div><div class="col-h">Base</div><div class="col-h">Adj</div><div class="col-h">SPP</div>
-        </div>
-        ${tier.powers.map((p,pi)=>`
-          <div class="pt-row${p.active?' pt-on':''}" onclick="togglePower(${ti},${pi})">
+        <div class="pt-colhdr"><div></div><div class="col-h" style="text-align:left">Power / Trapping</div><div class="col-h">Modifier</div><div class="col-h">Base</div><div class="col-h">Adj</div><div class="col-h">SPP</div></div>
+        ${tierPowers.map((p,pi)=>{
+          const idx=state.powers.indexOf(p);
+          return `<div class="pt-row${p.active?' pt-on':''}" onclick="togglePowerByIdx(${idx})">
             <div class="pt-check">${p.active?'✓':''}</div>
             <div><div class="pt-pname">${p.name}</div><div style="font-size:11px;color:var(--text-dim)">${p.effect}</div></div>
             <div class="pt-mod">${p.mod}</div>
             <div class="col-c">${p.base}</div>
-            <div class="col-c" style="color:${p.adj>0?'var(--green)':p.adj<0?'var(--red)':'var(--text-dim)'}">${p.adj>0?'+':''}${p.adj}</div>
+            <div class="col-c" style="color:${parseInt(p.adj)>0?'var(--green)':parseInt(p.adj)<0?'var(--red)':'var(--text-dim)'}">${parseInt(p.adj)>0?'+':''}${p.adj}</div>
             <div class="col-spp">${p.spp}</div>
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>`;
     container.appendChild(div);
   });
 }
 
-function toggleTierActive(ti){
-  state.powerTiers[ti].active=!state.powerTiers[ti].active;
-  state.powerTiers[ti].powers.forEach(p=>p.active=state.powerTiers[ti].active);
+function toggleTierActive(tierNum) {
+  const tierPowers=state.powers.filter(p=>p.tier===tierNum);
+  const allOn=tierPowers.every(p=>p.active);
+  tierPowers.forEach(p=>p.active=!allOn);
   renderPowerTiers(); updateStatusBar();
 }
-function togglePower(ti,pi){
-  state.powerTiers[ti].powers[pi].active=!state.powerTiers[ti].powers[pi].active;
+function togglePowerByIdx(idx) {
+  state.powers[idx].active=!state.powers[idx].active;
   renderPowerTiers(); updateStatusBar();
+}
+
+// ============================================================
+// RENDER: REFERENCE TABLES
+// ============================================================
+function renderEdgesRef() {
+  const tb=document.getElementById('edges-ref-body'); tb.innerHTML='';
+  state.edgesRef.forEach(e=>{
+    const tr=document.createElement('tr');
+    const bookCls=(e.book||'SWADE').toUpperCase()==='SPC'?'spc':'swade';
+    tr.innerHTML=`<td style="font-weight:700">${e.name||''}</td><td>${e.category||''}</td><td style="color:var(--text-dim)">${e.prereq||''}</td><td>${e.effect||''}</td><td><span class="book-tag ${bookCls}">${e.book||'SWADE'}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+function renderHindrancesRef() {
+  const tb=document.getElementById('hindrances-ref-body'); tb.innerHTML='';
+  state.hindrancesRef.forEach(h=>{
+    const tr=document.createElement('tr');
+    const bookCls=(h.book||'SWADE').toUpperCase()==='SPC'?'spc':'swade';
+    tr.innerHTML=`<td style="font-weight:700">${h.name||''}</td><td>${h.severity||''}</td><td>${h.effect||''}</td><td><span class="book-tag ${bookCls}">${h.book||'SWADE'}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+function renderSPRef() {
+  const tb=document.getElementById('sp-ref-body'); tb.innerHTML='';
+  state.spPowers.forEach(p=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:700">${p.name||''}</td><td style="font-family:'Share Tech Mono',monospace">${p.basecost||''}</td><td>${p.costtype||''}</td><td>${p.summary||''}</td><td style="color:var(--text-dim)">${p.notes||''}</td><td style="color:var(--text-dim)">${p.source||''}</td>`;
+    tb.appendChild(tr);
+  });
+}
+function renderWeaponsRef() {
+  const tb=document.getElementById('weapons-ref-body'); tb.innerHTML='';
+  state.weaponsRef.forEach(w=>{
+    const tr=document.createElement('tr');
+    const bookCls=(w.book||'SWADE').toUpperCase()==='SPC'?'spc':'swade';
+    tr.innerHTML=`<td style="font-weight:700">${w.name||''}</td><td style="font-family:'Share Tech Mono',monospace">${w.damage||''}</td><td>${w.skill||''}</td><td style="color:var(--text-dim)">${w.notes||''}</td><td><span class="book-tag ${bookCls}">${w.book||'SWADE'}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+function renderArmorRef() {
+  const tb=document.getElementById('armor-ref-body'); tb.innerHTML='';
+  state.armorRef.forEach(a=>{
+    const tr=document.createElement('tr');
+    const bookCls=(a.book||'SWADE').toUpperCase()==='SPC'?'spc':'swade';
+    tr.innerHTML=`<td style="font-weight:700">${a.location||a.name||''}</td><td style="font-family:'Share Tech Mono',monospace">${a.armorvalue||''}</td><td>${a.weight||''}</td><td style="color:var(--text-dim)">${a.notes||''}</td><td><span class="book-tag ${bookCls}">${a.book||'SWADE'}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function filterTable(inputId, tableId) {
+  const q=document.getElementById(inputId).value.toLowerCase();
+  const rows=document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(r=>{ r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'; });
 }
 
 // ============================================================
 // RENDER: DICE ROLLER
 // ============================================================
-function renderDiceButtons(){
+function renderDiceButtons() {
   const row=document.getElementById('dice-row'); row.innerHTML='';
   [4,6,8,10,12,20].forEach(d=>{
     const btn=document.createElement('button');
@@ -829,7 +929,7 @@ function renderDiceButtons(){
   w.onclick=()=>rollDie(6,true); row.appendChild(w);
 }
 
-function rollDie(sides,forceWild=false){
+function rollDie(sides,forceWild=false) {
   const mod=parseInt(document.getElementById('roll-modifier').value)||0;
   const useWild=forceWild||document.getElementById('wild-toggle').checked;
   function roll(s){let r=Math.floor(Math.random()*s)+1,t=r,x=0;while(r===s&&x<10){r=Math.floor(Math.random()*s)+1;t+=r;x++;}return{total:t,aced:x>0};}
@@ -845,47 +945,26 @@ function rollDie(sides,forceWild=false){
   re.innerHTML=`<div class="roll-num">${fr}</div><div><div class="roll-suc ${sc}">${st}</div><div class="roll-det">${detail}${wi}</div></div>`;
 }
 
-function renderSkillQuickRef(){
-  const all=[...ATTRS.map(a=>({name:a.name,isAttr:true})),...SKILLS.map(s=>({name:s.name,isAttr:false}))];
+function renderSkillQuickRef() {
+  const all=[...state.attrs.map(a=>({name:a.name,isAttr:true})),...state.skills.map(s=>({name:s.name,isAttr:false}))];
   let html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:7px;margin-top:10px">';
   all.forEach(item=>{
     const lvl=item.isAttr?computeAttrLevel(item.name):computeSkillLevel(item.name);
     const die=dieFor(lvl); const sides=dieVal(lvl);
     const col=item.isAttr?'var(--blue)':'var(--accent2)';
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 11px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="rollDie(${sides})">
-      <span style="font-weight:600">${item.name}</span>
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:${col}">${die}</span>
-    </div>`;
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 11px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="rollDie(${sides})"><span style="font-weight:600">${item.name}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:${col}">${die}</span></div>`;
   });
   html+='</div>';
   document.getElementById('skill-quick-ref').innerHTML=html;
 }
 
 // ============================================================
-// TOGGLES
+// WOUND / FATIGUE TOGGLES
 // ============================================================
-function toggleWound(i){
-  const {maxWounds}=getWoundEdgeInfo();
-  state.wounds[i]=!state.wounds[i];
-  if(!state.wounds[i]){for(let j=i+1;j<maxWounds;j++)state.wounds[j]=false;state.woundIncap=false;}
-  updateWoundDisplay();saveState();
-}
-function toggleIncap(){
-  const {maxWounds}=getWoundEdgeInfo();
-  state.woundIncap=!state.woundIncap;
-  if(state.woundIncap) state.wounds=Array(maxWounds).fill(true);
-  updateWoundDisplay();saveState();
-}
-function toggleFatigue(i){
-  state.fatigue[i]=!state.fatigue[i];
-  if(!state.fatigue[i]){for(let j=i+1;j<2;j++)state.fatigue[j]=false;state.fatigueIncap=false;}
-  updateFatigueDisplay();saveState();
-}
-function toggleFatigueIncap(){
-  state.fatigueIncap=!state.fatigueIncap;
-  if(state.fatigueIncap) state.fatigue=[true,true];
-  updateFatigueDisplay();saveState();
-}
+function toggleWound(i){const {maxWounds}=getWoundEdgeInfo();state.wounds[i]=!state.wounds[i];if(!state.wounds[i]){for(let j=i+1;j<maxWounds;j++)state.wounds[j]=false;state.woundIncap=false;}updateWoundDisplay();saveState();}
+function toggleIncap(){const {maxWounds}=getWoundEdgeInfo();state.woundIncap=!state.woundIncap;if(state.woundIncap)state.wounds=Array(maxWounds).fill(true);updateWoundDisplay();saveState();}
+function toggleFatigue(i){state.fatigue[i]=!state.fatigue[i];if(!state.fatigue[i]){for(let j=i+1;j<2;j++)state.fatigue[j]=false;state.fatigueIncap=false;}updateFatigueDisplay();saveState();}
+function toggleFatigueIncap(){state.fatigueIncap=!state.fatigueIncap;if(state.fatigueIncap)state.fatigue=[true,true];updateFatigueDisplay();saveState();}
 
 // ============================================================
 // NAV
@@ -895,27 +974,28 @@ function showTab(name,btn){
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(btn) btn.classList.add('active');
-  if(name==='roller') renderSkillQuickRef();
+  if(name==='roller'&&state.loaded) renderSkillQuickRef();
 }
 
 // ============================================================
 // FULL REFRESH
 // ============================================================
-function fullRefresh(){
+function fullRefresh() {
   renderStarting();
   renderProgressions();
   renderAttrs();
   renderSkills();
+  renderHindrances();
   renderEdges();
-  renderWeapons();
-  renderSPSummary();
-  updateStatusBar();
+  renderArmor();
+  renderGear();
+  updateStatusBar(); // calls renderWeapons, renderSPSummary, saveState
 }
 
 // ============================================================
-// SAVE / LOAD
+// SAVE / LOAD (localStorage)
 // ============================================================
-const SAVE_KEY='bolo_swade_v3';
+const SAVE_KEY='bolo_swade_v4';
 let saveTimer=null;
 
 function saveState(){
@@ -923,7 +1003,8 @@ function saveState(){
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       starting:  state.starting.map(s=>s.on),
       progressions: state.progressions.map(p=>p.checked),
-      powerTiers: state.powerTiers.map(t=>({active:t.active,powers:t.powers.map(p=>p.active)})),
+      powers:    state.powers.map(p=>p.active),
+      powerTiers:state.powerTiers.map(t=>t.active||false),
       bennies:state.bennies, maxBennies:state.maxBennies,
       wounds:state.wounds, woundIncap:state.woundIncap,
       fatigue:state.fatigue, fatigueIncap:state.fatigueIncap
@@ -931,17 +1012,14 @@ function saveState(){
     flashSave();
   }catch(e){}
 }
+
 function loadState(){
   try{
     const raw=localStorage.getItem(SAVE_KEY); if(!raw)return;
     const s=JSON.parse(raw);
-    if(s.starting) s.starting.forEach((on,i)=>{if(state.starting[i])state.starting[i].on=on;});
+    if(s.starting)     s.starting.forEach((on,i)=>{if(state.starting[i])state.starting[i].on=on;});
     if(s.progressions) s.progressions.forEach((c,i)=>{if(state.progressions[i])state.progressions[i].checked=c;});
-    if(s.powerTiers) s.powerTiers.forEach((t,ti)=>{
-      if(!state.powerTiers[ti])return;
-      state.powerTiers[ti].active=t.active;
-      t.powers.forEach((a,pi)=>{if(state.powerTiers[ti].powers[pi])state.powerTiers[ti].powers[pi].active=a;});
-    });
+    if(s.powers)       s.powers.forEach((a,i)=>{if(state.powers[i])state.powers[i].active=a;});
     if(s.bennies!==undefined)    state.bennies=s.bennies;
     if(s.maxBennies!==undefined) state.maxBennies=s.maxBennies;
     if(s.wounds)                 state.wounds=s.wounds;
@@ -950,31 +1028,133 @@ function loadState(){
     if(s.fatigueIncap!==undefined) state.fatigueIncap=s.fatigueIncap;
   }catch(e){}
 }
+
 function flashSave(){
   const el=document.getElementById('save-indicator'); if(!el)return;
   el.textContent='✓ Saved'; el.style.color='var(--green)';
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{el.textContent='Auto-saves locally';el.style.color='var(--text-dim)';},2000);
 }
-function clearSave(){
-  if(confirm('Reset everything to defaults?')){localStorage.removeItem(SAVE_KEY);location.reload();}
+function clearSave(){if(confirm('Reset everything to defaults?')){localStorage.removeItem(SAVE_KEY);location.reload();}}
+
+// ============================================================
+// EXPORT / IMPORT
+// ============================================================
+function exportSave(){
+  const data=localStorage.getItem(SAVE_KEY)||'{}';
+  const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='bolo-save.json';
+  a.click();
+}
+function importSave(){
+  const input=document.createElement('input');
+  input.type='file'; input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0]; if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{localStorage.setItem(SAVE_KEY,ev.target.result);location.reload();}
+      catch(err){alert('Failed to import save: '+err);}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 // ============================================================
-// INIT
+// MAIN LOAD — fetch all sheets
 // ============================================================
-loadState();
-renderAttrs();
-renderSkills();
-renderEdges();
-renderBennies();
-renderStarting();
-renderProgressions();
-renderPowerTiers();
-renderDiceButtons();
-updateFatigueDisplay();
-renderWeapons();
-updateStatusBar(); // calls renderSPSummary, renderWoundTrack, saveState
+async function loadAllSheets() {
+  const indicator=document.getElementById('save-indicator');
+  indicator.textContent='Fetching sheet data...';
+
+  try {
+    // Fetch all sheets in parallel
+    const [
+      attrsData, skillsData, startingData, progData,
+      tierData, powersData, hindrancesData,
+      weaponsData, armorData, gearData,
+      edgesRefData, hindrancesRefData, spData
+    ] = await Promise.all([
+      fetchSheet('Attributes'), fetchSheet('Skills'),
+      fetchSheet('Starting'),   fetchSheet('Progressions'),
+      fetchSheet('PowerTiers'), fetchSheet('Powers'),
+      fetchSheet('Hindrances'),
+      fetchSheet('Weapons'),    fetchSheet('Armor'),
+      fetchSheet('Gear'),
+      fetchSheet('Edges'),      fetchSheet('Hindrances'),
+      fetchSheet('SPCPowers')
+    ]);
+
+    // Populate state
+    state.attrs     = attrsData;
+    state.skills    = skillsData;
+    state.starting  = startingData.map(s=>({...s, on: s.defaulton==='TRUE'}));
+    state.progressions = progData.map(p=>({...p, checked:false}));
+    state.powerTiers   = tierData;
+    state.powers       = powersData.map(p=>({...p, active: p.defaultactive==='TRUE'||false}));
+    state.hindrances   = hindrancesData;
+    state.allWeapons   = weaponsData;
+    state.allArmor     = armorData;
+    state.allGear      = gearData;
+    state.edgesRef         = edgesRefData;
+    state.hindrancesRef    = hindrancesData;
+    state.spPowers         = spData;
+    state.weaponsRef       = weaponsData;
+    state.armorRef         = armorData;
+
+    // Restore session state from localStorage (after data is loaded)
+    loadState();
+    state.loaded = true;
+
+    // Show all content sections
+    document.getElementById('sheet-loading').style.display='none';
+    document.getElementById('sheet-content').style.display='block';
+    document.getElementById('prog-loading').style.display='none';
+    document.getElementById('prog-content').style.display='block';
+    document.getElementById('powers-loading').style.display='none';
+    document.getElementById('powers-content').style.display='block';
+    document.getElementById('ref-loading').style.display='none';
+    document.getElementById('ref-content').style.display='block';
+
+    // Render everything
+    renderAttrs();
+    renderSkills();
+    renderHindrances();
+    renderEdges();
+    renderArmor();
+    renderGear();
+    renderBennies();
+    renderStarting();
+    renderProgressions();
+    renderPowerTiers();
+    renderDiceButtons();
+    updateFatigueDisplay();
+    updateStatusBar();
+    renderEdgesRef();
+    renderHindrancesRef();
+    renderSPRef();
+    renderWeaponsRef();
+    renderArmorRef();
+
+    indicator.textContent='Auto-saves locally';
+    indicator.style.color='var(--text-dim)';
+
+  } catch(err) {
+    console.error('Sheet load error:', err);
+    indicator.textContent='⚠ Sheet load failed';
+    indicator.style.color='var(--red)';
+    ['sheet-loading','prog-loading','powers-loading','ref-loading'].forEach(id=>{
+      const el=document.getElementById(id);
+      el.innerHTML=`<div class="error-msg">⚠ Failed to load from Google Sheets: ${err.message}<br><br>Make sure the sheet is published (File → Share → Publish to web) and the Sheet ID is correct.</div>`;
+    });
+  }
+}
+
+// Boot
+loadAllSheets();
 </script>
 </body>
 </html>
