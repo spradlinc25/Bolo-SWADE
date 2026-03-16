@@ -863,21 +863,26 @@ function renderProgressions() {
 // ============================================================
 function renderPowerTiers() {
   const container=document.getElementById('power-list-container'); container.innerHTML='';
+
+  // Debug: log what we actually have
+  console.log('PowerTiers:', state.powerTiers.map(t=>({tier:t.tier,title:t.title})));
+  console.log('Powers tiers:', [...new Set(state.powers.map(p=>p.tier))]);
+
   state.powerTiers.forEach(tier=>{
-    // Normalize tier number to string for comparison (CSV gives strings)
-    const tierNum = String(tier.tier||'').trim();
-    const tierPowers = state.powers.filter(p => String(p.tier||'').trim() === tierNum);
+    // Use parseInt for comparison — handles "1", " 1", 1, "1.0" etc.
+    const tierNum = parseInt(tier.tier||0);
+    const tierPowers = state.powers.filter(p => parseInt(p.tier||0) === tierNum);
     const totalSPP = tierPowers.reduce((s,p)=>s+(parseInt(p.spp)||0),0);
     const tierActive = tierPowers.length && tierPowers.every(p=>p.active);
     const div=document.createElement('div'); div.className='power-tier';
     div.innerHTML=`
-      <div class="pt-header${tierActive?' tier-on':''}" onclick="toggleTierActive('${tierNum}')">
+      <div class="pt-header${tierActive?' tier-on':''}" onclick="toggleTierActive(${tierNum})">
         <div><div class="pt-title">${tier.title||'Tier '+tierNum}</div><div style="font-size:12px;color:var(--text-dim);margin-top:2px">${tier.spplabel||''}</div></div>
         <div style="display:flex;align-items:center;gap:14px"><span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2)">Total: ${totalSPP} SPP</span><span style="font-size:20px;color:var(--text-dim)">${tierActive?'●':'○'}</span></div>
       </div>
       <div class="pt-list">
         <div class="pt-colhdr"><div></div><div class="col-h" style="text-align:left">Power / Trapping</div><div class="col-h">Modifier</div><div class="col-h">Base</div><div class="col-h">Adj</div><div class="col-h">SPP</div></div>
-        ${tierPowers.map((p)=>{
+        ${tierPowers.length ? tierPowers.map((p)=>{
           const idx=state.powers.indexOf(p);
           return `<div class="pt-row${p.active?' pt-on':''}" onclick="togglePowerByIdx(${idx})">
             <div class="pt-check">${p.active?'✓':''}</div>
@@ -887,14 +892,14 @@ function renderPowerTiers() {
             <div class="col-c" style="color:${parseInt(p.adj)>0?'var(--green)':parseInt(p.adj)<0?'var(--red)':'var(--text-dim)'}">${parseInt(p.adj)>0?'+':''}${p.adj||0}</div>
             <div class="col-spp">${p.spp||''}</div>
           </div>`;
-        }).join('')}
+        }).join('') : '<div style="padding:12px;color:var(--text-dim);font-size:13px">No powers found for tier '+tierNum+' (check console)</div>'}
       </div>`;
     container.appendChild(div);
   });
 }
 
 function toggleTierActive(tierNum) {
-  const tierPowers = state.powers.filter(p => String(p.tier||'').trim() === String(tierNum).trim());
+  const tierPowers = state.powers.filter(p => parseInt(p.tier||0) === parseInt(tierNum||0));
   const allOn = tierPowers.every(p=>p.active);
   tierPowers.forEach(p=>p.active=!allOn);
   renderPowerTiers(); updateStatusBar();
