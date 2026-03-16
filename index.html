@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOLO — SWADE Character Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c0f;--surface:#111418;--surface2:#181c22;--border:#2a3040;--accent:#e85d26;--accent2:#f4a436;--green:#3ddc84;--blue:#4dabf7;--red:#ff4444;--muted:#4a5568;--text:#c8d3e0;--text-dim:#7a8aa0;--heading:#ffffff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;}
+nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 16px;flex-wrap:wrap;}
+.nav-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent);letter-spacing:3px;padding:10px 16px 10px 0;border-right:1px solid var(--border);margin-right:8px;}
+.nav-sub{font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding-right:16px;border-right:1px solid var(--border);margin-right:8px;}
+#nav-rank-display{color:var(--accent2);font-weight:700;}
+nav button{background:none;border:none;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:16px 14px;cursor:pointer;transition:all 0.2s;border-bottom:3px solid transparent;position:relative;top:1px;}
+nav button:hover{color:var(--text);}
+nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+#save-indicator{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:3px;cursor:pointer;}
+.reset-btn:hover{border-color:var(--red);color:var(--red);}
+.status-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.stat-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 12px;}
+.spl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;}
+.spv{font-family:'Share Tech Mono',monospace;font-size:17px;color:var(--accent2);font-weight:bold;}
+.spv.green{color:var(--green);}.spv.blue{color:var(--blue);}
+.bennies-track{display:flex;gap:5px;align-items:center;}
+.benny{width:26px;height:26px;border-radius:50%;border:2px solid var(--accent2);background:var(--accent2);cursor:pointer;transition:all 0.2s;position:relative;}
+.benny::after{content:'★';color:var(--bg);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;}
+.benny.spent{background:transparent;border-color:var(--muted);opacity:0.4;}
+.benny.spent::after{color:var(--muted);}
+.btn-tiny{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;cursor:pointer;margin-left:5px;}
+.btn-tiny:hover{border-color:var(--accent2);color:var(--accent2);}
+.tab{display:none;padding:16px;max-width:1400px;margin:0 auto;}
+.tab.active{display:block;}
+.section-header{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:3px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-header::before{content:'';display:block;width:4px;height:18px;background:var(--accent);border-radius:2px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.mb{margin-bottom:16px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;}
+.attr-table{width:100%;border-collapse:collapse;}
+.attr-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 6px 7px 0;text-align:left;}
+.attr-table td{padding:3px 0;}
+.aname{font-weight:700;font-size:15px;color:var(--heading);min-width:110px;}
+.die-cells{display:flex;gap:3px;align-items:center;}
+.die-dot{width:20px;height:20px;border-radius:3px;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
+.die-dot.filled{background:var(--accent);border-color:var(--accent);color:white;font-weight:bold;}
+.die-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent2);letter-spacing:1px;min-width:46px;text-align:right;}
+.track-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.track-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;margin-bottom:7px;}
+.track-boxes{display:flex;gap:5px;flex-wrap:wrap;}
+.tbox{width:44px;height:44px;border:2px solid var(--border);border-radius:4px;background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:10px;color:var(--text-dim);gap:1px;font-weight:600;}
+.tbox .pen{font-family:'Bebas Neue',sans-serif;font-size:16px;}
+.tbox:hover{border-color:var(--accent2);}
+.tbox.checked.wound{background:#3a1010;border-color:var(--red);color:var(--red);}
+.tbox.checked.fatigue{background:#1a1a0a;border-color:var(--accent2);color:var(--accent2);}
+.tbox.incap{border-color:var(--red);background:#200a0a;color:var(--red);}
+.tbox.incap.checked{background:var(--red);color:white;}
+.tbox.nos-ignored{opacity:0.6;border-style:dashed;}
+.pen-display{margin-top:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;display:flex;justify-content:space-between;align-items:flex-start;}
+.pval{font-family:'Share Tech Mono',monospace;font-size:20px;font-weight:bold;}
+.pval.danger{color:var(--red);}.pval.warning{color:var(--accent2);}.pval.ok{color:var(--green);}
+.incap-warn{background:#1a0505;border:2px solid var(--red);border-radius:6px;padding:10px 14px;color:var(--red);font-weight:700;text-align:center;margin-top:10px;font-size:15px;display:none;letter-spacing:1px;}
+.incap-warn.show{display:block;}
+
+.hindrance-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
+.hindrance-item.minor{border-left-color:var(--accent2);}
+.edge-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
+/* SUPER POWERS */
+.sp-section{background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;overflow:hidden;}
+.sp-section-header{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);cursor:pointer;}
+.sp-section-header:hover{background:#1e2530;}
+.sp-section-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;}
+.sp-row{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;font-size:13px;}
+.sp-row:last-child{border-bottom:none;}
+.sp-row:hover{background:#1a1f28;}
+.sp-row.sp-on{background:#0f1a14;}
+.sp-row.sp-on .sp-name{color:var(--green);}
+.sp-check{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.2s;flex-shrink:0;}
+.sp-row.sp-on .sp-check{background:var(--green);border-color:var(--green);color:var(--bg);}
+.sp-name{font-weight:700;}
+.sp-detail{font-size:11px;color:var(--text-dim);}
+.sp-spp{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);white-space:nowrap;}
+/* WEAPONS */
+.weapon-table{width:100%;border-collapse:collapse;}
+.weapon-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 10px 8px 0;text-align:left;}
+.weapon-table td{padding:8px 10px 8px 0;border-bottom:1px solid var(--border);vertical-align:middle;}
+.weapon-table tr:last-child td{border-bottom:none;}
+.wname{font-weight:700;font-size:15px;color:var(--heading);}
+.wsource{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);padding:2px 6px;border:1px solid var(--border);border-radius:3px;display:inline-block;margin-top:3px;}
+.wdmg{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent2);letter-spacing:1px;}
+.wdmg.up{color:var(--green);}
+.wtag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:1px 5px;border-radius:3px;border:1px solid var(--accent);color:var(--accent);margin-right:3px;margin-bottom:2px;}
+.wtag.heavy{border-color:var(--red);color:var(--red);}
+.wtag.natural{border-color:var(--blue);color:var(--blue);}
+/* PROGRESSIONS */
+.prog-tier{margin-bottom:20px;}
+.tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
+.tier-badge.novice{border-color:#4dabf7;color:#4dabf7;}.tier-badge.seasoned{border-color:#3ddc84;color:#3ddc84;}.tier-badge.veteran{border-color:#f4a436;color:#f4a436;}.tier-badge.heroic{border-color:#e85d26;color:#e85d26;}.tier-badge.legendary{border-color:#cc44ff;color:#cc44ff;}
+.prog-row{display:grid;grid-template-columns:36px 1fr 110px 160px 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+.prog-row:hover{border-color:var(--accent2);}
+.prog-row.checked{background:#0f1a0f;border-color:var(--green);}
+.prog-row.checked .prog-sel{color:var(--green);}
+.prog-chk{width:22px;height:22px;border:2px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.2s;flex-shrink:0;}
+.prog-row.checked .prog-chk{background:var(--green);border-color:var(--green);color:var(--bg);}
+.prog-sel{font-weight:700;font-size:15px;}
+.prog-pre{font-size:11px;color:var(--text-dim);}
+.prog-tbadge{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:2px 7px;border:1px solid var(--border);border-radius:3px;text-align:center;color:var(--text-dim);}
+.prog-tbadge.attribute{border-color:var(--blue);color:var(--blue);}.prog-tbadge.skill{border-color:var(--accent2);color:var(--accent2);}.prog-tbadge.edge{border-color:var(--accent);color:var(--accent);}.prog-tbadge.open{border-color:#cc44ff;color:#cc44ff;}
+.prog-eff{font-size:12px;color:var(--text-dim);}
+/* STARTING TOGGLES */
+.starting-row{display:grid;grid-template-columns:36px 1fr 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+.starting-row:hover{border-color:var(--accent2);}
+.starting-row.checked{background:#0f150f;border-color:var(--green);}
+.starting-row.checked .prog-sel{color:var(--green);}
+/* POWER TIERS */
+.power-tier{margin-bottom:20px;}
+.pt-header{background:var(--surface2);border:1px solid var(--border);border-radius:6px 6px 0 0;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background 0.2s;}
+.pt-header:hover{background:#1e2530;}
+.pt-header.tier-on{border-color:var(--accent);}
+.pt-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--heading);}
+.pt-list{border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;overflow:hidden;}
+.pt-colhdr{display:grid;grid-template-columns:30px 1fr 110px 50px 50px 50px;gap:8px;padding:7px 12px;background:var(--surface);border-bottom:1px solid var(--border);}
+.pt-row{display:grid;grid-template-columns:30px 1fr 110px 50px 50px 50px;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;}
+.pt-row:last-child{border-bottom:none;}
+.pt-row:hover{background:#1a1f28;}
+.pt-row.pt-on{background:#0f1a14;}
+.pt-row.pt-on .pt-pname{color:var(--green);}
+.pt-check{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.2s;}
+.pt-row.pt-on .pt-check{background:var(--green);border-color:var(--green);color:var(--bg);}
+.pt-pname{font-weight:700;font-size:14px;}
+.pt-mod{font-size:11px;color:var(--text-dim);font-style:italic;text-align:center;}
+.col-c{font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center;color:var(--text);}
+.col-spp{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;color:var(--accent2);font-weight:bold;}
+.col-h{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);text-align:center;}
+/* DICE */
+.dice-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px;}
+.dice-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.die-btn{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:4px;cursor:pointer;transition:all 0.2s;min-width:56px;text-align:center;}
+.die-btn:hover{border-color:var(--accent);color:var(--accent);}
+.die-btn.wild-die{border-color:var(--accent2);color:var(--accent2);}
+.roll-result{margin-top:12px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;gap:14px;}
+.roll-num{font-family:'Bebas Neue',sans-serif;font-size:46px;color:var(--accent2);line-height:1;}
+.roll-suc{font-size:15px;font-weight:700;}
+.roll-suc.success{color:var(--green);}.roll-suc.raise{color:var(--accent2);}.roll-suc.fail{color:var(--red);}
+.roll-det{font-size:12px;color:var(--text-dim);}
+@media(max-width:700px){.grid-2{grid-template-columns:1fr;}.prog-row{grid-template-columns:32px 1fr;}.prog-eff,.prog-tbadge{display:none;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title">BOLO</div>
+  <div class="nav-sub">Czarnian · <span id="nav-rank-display">Novice</span></div>
+  <button class="active" onclick="showTab('sheet',this)">Character</button>
+  <button onclick="showTab('progressions',this)">Progressions</button>
+  <button onclick="showTab('powers',this)">Power Tiers</button>
+  <button onclick="showTab('roller',this)">Dice Roller</button>
+  <div class="nav-right">
+    <span id="save-indicator">Auto-saves locally</span>
+    <button class="reset-btn" onclick="clearSave()">↺ Reset</button>
+  </div>
+</nav>
+
+<div class="status-bar">
+  <div class="stat-pill"><span class="spl">Rank</span><span class="spv" id="sb-rank">Novice</span></div>
+  <div class="stat-pill"><span class="spl">Parry</span><span class="spv" id="sb-parry">7</span></div>
+  <div class="stat-pill"><span class="spl">Toughness</span><span class="spv green" id="sb-toughness">9(2)</span></div>
+  <div class="stat-pill"><span class="spl">Pace</span><span class="spv">6</span></div>
+  <div class="stat-pill"><span class="spl">Carry</span><span class="spv">75 lbs</span></div>
+  <div class="stat-pill">
+    <span class="spl">Bennies</span>
+    <div class="bennies-track" id="bennies-track"></div>
+    <button class="btn-tiny" onclick="addBenny()">+</button>
+  </div>
+  <div class="stat-pill"><span class="spl">Wound Pen.</span><span class="spv danger" id="sb-wound-pen">0</span></div>
+</div>
+
+<!-- CHARACTER TAB -->
+<div id="tab-sheet" class="tab active">
+  <div class="grid-2 mb">
+    <div class="card">
+      <div class="section-header">Attributes</div>
+      <table class="attr-table">
+        <thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
+        <tbody id="attr-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="section-header">Skills</div>
+      <table class="attr-table">
+        <thead><tr><th>Skill</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
+        <tbody id="skill-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SUPER POWERS SUMMARY -->
+  <div class="card mb">
+    <div class="section-header">Active Super Powers</div>
+    <div id="sp-summary"></div>
+  </div>
+
+  <!-- COMBAT STATUS -->
+  <div class="card mb">
+    <div class="section-header">Combat Status</div>
+    <div class="track-grid">
+      <div>
+        <div class="track-label" id="wound-track-label">Wounds (Max 3 before Incap)</div>
+        <div class="track-boxes" id="wound-boxes"></div>
+        <div class="pen-display">
+          <div>
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Wound Penalty</div>
+            <div id="nos-indicator" style="display:none;font-size:11px;margin-top:3px;"></div>
+          </div>
+          <span class="pval ok" id="wound-pen-display">0</span>
+        </div>
+        <div class="incap-warn" id="incap-warning">⚠ INCAPACITATED — VIGOR ROLL OR DIE</div>
+      </div>
+      <div>
+        <div class="track-label">Fatigue (Max 2 before Incap)</div>
+        <div class="track-boxes">
+          <div class="tbox fatigue" onclick="toggleFatigue(0)" id="fatigue-0"><span class="pen">-1</span><span style="font-size:9px">Fatigue</span></div>
+          <div class="tbox fatigue" onclick="toggleFatigue(1)" id="fatigue-1"><span class="pen">-2</span><span style="font-size:9px">Fatigue</span></div>
+          <div class="tbox incap" onclick="toggleFatigueIncap()" id="fatigue-incap"><span style="font-size:13px;font-weight:900">✕</span><span style="font-size:9px">INCAP</span></div>
+        </div>
+        <div class="pen-display">
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Fatigue Penalty</div>
+          <span class="pval ok" id="fatigue-pen-display">0</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WEAPONS -->
+  <div class="card mb">
+    <div class="section-header">Weapons</div>
+    <div id="weapons-table"></div>
+  </div>
+
+  <div class="grid-2 mb">
+    <div class="card">
+      <div class="section-header">Hindrances</div>
+      <div class="hindrance-item"><strong>Alien Form (Major)</strong> — True form is inhuman; -4 Healing; can't use standard gear</div>
+      <div class="hindrance-item"><strong>Wanted (Major)</strong> — Hunted by powerful authorities across the galaxy</div>
+      <div class="hindrance-item minor"><strong>Outsider (Minor/Racial)</strong> — -2 Persuasion with most civilized species</div>
+    </div>
+    <div class="card">
+      <div class="section-header">Edges</div>
+      <div id="edges-list"></div>
+    </div>
+  </div>
+
+  <div class="card mb">
+    <div class="section-header">Armor</div>
+    <table class="attr-table"><thead><tr><th>Location</th><th>Armor</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="aname">(Unarmored)</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">0</td><td></td></tr>
+      <tr><td class="aname">Head</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
+      <tr><td class="aname">Torso</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
+      <tr><td class="aname">Arms</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
+      <tr><td class="aname">Legs</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">—</td><td></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- PROGRESSIONS TAB -->
+<div id="tab-progressions" class="tab">
+  <div class="section-header" style="margin-bottom:16px">Advance-by-Advance Roadmap</div>
+  <!-- STARTING section at top -->
+  <div class="prog-tier">
+    <div class="tier-badge" style="border-color:var(--text-dim);color:var(--text-dim)">Starting (Toggle to Test)</div>
+    <div id="starting-list"></div>
+  </div>
+  <div id="prog-list"></div>
+</div>
+
+<!-- POWERS TAB -->
+<div id="tab-powers" class="tab">
+  <div class="section-header" style="margin-bottom:16px">Power Tier Progressions</div>
+  <div id="power-list-container"></div>
+</div>
+
+<!-- ROLLER TAB -->
+<div id="tab-roller" class="tab">
+  <div class="dice-section">
+    <div class="section-header">Dice Roller</div>
+    <div style="font-size:13px;color:var(--text-dim);margin:8px 0 4px">Click a die to roll. Wild Die (d6) auto-included as Wild Card.</div>
+    <div class="dice-row" id="dice-row"></div>
+    <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <label style="font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Modifier:</label>
+      <input type="number" id="roll-modifier" value="0" style="width:60px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 8px;font-family:'Share Tech Mono',monospace;font-size:14px;border-radius:4px;">
+      <label style="font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:5px;">
+        <input type="checkbox" id="wild-toggle" checked> Wild Die
+      </label>
+    </div>
+    <div class="roll-result" id="roll-result" style="display:none;"></div>
+  </div>
+  <div class="card">
+    <div class="section-header">Quick Skill Reference</div>
+    <div id="skill-quick-ref"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  // Starting toggleable edges/abilities (for testing purposes)
+  starting: [
+    {on:true,  name:'Brawler (Racial)',    type:'edge', effect:'Fists = Str+d4; +1 Toughness'},
+    {on:true,  name:'Infravision (Racial)',type:'edge', effect:'Halve illumination penalties vs warm targets'},
+    {on:true,  name:'Martial Artist',      type:'edge', effect:'Fists = Natural Weapon; +1 Parry unarmed; fist d4→d6'},
+    {on:true,  name:'Super Powers',        type:'edge', effect:'10 SPP, Rising Stars (Tier 1)'},
+  ],
+  progressions: [
+    {checked:false,rank:'Novice',   adv:1,  type:'Attribute', sel:'Vigor d10',               prereq:'N/A',                   effect:'Toughness 12(2); better Soak'},
+    {checked:false,rank:'Novice',   adv:2,  type:'Skill',     sel:'Fighting d10',             prereq:'Agi d6',                effect:'Parry 7+; offense + defense'},
+    {checked:false,rank:'Novice',   adv:3,  type:'Edge',      sel:'Nerves of Steel',          prereq:'Vigor d8+',             effect:'Ignore 1 Wound penalty'},
+    {checked:false,rank:'Novice',   adv:4,  type:'Edge',      sel:'Iron Jaw',                 prereq:'Vigor d8+',             effect:'+2 to Soak and KO rolls'},
+    {checked:false,rank:'Seasoned', adv:5,  type:'Edge',      sel:'Imp. Nerves of Steel',     prereq:'Nerves of Steel',       effect:'Ignore 2 Wound penalties'},
+    {checked:false,rank:'Seasoned', adv:6,  type:'Edge',      sel:'Bruiser',                  prereq:'S, Brawler',            effect:'Fist d6→d8; +1 Toughness'},
+    {checked:false,rank:'Seasoned', adv:7,  type:'Edge',      sel:'Take the Hit',             prereq:'S, Iron Jaw, Vig d10+', effect:'Free Soak reroll'},
+    {checked:false,rank:'Seasoned', adv:8,  type:'Attribute', sel:'Spirit d8',                prereq:'N/A',                   effect:'Focus/Power Down; Chameleon'},
+    {checked:false,rank:'Veteran',  adv:9,  type:'Edge',      sel:'Martial Warrior',          prereq:'S, Martial Artist',     effect:'Fist d8→d10; +2 Fighting unarmed'},
+    {checked:false,rank:'Veteran',  adv:10, type:'Attribute', sel:'Smarts d8',                prereq:'N/A',                   effect:'Unlocks Level Headed'},
+    {checked:false,rank:'Veteran',  adv:11, type:'Edge',      sel:'Level Headed',             prereq:'S, Smarts d8+',         effect:'Draw 2 Action Cards, keep best'},
+    {checked:false,rank:'Veteran',  adv:12, type:'Edge',      sel:'Frenzy',                   prereq:'S, Fighting d8+',       effect:'Extra Fighting die, 1 atk/turn'},
+    {checked:false,rank:'Heroic',   adv:13, type:'Attribute', sel:'Spirit d10',               prereq:'N/A',                   effect:'Stronger Focus / Power Down'},
+    {checked:false,rank:'Heroic',   adv:14, type:'Edge',      sel:'Sweep',                    prereq:'Str d8+, Fight d8+',    effect:'Hit all adjacent at -2'},
+    {checked:false,rank:'Heroic',   adv:15, type:'Edge',      sel:'Imp. Frenzy',              prereq:'V, Frenzy',             effect:'Extra Fighting die, 2 atks/turn'},
+    {checked:false,rank:'Heroic',   adv:16, type:'Skill x2',  sel:'Science d6 + Piloting d6', prereq:'Below linked',          effect:'Genius + pilot online'},
+    {checked:false,rank:'Legendary',adv:17, type:'Edge',      sel:'Tough as Nails',           prereq:'L, Vigor d8+',          effect:'4 Wounds before Incap'},
+    {checked:false,rank:'Legendary',adv:18, type:'Edge',      sel:'Tougher than Nails',       prereq:'L, TaN, Vig d12',       effect:'5 Wounds before Incap'},
+    {checked:false,rank:'Legendary',adv:19, type:'Attribute', sel:'Str or Vig raise',         prereq:'L: every other adv',    effect:'Push toward d12+2'},
+    {checked:false,rank:'Legendary',adv:20, type:'Open',      sel:'Campaign pick',            prereq:'N/A',                   effect:'Imp. Sweep, Hard to Kill, etc.'},
+  ],
+  // Each tier only lists powers that are NEW or UPGRADED vs previous tier.
+  // Base powers (Armor, Chameleon, Force Field, Scan) live only in Tier 1.
+  // getActivePower() resolves the effective version by scanning tiers high→low.
+  powerTiers: [
+    {title:'TIER 1: THE TECH-HUNTER', spp:'10 SPP, Power Limit 5', active:true, powers:[
+      {active:true,  name:'Armor',        mod:'Device',          base:1, adj:-1, spp:0,  effect:'+2 Armor (GM negotiated, required)'},
+      {active:true,  name:'Chameleon',    mod:'Device',          base:3, adj:-1, spp:2,  effect:'Assume appearance of beings within 2 Size.'},
+      {active:true,  name:'Force Field',  mod:'Device',          base:2, adj:-1, spp:1,  effect:'Reduce incoming damage by 2. Powers Down if Shaken.'},
+      {active:true,  name:'Scan',         mod:'Tracker, Device', base:2, adj:0,  spp:2,  effect:'Biological targets 1mi. Sense passing within 1wk.'},
+      {active:true,  name:'Melee Attack', mod:'Heavy Weapon',    base:2, adj:1,  spp:3,  effect:'+d6 to melee damage (stacks with MA/Brawler). Heavy Weapon.'},
+      {active:true,  name:'Toughness',    mod:'None',            base:2, adj:0,  spp:2,  effect:'+2 Toughness (ignores AP).'},
+    ]},
+    {title:'TIER 2: HEALING FACTOR AWAKENS', spp:'+5 SPP → 15 total, Power Limit 5', active:false, powers:[
+      {active:false, name:'Regeneration', mod:'None',            base:5, adj:0,  spp:5,  effect:'Heal 1 Wound/hour on Focus roll. Czarnian DNA awakens.'},
+    ]},
+    {title:'TIER 3: CZARNIAN AWAKENING', spp:'+15 SPP → 30 total, Power Limit 10', active:false, powers:[
+      {active:false, name:'Melee Attack ↑',    mod:'Heavy Weapon', base:4, adj:1,  spp:4,  effect:'+2d6 to melee damage. Heavy Weapon. (Replaces Tier 1)'},
+      {active:false, name:'Toughness ↑',       mod:'None',         base:4, adj:0,  spp:4,  effect:'+4 Toughness. (Replaces Tier 1)'},
+      {active:false, name:'Super Attr: Str',   mod:'None',         base:4, adj:0,  spp:4,  effect:'Strength +2 die types (d8→d12).'},
+      {active:false, name:'Super Attr: Vig',   mod:'None',         base:4, adj:0,  spp:4,  effect:'Vigor +2 die types (d10→d12+1).'},
+      {active:false, name:'Hardy',             mod:'None',         base:2, adj:0,  spp:2,  effect:"2nd Shaken doesn't cause a Wound."},
+      {active:false, name:'Banked',            mod:'N/A',          base:0, adj:0,  spp:1,  effect:'Reserved for utility upgrades.'},
+    ]},
+    {title:'TIER 4: THE MAIN MAN', spp:'+15 SPP → 45 total, Power Limit 15', active:false, powers:[
+      {active:false, name:'Melee Attack ↑↑',   mod:'Heavy Weapon', base:6, adj:1,  spp:6,  effect:'+3d6 to melee damage. Heavy Weapon. (Replaces Tier 3)'},
+      {active:false, name:'Toughness ↑↑',      mod:'None',         base:5, adj:0,  spp:5,  effect:'+5 Toughness. (Replaces Tier 3)'},
+      {active:false, name:'Regeneration ↑',    mod:'Regrowth',     base:10,adj:2,  spp:12, effect:'Heal 1 Wound/ROUND + Regrow limbs. (Replaces Tier 2)'},
+      {active:false, name:'Super Attr: Str ↑', mod:'None',         base:6, adj:0,  spp:6,  effect:'Strength +3 die types (d8→d12+1). (Replaces Tier 3)'},
+      {active:false, name:'Hardy',             mod:'None',         base:2, adj:0,  spp:2,  effect:"2nd Shaken doesn't cause a Wound."},
+      {active:false, name:'Super Attr: Vig',   mod:'None',         base:4, adj:0,  spp:4,  effect:'Vigor +2 die types (d10→d12+1).'},
+      {active:false, name:'Fearless',          mod:'None',         base:2, adj:0,  spp:2,  effect:'Immune to Fear checks.'},
+      {active:false, name:'Banked',            mod:'N/A',          base:0, adj:0,  spp:1,  effect:'Available for utility (Genius, Scan, etc.).'},
+    ]},
+  ],
+  bennies:3, maxBennies:3,
+  wounds:[false,false,false,false,false],
+  woundIncap:false,
+  fatigue:[false,false],
+  fatigueIncap:false
+};
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const DIE_NAMES = ['d4','d6','d8','d10','d12'];
+const ATTRS = [
+  {name:'Agility', base:2},{name:'Smarts',base:2},{name:'Spirit',base:2},
+  {name:'Strength',base:3},{name:'Vigor',base:3}
+];
+const SKILLS = [
+  {name:'Athletics',base:1},{name:'Com. Knowledge',base:1},{name:'Fighting',base:3},
+  {name:'Focus',base:2},{name:'Intimidation',base:2},{name:'Notice',base:2},
+  {name:'Persuasion',base:1},{name:'Piloting',base:1},{name:'Science',base:1},
+  {name:'Shooting',base:2},{name:'Stealth',base:1},{name:'Survival',base:2}
+];
+
+// ============================================================
+// HELPERS
+// ============================================================
+function dieFor(lvl)  { return DIE_NAMES[Math.min(lvl-1,4)]; }
+function dieVal(lvl)  { return [4,6,8,10,12][Math.min(lvl-1,4)]; }
+function hasEdge(name){ return !!state.progressions.find(p=>p.checked && p.sel===name); }
+function hasStart(name){ return !!state.starting.find(s=>s.on && s.name===name); }
+
+function computeAttrLevel(name) {
+  const a = ATTRS.find(x=>x.name===name);
+  let lvl = a.base;
+  state.progressions.forEach(p=>{
+    if(!p.checked) return;
+    if(p.type==='Attribute' && p.sel.toLowerCase().includes(name.toLowerCase())) lvl++;
+  });
+  return Math.min(5,lvl);
+}
+function computeSkillLevel(name) {
+  const s = SKILLS.find(x=>x.name===name);
+  if(!s) return 1;
+  let lvl = s.base;
+  state.progressions.forEach(p=>{
+    if(!p.checked) return;
+    if((p.type==='Skill'||p.type==='Skill x2') && p.sel.toLowerCase().includes(name.toLowerCase()))
+      lvl += (p.type==='Skill x2') ? 2 : 1;
+  });
+  return Math.min(5,lvl);
+}
+// getActivePower returns the highest-tier active version of a named power.
+// Upgrade entries use names like 'Melee Attack ↑' — strip arrows for base-name matching.
+function getActivePower(name) {
+  let found = null;
+  state.powerTiers.forEach(t => {
+    t.powers.forEach(p => {
+      if(!p.active) return;
+      const baseName = p.name.replace(/\s*↑+$/,''); // strip upgrade arrows
+      if(baseName === name) found = p;
+    });
+  });
+  return found;
+}
+
+function computeParry() {
+  const fLvl = computeSkillLevel('Fighting');
+  let p = 2 + Math.floor(dieVal(fLvl)/2);
+  if(hasStart('Martial Artist')) p += 1; // +1 Parry unarmed
+  if(hasEdge('Martial Warrior')) p += 1; // additional +1
+  return p;
+}
+
+function computeToughness() {
+  const vigLvl = computeAttrLevel('Vigor');
+  let t = 2 + Math.floor(dieVal(vigLvl)/2);
+  if(hasStart('Brawler (Racial)')) t += 1;
+  if(hasEdge('Bruiser')) t += 1;
+  // Toughness super power: base = SPP spent = +1 per level (per power list: 1/Level)
+  const tp = getActivePower('Toughness');
+  if(tp) t += tp.base; // base 2 = +2, base 4 = +4, base 5 = +5
+  return t;
+}
+
+function computeArmorBonus() {
+  return getActivePower('Armor') ? 2 : 0;
+}
+
+function getWoundEdgeInfo() {
+  const nosIgnore = hasEdge('Imp. Nerves of Steel') ? 2 : hasEdge('Nerves of Steel') ? 1 : 0;
+  const maxWounds = hasEdge('Tougher than Nails') ? 5 : hasEdge('Tough as Nails') ? 4 : 3;
+  return {nosIgnore, maxWounds};
+}
+
+// ============================================================
+// RENDER: ATTRS & SKILLS
+// ============================================================
+function renderDieDots(lvl) {
+  let h='<div class="die-cells">';
+  for(let i=1;i<=5;i++) h+=`<div class="die-dot${i===lvl?' filled':''}">${DIE_NAMES[i-1].replace('d','')}</div>`;
+  return h+'</div>';
+}
+function renderAttrs() {
+  const tb=document.getElementById('attr-body'); tb.innerHTML='';
+  ATTRS.forEach(a=>{
+    const lvl=computeAttrLevel(a.name);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="aname">${a.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right">${dieFor(lvl)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+function renderSkills() {
+  const tb=document.getElementById('skill-body'); tb.innerHTML='';
+  SKILLS.forEach(s=>{
+    const lvl=computeSkillLevel(s.name);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="aname">${s.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right;font-size:18px">${dieFor(lvl)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ============================================================
+// RENDER: SUPER POWERS SUMMARY (Character Sheet)
+// ============================================================
+function renderSPSummary() {
+  const container = document.getElementById('sp-summary');
+  const allActive = [];
+  state.powerTiers.forEach((tier,ti)=>{
+    tier.powers.forEach((p,pi)=>{
+      if(p.active) allActive.push({...p, tierName:tier.title, ti, pi});
+    });
+  });
+  if(allActive.length===0){
+    container.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No super powers active. Toggle tiers/powers in the Power Tiers tab.</div>';
+    return;
+  }
+  // Group by tier
+  const byTier = {};
+  allActive.forEach(p=>{ if(!byTier[p.tierName]) byTier[p.tierName]=[]; byTier[p.tierName].push(p); });
+  let html='';
+  Object.entries(byTier).forEach(([tierName, powers])=>{
+    const ti = powers[0].ti;
+    html+=`<div class="sp-section">
+      <div class="sp-section-header" onclick="showTab('powers',document.querySelector('nav button:nth-child(4)'))">
+        <span class="sp-section-title">${tierName}</span>
+        <span style="font-size:11px;color:var(--text-dim)">Click to manage →</span>
+      </div>`;
+    powers.forEach(p=>{
+      html+=`<div class="sp-row sp-on" onclick="togglePower(${p.ti},${p.pi});renderSPSummary()">
+        <div class="sp-check">✓</div>
+        <div><div class="sp-name">${p.name}</div><div class="sp-detail">${p.effect}</div></div>
+        <div class="sp-spp">${p.spp} SPP</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  container.innerHTML=html;
+}
+
+// ============================================================
+// RENDER: EDGES
+// ============================================================
+function renderEdges() {
+  const el=document.getElementById('edges-list');
+  let html='';
+  state.starting.forEach(s=>{
+    if(s.on) html+=`<div class="edge-item"><strong>${s.name}</strong> — ${s.effect}</div>`;
+  });
+  state.progressions.forEach(p=>{
+    if(p.checked && p.type==='Edge')
+      html+=`<div class="edge-item"><strong>${p.sel}</strong> — ${p.effect}</div>`;
+  });
+  el.innerHTML=html || '<div style="color:var(--text-dim);font-style:italic;font-size:13px">No active edges.</div>';
+}
+
+// ============================================================
+// RENDER: WEAPONS
+// Melee Attack power STACKS with Martial Artist / Brawler.
+// Rule: the power adds extra damage dice on top of base melee damage.
+// Tier 1: base=2 → adds 1d6  (2 SPP = 1 die step = 1d6 extra)
+// Tier 3: base=4 → adds 2d6
+// Tier 4: base=6 → adds 3d6
+// So at Tier 1 with MA: Str + d6 (MA fist) + d6 (power) = Str+2d6
+// ============================================================
+function computeWeapons() {
+  const strDie = dieFor(computeAttrLevel('Strength'));
+  const fDie   = dieFor(computeSkillLevel('Fighting'));
+  const hasBrawler = hasStart('Brawler (Racial)');
+  const hasMA      = hasStart('Martial Artist');
+  const hasBruiser = hasEdge('Bruiser');
+  const hasMW      = hasEdge('Martial Warrior');
+
+  // Fist base bonus die from edges
+  let fistBonus = null;
+  if(hasBrawler) fistBonus = 'd4';
+  if(hasMA)      fistBonus = 'd6'; // MA upgrades over Brawler
+  if(hasBruiser && fistBonus==='d6') fistBonus = 'd8';
+  if(hasMW      && fistBonus==='d8') fistBonus = 'd10';
+
+  const weapons = [];
+
+  // Basic fists
+  const fistDmg = fistBonus ? `${strDie}+${fistBonus}` : strDie;
+  const fistUpgraded = fistBonus && fistBonus !== 'd6';
+  weapons.push({
+    name: fistBonus ? 'Fists' : 'Unarmed',
+    damage: fistDmg,
+    skillLabel: `Fighting ${fDie}`,
+    tags: hasMA ? ['Natural Weapon'] : [],
+    notes: hasMA ? 'Martial Artist. AP 0.' : 'AP 0.',
+    upgraded: fistUpgraded,
+    source: 'Racial/Edges'
+  });
+
+  // Enhanced Fists — Melee Attack power STACKS with edge damage
+  const mp = getActivePower('Melee Attack');
+  if(mp) {
+    // Each 2 base = 1 extra d6 (per the tier design: base 2=1d6, 4=2d6, 6=3d6)
+    const extraDice = Math.floor(mp.base / 2);
+    const powerDice = Array(extraDice).fill('d6').join('+');
+    // Stack on top of edge fist bonus
+    let enhancedDmg;
+    if(fistBonus) {
+      enhancedDmg = `${strDie}+${fistBonus}+${powerDice}`;
+    } else {
+      enhancedDmg = `${strDie}+${powerDice}`;
+    }
+    weapons.push({
+      name: 'Enhanced Fists',
+      damage: enhancedDmg,
+      skillLabel: `Fighting ${fDie}`,
+      tags: ['Natural Weapon','Heavy Weapon'],
+      notes: mp.effect,
+      upgraded: true,
+      source: 'Melee Attack Power'
+    });
+  }
+
+  return weapons;
+}
+
+function renderWeapons() {
+  const weapons = computeWeapons();
+  let html = `<table class="weapon-table"><thead><tr>
+    <th>Weapon</th><th>Damage</th><th>Skill</th><th>Tags / Notes</th>
+  </tr></thead><tbody>`;
+  weapons.forEach(w=>{
+    const tags = w.tags.map(t=>`<span class="wtag ${t==='Heavy Weapon'?'heavy':t==='Natural Weapon'?'natural':''}">${t}</span>`).join('');
+    html+=`<tr>
+      <td><div class="wname">${w.name}</div><span class="wsource">${w.source}</span></td>
+      <td><div class="wdmg${w.upgraded?' up':''}">${w.damage}</div></td>
+      <td><div style="font-size:13px;color:var(--text-dim)">${w.skillLabel}</div></td>
+      <td><div>${tags}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">${w.notes}</div></td>
+    </tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('weapons-table').innerHTML=html;
+}
+
+// ============================================================
+// RENDER: WOUND TRACK
+// ============================================================
+function renderWoundTrack() {
+  const {nosIgnore,maxWounds}=getWoundEdgeInfo();
+  document.getElementById('wound-track-label').textContent=`Wounds (Max ${maxWounds} before Incap)`;
+  const container=document.getElementById('wound-boxes'); container.innerHTML='';
+  for(let i=0;i<maxWounds;i++){
+    const ignored = i < nosIgnore;
+    const box=document.createElement('div');
+    box.id=`wound-${i}`;
+    box.className=`tbox wound${state.wounds[i]?' checked':''}${ignored?' nos-ignored':''}`;
+    box.onclick=()=>toggleWound(i);
+    box.innerHTML=`<span class="pen" style="${ignored?'text-decoration:line-through;opacity:0.5':''}">-${i+1}</span><span style="font-size:9px">${i===0?'Wound':'Wounds'}${ignored?' ★':''}</span>`;
+    container.appendChild(box);
+  }
+  const incap=document.createElement('div');
+  incap.id='wound-incap';
+  incap.className=`tbox incap${state.woundIncap?' checked':''}`;
+  incap.onclick=toggleIncap;
+  incap.innerHTML=`<span style="font-size:13px;font-weight:900">✕</span><span style="font-size:9px">INCAP</span>`;
+  container.appendChild(incap);
+}
+
+function updateWoundDisplay() {
+  renderWoundTrack();
+  const {nosIgnore,maxWounds}=getWoundEdgeInfo();
+  const wc=state.wounds.slice(0,maxWounds).filter(Boolean).length;
+  const ep=Math.max(0,wc-nosIgnore);
+  const pen=ep>0?`-${ep}`:'0';
+  const el=document.getElementById('wound-pen-display');
+  el.textContent=pen;
+  el.className='pval '+(wc>=maxWounds?'danger':ep>0?'warning':'ok');
+  document.getElementById('sb-wound-pen').textContent=pen;
+  document.getElementById('incap-warning').classList.toggle('show',state.woundIncap);
+  const ni=document.getElementById('nos-indicator');
+  if(nosIgnore>0){
+    ni.style.display='block'; ni.style.color='var(--green)';
+    ni.textContent=nosIgnore===2?'★ Imp. NOS: first 2 penalties ignored':'★ NOS: first penalty ignored';
+  } else { ni.style.display='none'; }
+}
+
+function updateFatigueDisplay() {
+  const fc=state.fatigue.filter(Boolean).length;
+  for(let i=0;i<2;i++) document.getElementById(`fatigue-${i}`).classList.toggle('checked',state.fatigue[i]);
+  document.getElementById('fatigue-incap').classList.toggle('checked',state.fatigueIncap);
+  const pen=fc>0?`-${fc}`:'0';
+  const el=document.getElementById('fatigue-pen-display');
+  el.textContent=pen; el.className='pval '+(fc>=2?'danger':fc>0?'warning':'ok');
+}
+
+// ============================================================
+// STATUS BAR + RANK DISPLAY IN NAV
+// ============================================================
+function computeRank() {
+  // Rank is determined by how many advances are checked
+  const checked = state.progressions.filter(p=>p.checked).length;
+  // SWADE: Novice 0-3 advances, Seasoned 4-7, Veteran 8-11, Heroic 12-15, Legendary 16+
+  if(checked >= 16) return 'Legendary';
+  if(checked >= 12) return 'Heroic';
+  if(checked >=  8) return 'Veteran';
+  if(checked >=  4) return 'Seasoned';
+  return 'Novice';
+}
+
+function updateStatusBar() {
+  const rank = computeRank();
+  document.getElementById('sb-rank').textContent  = rank;
+  document.getElementById('nav-rank-display').textContent = rank;
+  document.getElementById('sb-parry').textContent  = computeParry();
+  const t=computeToughness(), ar=computeArmorBonus();
+  document.getElementById('sb-toughness').textContent = ar>0 ? `${t+ar}(${ar})` : `${t}`;
+  updateWoundDisplay();
+  renderWeapons();
+  renderSPSummary();
+  saveState();
+}
+
+
+function renderBennies() {
+  const track=document.getElementById('bennies-track'); track.innerHTML='';
+  for(let i=0;i<state.maxBennies;i++){
+    const b=document.createElement('div');
+    b.className='benny'+(i>=state.bennies?' spent':'');
+    b.title=i<state.bennies?'Click to spend':'Spent';
+    b.onclick=()=>{ if(i<state.bennies){state.bennies--;renderBennies();saveState();} };
+    track.appendChild(b);
+  }
+}
+function addBenny(){ state.maxBennies++;state.bennies++;renderBennies();saveState(); }
+
+
+// ============================================================
+// RENDER: PROGRESSIONS (starting + advances)
+// ============================================================
+function renderStarting() {
+  const container=document.getElementById('starting-list');
+  container.innerHTML='';
+  state.starting.forEach((s,i)=>{
+    const row=document.createElement('div');
+    row.className='starting-row'+(s.on?' checked':'');
+    row.innerHTML=`
+      <div class="prog-chk">${s.on?'✓':''}</div>
+      <div><div class="prog-sel">${s.name}</div><div class="prog-pre">${s.type}</div></div>
+      <div class="prog-eff">${s.effect}</div>`;
+    row.onclick=()=>{ state.starting[i].on=!state.starting[i].on; fullRefresh(); };
+    container.appendChild(row);
+  });
+}
+
+function renderProgressions() {
+  const container=document.getElementById('prog-list');
+  container.innerHTML='';
+  const ranks=['Novice','Seasoned','Veteran','Heroic','Legendary'];
+  ranks.forEach(rank=>{
+    const items=state.progressions.filter(p=>p.rank===rank);
+    const tier=document.createElement('div');
+    tier.className='prog-tier';
+    tier.innerHTML=`<div class="tier-badge ${rank.toLowerCase()}">${rank}</div>`;
+    items.forEach(p=>{
+      const gi=state.progressions.indexOf(p);
+      const tc=p.type==='Attribute'?'attribute':p.type.startsWith('Skill')?'skill':p.type==='Edge'?'edge':'open';
+      const row=document.createElement('div');
+      row.className='prog-row'+(p.checked?' checked':'');
+      row.innerHTML=`
+        <div class="prog-chk">${p.checked?'✓':''}</div>
+        <div><div class="prog-sel">${p.sel}</div><div class="prog-pre">${p.prereq}</div></div>
+        <div class="prog-tbadge ${tc}">${p.type}</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center">Adv #${p.adv}</div>
+        <div class="prog-eff">${p.effect}</div>`;
+      row.onclick=()=>{ state.progressions[gi].checked=!state.progressions[gi].checked; fullRefresh(); };
+      tier.appendChild(row);
+    });
+    container.appendChild(tier);
+  });
+}
+
+// ============================================================
+// RENDER: POWER TIERS
+// ============================================================
+function renderPowerTiers() {
+  const container=document.getElementById('power-list-container');
+  container.innerHTML='';
+  state.powerTiers.forEach((tier,ti)=>{
+    const totalSPP=tier.powers.reduce((s,p)=>s+p.spp,0);
+    const div=document.createElement('div');
+    div.className='power-tier';
+    div.innerHTML=`
+      <div class="pt-header${tier.active?' tier-on':''}" onclick="toggleTierActive(${ti})">
+        <div><div class="pt-title">${tier.title}</div><div style="font-size:12px;color:var(--text-dim);margin-top:2px">${tier.spp}</div></div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2)">Total: ${totalSPP} SPP</span>
+          <span style="font-size:20px;color:var(--text-dim)">${tier.active?'●':'○'}</span>
+        </div>
+      </div>
+      <div class="pt-list">
+        <div class="pt-colhdr">
+          <div></div><div class="col-h" style="text-align:left">Power / Trapping</div>
+          <div class="col-h">Modifier</div><div class="col-h">Base</div><div class="col-h">Adj</div><div class="col-h">SPP</div>
+        </div>
+        ${tier.powers.map((p,pi)=>`
+          <div class="pt-row${p.active?' pt-on':''}" onclick="togglePower(${ti},${pi})">
+            <div class="pt-check">${p.active?'✓':''}</div>
+            <div><div class="pt-pname">${p.name}</div><div style="font-size:11px;color:var(--text-dim)">${p.effect}</div></div>
+            <div class="pt-mod">${p.mod}</div>
+            <div class="col-c">${p.base}</div>
+            <div class="col-c" style="color:${p.adj>0?'var(--green)':p.adj<0?'var(--red)':'var(--text-dim)'}">${p.adj>0?'+':''}${p.adj}</div>
+            <div class="col-spp">${p.spp}</div>
+          </div>`).join('')}
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function toggleTierActive(ti){
+  state.powerTiers[ti].active=!state.powerTiers[ti].active;
+  state.powerTiers[ti].powers.forEach(p=>p.active=state.powerTiers[ti].active);
+  renderPowerTiers(); updateStatusBar();
+}
+function togglePower(ti,pi){
+  state.powerTiers[ti].powers[pi].active=!state.powerTiers[ti].powers[pi].active;
+  renderPowerTiers(); updateStatusBar();
+}
+
+// ============================================================
+// RENDER: DICE ROLLER
+// ============================================================
+function renderDiceButtons(){
+  const row=document.getElementById('dice-row'); row.innerHTML='';
+  [4,6,8,10,12,20].forEach(d=>{
+    const btn=document.createElement('button');
+    btn.className='die-btn'; btn.textContent=`d${d}`;
+    btn.onclick=()=>rollDie(d); row.appendChild(btn);
+  });
+  const w=document.createElement('button');
+  w.className='die-btn wild-die'; w.textContent='Wild d6';
+  w.onclick=()=>rollDie(6,true); row.appendChild(w);
+}
+
+function rollDie(sides,forceWild=false){
+  const mod=parseInt(document.getElementById('roll-modifier').value)||0;
+  const useWild=forceWild||document.getElementById('wild-toggle').checked;
+  function roll(s){let r=Math.floor(Math.random()*s)+1,t=r,x=0;while(r===s&&x<10){r=Math.floor(Math.random()*s)+1;t+=r;x++;}return{total:t,aced:x>0};}
+  const main=roll(sides); const fm=main.total+mod;
+  let detail=`d${sides}: ${main.total}${main.aced?' (Aced!)':''}`;
+  let fr=fm,wi='';
+  if(useWild&&!forceWild){const w=roll(6);const fw=w.total+mod;wi=` | Wild d6: ${w.total}${w.aced?' (Aced!)':''}`;if(fw>fm){fr=fw;wi+=' ← used';}}
+  if(mod!==0) detail+=` ${mod>=0?'+':''}${mod}`;
+  let st='Failure',sc='fail';
+  if(fr>=4){const r=Math.floor((fr-4)/4);st=r>0?`Success with ${r} Raise${r>1?'s':''}!`:'Success!';sc=r>0?'raise':'success';}
+  const re=document.getElementById('roll-result');
+  re.style.display='flex';
+  re.innerHTML=`<div class="roll-num">${fr}</div><div><div class="roll-suc ${sc}">${st}</div><div class="roll-det">${detail}${wi}</div></div>`;
+}
+
+function renderSkillQuickRef(){
+  const all=[...ATTRS.map(a=>({name:a.name,isAttr:true})),...SKILLS.map(s=>({name:s.name,isAttr:false}))];
+  let html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:7px;margin-top:10px">';
+  all.forEach(item=>{
+    const lvl=item.isAttr?computeAttrLevel(item.name):computeSkillLevel(item.name);
+    const die=dieFor(lvl); const sides=dieVal(lvl);
+    const col=item.isAttr?'var(--blue)':'var(--accent2)';
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 11px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="rollDie(${sides})">
+      <span style="font-weight:600">${item.name}</span>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:${col}">${die}</span>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('skill-quick-ref').innerHTML=html;
+}
+
+// ============================================================
+// TOGGLES
+// ============================================================
+function toggleWound(i){
+  const {maxWounds}=getWoundEdgeInfo();
+  state.wounds[i]=!state.wounds[i];
+  if(!state.wounds[i]){for(let j=i+1;j<maxWounds;j++)state.wounds[j]=false;state.woundIncap=false;}
+  updateWoundDisplay();saveState();
+}
+function toggleIncap(){
+  const {maxWounds}=getWoundEdgeInfo();
+  state.woundIncap=!state.woundIncap;
+  if(state.woundIncap) state.wounds=Array(maxWounds).fill(true);
+  updateWoundDisplay();saveState();
+}
+function toggleFatigue(i){
+  state.fatigue[i]=!state.fatigue[i];
+  if(!state.fatigue[i]){for(let j=i+1;j<2;j++)state.fatigue[j]=false;state.fatigueIncap=false;}
+  updateFatigueDisplay();saveState();
+}
+function toggleFatigueIncap(){
+  state.fatigueIncap=!state.fatigueIncap;
+  if(state.fatigueIncap) state.fatigue=[true,true];
+  updateFatigueDisplay();saveState();
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function showTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='roller') renderSkillQuickRef();
+}
+
+// ============================================================
+// FULL REFRESH
+// ============================================================
+function fullRefresh(){
+  renderStarting();
+  renderProgressions();
+  renderAttrs();
+  renderSkills();
+  renderEdges();
+  renderWeapons();
+  renderSPSummary();
+  updateStatusBar();
+}
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+const SAVE_KEY='bolo_swade_v3';
+let saveTimer=null;
+
+function saveState(){
+  try{
+    localStorage.setItem(SAVE_KEY,JSON.stringify({
+      starting:  state.starting.map(s=>s.on),
+      progressions: state.progressions.map(p=>p.checked),
+      powerTiers: state.powerTiers.map(t=>({active:t.active,powers:t.powers.map(p=>p.active)})),
+      bennies:state.bennies, maxBennies:state.maxBennies,
+      wounds:state.wounds, woundIncap:state.woundIncap,
+      fatigue:state.fatigue, fatigueIncap:state.fatigueIncap
+    }));
+    flashSave();
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY); if(!raw)return;
+    const s=JSON.parse(raw);
+    if(s.starting) s.starting.forEach((on,i)=>{if(state.starting[i])state.starting[i].on=on;});
+    if(s.progressions) s.progressions.forEach((c,i)=>{if(state.progressions[i])state.progressions[i].checked=c;});
+    if(s.powerTiers) s.powerTiers.forEach((t,ti)=>{
+      if(!state.powerTiers[ti])return;
+      state.powerTiers[ti].active=t.active;
+      t.powers.forEach((a,pi)=>{if(state.powerTiers[ti].powers[pi])state.powerTiers[ti].powers[pi].active=a;});
+    });
+    if(s.bennies!==undefined)    state.bennies=s.bennies;
+    if(s.maxBennies!==undefined) state.maxBennies=s.maxBennies;
+    if(s.wounds)                 state.wounds=s.wounds;
+    if(s.woundIncap!==undefined) state.woundIncap=s.woundIncap;
+    if(s.fatigue)                state.fatigue=s.fatigue;
+    if(s.fatigueIncap!==undefined) state.fatigueIncap=s.fatigueIncap;
+  }catch(e){}
+}
+function flashSave(){
+  const el=document.getElementById('save-indicator'); if(!el)return;
+  el.textContent='✓ Saved'; el.style.color='var(--green)';
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{el.textContent='Auto-saves locally';el.style.color='var(--text-dim)';},2000);
+}
+function clearSave(){
+  if(confirm('Reset everything to defaults?')){localStorage.removeItem(SAVE_KEY);location.reload();}
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+renderAttrs();
+renderSkills();
+renderEdges();
+renderBennies();
+renderStarting();
+renderProgressions();
+renderPowerTiers();
+renderDiceButtons();
+updateFatigueDisplay();
+renderWeapons();
+updateStatusBar(); // calls renderSPSummary, renderWoundTrack, saveState
+</script>
+</body>
+</html>
