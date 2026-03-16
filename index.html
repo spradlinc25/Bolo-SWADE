@@ -421,28 +421,10 @@ async function fetchSheet(name) {
   const text = await resp.text();
   const rows = parseCSV(text);
   if (rows.length < 2) return [];
-
-  // Title row detection: our sheets have "BOLO — TAB NAME" as row 1, real headers as row 2.
-  // A title row typically has: few non-empty cells OR first cell contains "—" OR "BOLO"
-  // A header row has short lowercase/mixed words like "name", "tier", "effect" etc.
-  let headerIdx = 0;
-  if (rows.length > 2) {
-    const row0 = rows[0];
-    const row0text = row0.join(' ').toLowerCase();
-    const row0NonEmpty = row0.filter(c => c && c.trim()).length;
-    const looksLikeTitle = 
-      row0NonEmpty <= 1 ||                          // single merged cell
-      row0text.includes('bolo') ||                  // contains "bolo"
-      row0text.includes(' — ') ||                   // contains em-dash separator
-      row0text.includes('swade') ||                 // contains "swade"
-      row0text.includes('super powers') ||          // tab title text
-      row0text.includes('savage worlds');           // tab title text
-    if (looksLikeTitle) headerIdx = 1;
-  }
-
-  const headers = rows[headerIdx].map(h => h.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''));
-  console.log(`[${name}] headerIdx=${headerIdx}, headers:`, headers);
-  return rows.slice(headerIdx + 1).filter(r => r.some(c => c && c.trim())).map(r => {
+  // Row 0 = headers, Row 1+ = data. Simple and clean.
+  const headers = rows[0].map(h => (h||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''));
+  console.log(`[${name}] headers:`, headers);
+  return rows.slice(1).filter(r => r.some(c => c && c.trim())).map(r => {
     const obj = {};
     headers.forEach((h, i) => { if (h) obj[h] = (r[i] || '').trim(); });
     return obj;
@@ -490,28 +472,24 @@ function hasEdge(name) { return !!state.progressions.find(p=>p.checked && p.sele
 function hasStart(name){ return !!state.starting.find(s=>s.on && s.name===name); }
 
 function computeAttrLevel(name) {
-  const a = state.attrs.find(x => f(x,'name','attribute') && f(x,'name','attribute').toLowerCase()===name.toLowerCase());
+  const a = state.attrs.find(x => x.name && x.name.toLowerCase()===name.toLowerCase());
   if(!a) return 1;
-  let lvl = parseInt(f(a,'base','base_die','diestep','level'))||1;
+  let lvl = parseInt(a.base)||1;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    const sel = f(p,'selection','name','edge','skill','attribute');
-    const typ = f(p,'type');
-    if(typ==='Attribute' && sel && sel.toLowerCase().includes(name.toLowerCase())) lvl++;
+    if(p.type==='Attribute' && p.selection && p.selection.toLowerCase().includes(name.toLowerCase())) lvl++;
   });
   return Math.min(5,lvl);
 }
 
 function computeSkillLevel(name) {
-  const s = state.skills.find(x => f(x,'name','skill') && f(x,'name','skill').toLowerCase()===name.toLowerCase());
+  const s = state.skills.find(x => x.name && x.name.toLowerCase()===name.toLowerCase());
   if(!s) return 1;
-  let lvl = parseInt(f(s,'base','base_die','diestep','level'))||1;
+  let lvl = parseInt(s.base)||1;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    const sel = f(p,'selection','name','edge','skill');
-    const typ = f(p,'type');
-    if((typ==='Skill'||typ==='Skill x2') && sel && sel.toLowerCase().includes(name.toLowerCase()))
-      lvl += (typ==='Skill x2') ? 2 : 1;
+    if((p.type==='Skill'||p.type==='Skill x2') && p.selection && p.selection.toLowerCase().includes(name.toLowerCase()))
+      lvl += (p.type==='Skill x2') ? 2 : 1;
   });
   return Math.min(5,lvl);
 }
@@ -599,10 +577,9 @@ function renderDieDots(lvl) {
 function renderAttrs() {
   const tb=document.getElementById('attr-body'); tb.innerHTML='';
   state.attrs.forEach(a=>{
-    const nm = f(a,'name','attribute','attr');
-    const lvl = nm ? computeAttrLevel(nm) : 1;
+    const lvl=computeAttrLevel(a.name);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="aname">${nm||'?'}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right">${dieFor(lvl)}</td>`;
+    tr.innerHTML=`<td class="aname">${a.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right">${dieFor(lvl)}</td>`;
     tb.appendChild(tr);
   });
 }
@@ -610,10 +587,9 @@ function renderAttrs() {
 function renderSkills() {
   const tb=document.getElementById('skill-body'); tb.innerHTML='';
   state.skills.forEach(s=>{
-    const nm = f(s,'name','skill');
-    const lvl = nm ? computeSkillLevel(nm) : 1;
+    const lvl=computeSkillLevel(s.name);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="aname">${nm||'?'}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right;font-size:18px">${dieFor(lvl)}</td>`;
+    tr.innerHTML=`<td class="aname">${s.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right;font-size:18px">${dieFor(lvl)}</td>`;
     tb.appendChild(tr);
   });
 }
@@ -732,9 +708,9 @@ function renderWeapons() {
 // ============================================================
 function renderArmor() {
   const tb = document.getElementById('armor-body');
-  const equipped = state.allArmor.filter(a=>a.equipped==='TRUE');
-  const bolo = equipped.length ? equipped : state.allArmor.filter(a=>a.category==='Bolo');
-  tb.innerHTML = bolo.map(a=>`<tr><td class="aname">${a.location}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">${a.armorvalue||'—'}</td><td style="font-size:12px;color:var(--text-dim)">${a.notes||''}</td></tr>`).join('');
+  // First 4 rows of Armor tab are Bolo's equipped slots (Head/Torso/Arms/Legs)
+  const boloSlots = state.allArmor.slice(0, 4);
+  tb.innerHTML = boloSlots.map(a=>`<tr><td class="aname">${a.name||'—'}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">${a.armorvalue||'0'}</td><td style="font-size:12px;color:var(--text-dim)">${a.notes||''}</td></tr>`).join('');
 }
 
 // ============================================================
@@ -1213,72 +1189,22 @@ async function loadAllSheets() {
       fetchSheet('SPCPowers')
     ]);
 
-    // ── Normalize all rows to canonical field names ──────────────
-    // The CSV parser lowercases + underscores headers, but merged title rows
-    // or slight spelling differences can still cause mismatches. We normalize
-    // each dataset to the exact key names the rest of the code expects.
-    function norm(rows, map) {
-      // map = { canonicalKey: ['possible','header','variants'] }
-      return rows.map(row => {
-        const out = {...row};
-        for (const [canon, variants] of Object.entries(map)) {
-          if (out[canon] !== undefined) continue; // already correct
-          for (const v of variants) {
-            if (row[v] !== undefined) { out[canon] = row[v]; break; }
-          }
-          if (out[canon] === undefined) out[canon] = '';
-        }
-        return out;
-      });
-    }
-
-    state.attrs = norm(attrsData, {
-      name:['attribute','attr','attribute_name'], base:['base','base_die','diestep','level','die']
-    });
-    state.skills = norm(skillsData, {
-      name:['skill','skill_name'], base:['base','base_die','diestep','level','die'], linkedattr:['linkedattr','linked_attr','linked_attribute','attribute']
-    });
-    state.starting = norm(startingData, {
-      name:['name','edge','edge_name'], type:['type'], effect:['effect'], defaulton:['defaulton','default_on','default']
-    }).map(s=>({...s, on: (s.defaulton||'').toUpperCase()==='TRUE'}));
-    state.progressions = norm(progData, {
-      adv:['adv','advance','#'], rank:['rank'], type:['type'], selection:['selection','edge','skill','attribute','name'],
-      prereq:['prereq','prerequisites','requirement'], effect:['effect']
-    }).map(p=>({...p, checked:false}));
-    state.powerTiers = norm(tierData, {
-      tier:['tier'], title:['title'], spplabel:['spplabel','spp_label','label'], defaultactive:['defaultactive','default_active','default']
-    });
-    state.powers = norm(powersData, {
-      tier:['tier'], name:['name','power'], mod:['mod','modifier','trapping'], base:['base'],
-      adj:['adj','adjustment'], spp:['spp'], effect:['effect','description'], upgrades:['upgrades']
-    }).map(p=>({...p, active: (p.defaultactive||'').toUpperCase()==='TRUE'}));
-    state.hindrances = norm(hindrancesData, {
-      name:['name','hindrance'], severity:['severity','type'], effect:['effect','description'],
-      bolohad:['bolohad','bolo_has','bolo_had','bolohas'], source:['source']
-    });
-    state.allWeapons = norm(weaponsData, {
-      name:['name','weapon'], damage:['damage','dmg'], skill:['skill'], tags:['tags'],
-      notes:['notes'], source:['source'], dynamic:['dynamic'], acquired:['acquired'], book:['book']
-    });
-    state.allArmor = norm(armorData, {
-      location:['location','name','armor'], armorvalue:['armorvalue','armor','armor_value','value'],
-      weight:['weight'], notes:['notes'], equipped:['equipped'], category:['category'], minstr:['minstr','min_str'], book:['book']
-    });
-    state.allGear = norm(gearData, {
-      name:['name','item'], weight:['weight'], cost:['cost'], notes:['notes'],
-      category:['category'], acquired:['acquired'], book:['book']
-    });
-    state.edgesRef = norm(edgesRefData, {
-      name:['name','edge'], category:['category','type'], prereq:['prereq','prerequisites'],
-      effect:['effect','description','summary'], source:['source'], book:['book']
-    });
-    state.hindrancesRef = state.hindrances;
-    state.spPowers = norm(spData, {
-      name:['name','power'], basecost:['basecost','base_cost','cost'], costtype:['costtype','cost_type','type'],
-      summary:['summary','description','effect'], notes:['notes'], source:['source']
-    });
-    state.weaponsRef = state.allWeapons;
-    state.armorRef   = state.allArmor;
+    // ── Populate state (headers now match exactly) ───────────
+    state.attrs        = attrsData;
+    state.skills       = skillsData;
+    state.starting     = startingData.map(s=>({...s, on: s.defaulton==='TRUE'}));
+    state.progressions = progData.map(p=>({...p, checked: false}));
+    state.powerTiers   = tierData;
+    state.powers       = powersData.map(p=>({...p, active: p.defaultactive==='TRUE'}));
+    state.hindrances   = hindrancesData;
+    state.allWeapons   = weaponsData;
+    state.allArmor     = armorData;
+    state.allGear      = gearData;
+    state.edgesRef         = edgesRefData;
+    state.hindrancesRef    = hindrancesData;
+    state.spPowers         = spData;
+    state.weaponsRef       = weaponsData;
+    state.armorRef         = armorData;
 
     // Restore session state from localStorage (after data is loaded)
     loadState();
