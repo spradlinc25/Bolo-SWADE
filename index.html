@@ -22,6 +22,13 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 #save-indicator{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);}
 .reset-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:3px;cursor:pointer;}
 .reset-btn:hover{border-color:var(--red);color:var(--red);}
+.sync-btn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:3px;cursor:pointer;transition:all 0.2s;border:1px solid;}
+.sync-btn.connect{border-color:var(--blue);color:var(--blue);background:none;}
+.sync-btn.connect:hover{background:var(--blue);color:var(--bg);}
+.sync-btn.connected{border-color:var(--green);color:var(--green);background:none;}
+.sync-btn.connected:hover{border-color:var(--red);color:var(--red);}
+.sync-btn.saving{border-color:var(--accent2);color:var(--accent2);background:none;pointer-events:none;}
+.sync-status{font-size:10px;letter-spacing:1px;text-transform:uppercase;}
 
 /* STATUS BAR */
 .status-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
@@ -190,6 +197,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 @media(max-width:700px){.grid-2{grid-template-columns:1fr;}.prog-row{grid-template-columns:32px 1fr;}.prog-eff,.prog-tbadge{display:none;}}
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -202,7 +210,10 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   <button onclick="showTab('reference',this)">Reference</button>
   <button onclick="showTab('roller',this)">Dice Roller</button>
   <div class="nav-right">
-    <span id="save-indicator">Loading...</span>
+    <span id="save-indicator" class="sync-status">Loading...</span>
+    <button id="sync-btn" class="sync-btn connect" onclick="handleSyncBtn()" title="Connect Google account to sync across devices">☁ Connect Sync</button>
+    <button class="reset-btn" onclick="exportSave()" title="Download save file">↓ Export</button>
+    <button class="reset-btn" onclick="importSave()" title="Load save file">↑ Import</button>
     <button class="reset-btn" onclick="clearSave()">↺ Reset</button>
   </div>
 </nav>
@@ -1094,70 +1105,282 @@ function fullRefresh() {
 }
 
 // ============================================================
-// SAVE / LOAD (localStorage)
+// GOOGLE OAUTH + SHEETS SYNC
 // ============================================================
-const SAVE_KEY='bolo_swade_v4';
-let saveTimer=null;
+// REPLACE THIS with your actual OAuth Client ID from Google Cloud Console:
+// APIs & Services → Credentials → OAuth 2.0 Client ID → Web application
+// Authorized JavaScript origins: https://spradlinc25.github.io
+const GOOGLE_CLIENT_ID = '499020138123-mj1nakqq9rrrv74pjrk0s476b3j10901.apps.googleusercontent.com';
+const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 
-function saveState(){
-  try{
-    localStorage.setItem(SAVE_KEY,JSON.stringify({
-      starting:  state.starting.map(s=>s.on),
-      progressions: state.progressions.map(p=>p.checked),
-      powers:    state.powers.map(p=>p.active),
-      powerTiers:state.powerTiers.map(t=>t.active||false),
-      bennies:state.bennies, maxBennies:state.maxBennies,
-      wounds:state.wounds, woundIncap:state.woundIncap,
-      fatigue:state.fatigue, fatigueIncap:state.fatigueIncap
-    }));
-    flashSave();
-  }catch(e){}
+let gAuthToken = null;       // current access token
+let gTokenExpiry = 0;        // token expiry timestamp
+let syncPending = false;     // debounce flag
+let syncTimer = null;        // debounce timer
+let isConnected = false;     // OAuth connected state
+
+// State tab range — we write a single JSON blob to State!B2
+const STATE_RANGE = 'State!B2';
+
+function buildSavePayload() {
+  return JSON.stringify({
+    starting:    state.starting.map(s => s.on),
+    progressions:state.progressions.map(p => p.checked),
+    powers:      state.powers.map(p => p.active),
+    bennies:     state.bennies,
+    maxBennies:  state.maxBennies,
+    wounds:      state.wounds,
+    woundIncap:  state.woundIncap,
+    fatigue:     state.fatigue,
+    fatigueIncap:state.fatigueIncap
+  });
 }
 
-function loadState(){
-  try{
-    const raw=localStorage.getItem(SAVE_KEY); if(!raw)return;
-    const s=JSON.parse(raw);
-    if(s.starting)     s.starting.forEach((on,i)=>{if(state.starting[i])state.starting[i].on=on;});
-    if(s.progressions) s.progressions.forEach((c,i)=>{if(state.progressions[i])state.progressions[i].checked=c;});
-    if(s.powers)       s.powers.forEach((a,i)=>{if(state.powers[i])state.powers[i].active=a;});
-    if(s.bennies!==undefined)    state.bennies=s.bennies;
-    if(s.maxBennies!==undefined) state.maxBennies=s.maxBennies;
-    if(s.wounds)                 state.wounds=s.wounds;
-    if(s.woundIncap!==undefined) state.woundIncap=s.woundIncap;
-    if(s.fatigue)                state.fatigue=s.fatigue;
-    if(s.fatigueIncap!==undefined) state.fatigueIncap=s.fatigueIncap;
-  }catch(e){}
+// ── localStorage save (always happens, instant) ──────────────
+const SAVE_KEY = 'bolo_swade_v4';
+let localSaveTimer = null;
+
+function saveState() {
+  try {
+    localStorage.setItem(SAVE_KEY, buildSavePayload());
+  } catch(e) {}
+  // Queue a Google Sheets sync (debounced 1.5s so we don't spam on rapid clicks)
+  if (isConnected) scheduleSheetsSync();
+  else flashSave('local');
 }
 
-function flashSave(){
-  const el=document.getElementById('save-indicator'); if(!el)return;
-  el.textContent='✓ Saved'; el.style.color='var(--green)';
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{el.textContent='Auto-saves locally';el.style.color='var(--text-dim)';},2000);
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    applyPayload(JSON.parse(raw));
+  } catch(e) {}
 }
-function clearSave(){if(confirm('Reset everything to defaults?')){localStorage.removeItem(SAVE_KEY);location.reload();}}
 
-// ============================================================
-// EXPORT / IMPORT
-// ============================================================
-function exportSave(){
-  const data=localStorage.getItem(SAVE_KEY)||'{}';
-  const blob=new Blob([data],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='bolo-save.json';
+function applyPayload(s) {
+  if (!s) return;
+  if (s.starting)      s.starting.forEach((on, i) => { if (state.starting[i]) state.starting[i].on = on; });
+  if (s.progressions)  s.progressions.forEach((c, i) => { if (state.progressions[i]) state.progressions[i].checked = c; });
+  if (s.powers)        s.powers.forEach((a, i) => { if (state.powers[i]) state.powers[i].active = a; });
+  if (s.bennies !== undefined)     state.bennies = s.bennies;
+  if (s.maxBennies !== undefined)  state.maxBennies = s.maxBennies;
+  if (s.wounds)                    state.wounds = s.wounds;
+  if (s.woundIncap !== undefined)  state.woundIncap = s.woundIncap;
+  if (s.fatigue)                   state.fatigue = s.fatigue;
+  if (s.fatigueIncap !== undefined) state.fatigueIncap = s.fatigueIncap;
+}
+
+// ── Google Sheets write ───────────────────────────────────────
+function scheduleSheetsSync() {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => doSheetsSync(), 1500);
+}
+
+async function doSheetsSync() {
+  if (!gAuthToken || Date.now() > gTokenExpiry) {
+    // Token expired — try silent refresh
+    const refreshed = await silentRefresh();
+    if (!refreshed) {
+      flashSave('local');
+      return;
+    }
+  }
+  setSyncStatus('saving');
+  try {
+    const payload = buildSavePayload();
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(STATE_RANGE)}?valueInputOption=RAW`;
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${gAuthToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ values: [[payload]] })
+    });
+    if (!resp.ok) throw new Error(`Sheets write failed: ${resp.status}`);
+    flashSave('cloud');
+    // Also persist token info
+    localStorage.setItem('bolo_gtoken', JSON.stringify({ token: gAuthToken, expiry: gTokenExpiry }));
+  } catch(err) {
+    console.warn('Sheets sync failed:', err);
+    flashSave('local');
+  }
+}
+
+async function loadFromSheets() {
+  if (!gAuthToken) return false;
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(STATE_RANGE)}`;
+    const resp = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${gAuthToken}` }
+    });
+    if (!resp.ok) return false;
+    const data = await resp.json();
+    const raw = data.values?.[0]?.[0];
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    applyPayload(parsed);
+    // Also update localStorage with the cloud version
+    localStorage.setItem(SAVE_KEY, raw);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+// ── OAuth flow ────────────────────────────────────────────────
+function handleSyncBtn() {
+  if (isConnected) {
+    // Disconnect
+    gAuthToken = null; gTokenExpiry = 0; isConnected = false;
+    localStorage.removeItem('bolo_gtoken');
+    setSyncStatus('disconnected');
+    return;
+  }
+  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com') {
+    alert('Google sync not configured yet.\n\nTo enable cross-device sync:\n1. Go to console.cloud.google.com\n2. Create a project → Enable Sheets API\n3. Create OAuth 2.0 Client ID (Web application)\n4. Add https://spradlinc25.github.io as authorized origin\n5. Paste the Client ID into the HTML file\n\nFor now, use Export/Import buttons to transfer saves between devices.');
+    return;
+  }
+  // Trigger Google OAuth popup
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: SHEETS_SCOPE,
+    callback: async (resp) => {
+      if (resp.error) { console.error('OAuth error:', resp); return; }
+      gAuthToken = resp.access_token;
+      gTokenExpiry = Date.now() + (resp.expires_in * 1000) - 60000; // 1min buffer
+      isConnected = true;
+      setSyncStatus('connected');
+      // Try to load cloud save — if it's newer than local, use it
+      setSyncStatus('loading');
+      const loaded = await loadFromSheets();
+      if (loaded) {
+        fullRefresh();
+        flashSave('loaded');
+      } else {
+        // No cloud save yet — push local state up
+        await doSheetsSync();
+      }
+    }
+  });
+  client.requestAccessToken();
+}
+
+async function silentRefresh() {
+  // Check if we have a stored token that's still valid
+  try {
+    const stored = localStorage.getItem('bolo_gtoken');
+    if (!stored) return false;
+    const { token, expiry } = JSON.parse(stored);
+    if (Date.now() < expiry) {
+      gAuthToken = token;
+      gTokenExpiry = expiry;
+      isConnected = true;
+      setSyncStatus('connected');
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ── UI helpers ────────────────────────────────────────────────
+function setSyncStatus(status) {
+  const btn = document.getElementById('sync-btn');
+  const ind = document.getElementById('save-indicator');
+  if (!btn || !ind) return;
+  switch(status) {
+    case 'connected':
+      btn.textContent = '☁ Synced';
+      btn.className = 'sync-btn connected';
+      btn.title = 'Connected — click to disconnect';
+      ind.textContent = 'Cloud sync on';
+      ind.style.color = 'var(--green)';
+      break;
+    case 'saving':
+      btn.textContent = '☁ Saving…';
+      btn.className = 'sync-btn saving';
+      ind.textContent = 'Saving to cloud…';
+      ind.style.color = 'var(--accent2)';
+      break;
+    case 'loading':
+      btn.textContent = '☁ Loading…';
+      btn.className = 'sync-btn saving';
+      ind.textContent = 'Loading from cloud…';
+      ind.style.color = 'var(--accent2)';
+      break;
+    case 'disconnected':
+      btn.textContent = '☁ Connect Sync';
+      btn.className = 'sync-btn connect';
+      btn.title = 'Connect Google account to sync across devices';
+      ind.textContent = 'Local only';
+      ind.style.color = 'var(--text-dim)';
+      break;
+    case 'loaded':
+      btn.textContent = '☁ Synced';
+      btn.className = 'sync-btn connected';
+      ind.textContent = 'Loaded from cloud ✓';
+      ind.style.color = 'var(--green)';
+      setTimeout(() => { if(isConnected) { ind.textContent = 'Cloud sync on'; } }, 3000);
+      break;
+  }
+}
+
+function flashSave(mode='local') {
+  const ind = document.getElementById('save-indicator');
+  if (!ind) return;
+  if (mode === 'cloud') {
+    ind.textContent = '☁ Saved to cloud ✓';
+    ind.style.color = 'var(--green)';
+    const btn = document.getElementById('sync-btn');
+    if (btn) { btn.textContent = '☁ Synced'; btn.className = 'sync-btn connected'; }
+    setTimeout(() => { if (isConnected) { ind.textContent = 'Cloud sync on'; ind.style.color = 'var(--green)'; } }, 2500);
+  } else {
+    ind.textContent = '✓ Saved locally';
+    ind.style.color = 'var(--text-dim)';
+    clearTimeout(localSaveTimer);
+    localSaveTimer = setTimeout(() => {
+      ind.textContent = isConnected ? 'Cloud sync on' : 'Auto-saves locally';
+      ind.style.color = isConnected ? 'var(--green)' : 'var(--text-dim)';
+    }, 2000);
+  }
+}
+
+function clearSave() {
+  if (!confirm('Reset everything to defaults? This clears local save and cloud save.')) return;
+  localStorage.removeItem(SAVE_KEY);
+  if (isConnected) {
+    // Clear cloud save too
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(STATE_RANGE)}?valueInputOption=RAW`;
+    fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${gAuthToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: [['']] })
+    }).catch(() => {});
+  }
+  location.reload();
+}
+
+// ── Export / Import ───────────────────────────────────────────
+function exportSave() {
+  const data = localStorage.getItem(SAVE_KEY) || '{}';
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bolo-save.json';
   a.click();
 }
-function importSave(){
-  const input=document.createElement('input');
-  input.type='file'; input.accept='.json';
-  input.onchange=e=>{
-    const file=e.target.files[0]; if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      try{localStorage.setItem(SAVE_KEY,ev.target.result);location.reload();}
-      catch(err){alert('Failed to import save: '+err);}
+
+function importSave() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        localStorage.setItem(SAVE_KEY, ev.target.result);
+        location.reload();
+      } catch(err) { alert('Failed to import: ' + err); }
     };
     reader.readAsText(file);
   };
@@ -1206,8 +1429,13 @@ async function loadAllSheets() {
     state.weaponsRef       = weaponsData;
     state.armorRef         = armorData;
 
-    // Restore session state from localStorage (after data is loaded)
-    loadState();
+    // Restore session state — try cloud first if connected, else localStorage
+    if (isConnected) {
+      const cloudLoaded = await loadFromSheets();
+      if (!cloudLoaded) loadState(); // fallback to local
+    } else {
+      loadState();
+    }
     state.loaded = true;
 
     // Show all content sections
@@ -1240,8 +1468,13 @@ async function loadAllSheets() {
     renderWeaponsRef();
     renderArmorRef();
 
-    indicator.textContent='Auto-saves locally';
-    indicator.style.color='var(--text-dim)';
+    // Update status bar
+    if (isConnected) {
+      setSyncStatus('connected');
+    } else {
+      indicator.textContent = 'Auto-saves locally';
+      indicator.style.color = 'var(--text-dim)';
+    }
 
   } catch(err) {
     console.error('Sheet load error:', err);
@@ -1254,7 +1487,10 @@ async function loadAllSheets() {
   }
 }
 
-// Boot
+// Boot — try silent OAuth restore, then load sheet data
+silentRefresh().then(() => {
+  if (isConnected) setSyncStatus('connected');
+});
 loadAllSheets();
 </script>
 </body>
