@@ -10,76 +10,70 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;}
 
-/* NAV */
-nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 16px;flex-wrap:wrap;}
-.nav-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent);letter-spacing:3px;padding:10px 16px 10px 0;border-right:1px solid var(--border);margin-right:8px;}
-.nav-sub{font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding-right:16px;border-right:1px solid var(--border);margin-right:8px;}
+/* NAV — sticky, slim, always visible */
+nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 10px;flex-wrap:nowrap;min-height:40px;}
+.nav-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);letter-spacing:3px;padding-right:10px;border-right:1px solid var(--border);margin-right:6px;white-space:nowrap;line-height:40px;}
+.nav-sub{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding-right:10px;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap;}
 #nav-rank-display{color:var(--accent2);font-weight:700;}
-nav button{background:none;border:none;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:16px 14px;cursor:pointer;transition:all 0.2s;border-bottom:3px solid transparent;position:relative;top:1px;}
+.nav-tabs{display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;flex:1;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+nav button{background:none;border:none;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:11px 9px;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;position:relative;top:1px;white-space:nowrap;}
 nav button:hover{color:var(--text);}
 nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
-#save-indicator{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);}
-.reset-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:3px;cursor:pointer;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:4px;padding-left:6px;flex-shrink:0;}
+#save-indicator{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:3px;cursor:pointer;white-space:nowrap;}
 .reset-btn:hover{border-color:var(--red);color:var(--red);}
-.sync-btn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:3px;cursor:pointer;transition:all 0.2s;border:1px solid;}
+.sync-btn{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;cursor:pointer;transition:all 0.2s;border:1px solid;white-space:nowrap;}
 .sync-btn.connect{border-color:var(--blue);color:var(--blue);background:none;}
 .sync-btn.connect:hover{background:var(--blue);color:var(--bg);}
 .sync-btn.connected{border-color:var(--green);color:var(--green);background:none;}
 .sync-btn.connected:hover{border-color:var(--red);color:var(--red);}
 .sync-btn.saving{border-color:var(--accent2);color:var(--accent2);background:none;pointer-events:none;}
-.sync-status{font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.sync-status{font-size:9px;letter-spacing:1px;text-transform:uppercase;}
 
-/* STATUS BAR */
-.status-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-.stat-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 12px;}
-.spl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;}
-.spv{font-family:'Share Tech Mono',monospace;font-size:17px;color:var(--accent2);font-weight:bold;}
+/* STAT BAR — scrolls with page, collapsible on mobile */
+.stat-bar{background:var(--surface);border-bottom:1px solid var(--border);}
+.stat-bar-toggle{display:none;width:100%;background:var(--surface2);border:none;border-bottom:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;cursor:pointer;text-align:left;}
+.stat-bar-inner{display:flex;flex-wrap:wrap;align-items:stretch;}
+.stat-bar-inner.sb-collapsed{display:none;}
+.stat-pill{display:flex;align-items:center;gap:5px;padding:5px 10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.spl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;white-space:nowrap;}
+.spv{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--accent2);font-weight:bold;}
 .spv.green{color:var(--green);}.spv.blue{color:var(--blue);}
-.bennies-track{display:flex;gap:5px;align-items:center;}
-.benny{width:26px;height:26px;border-radius:50%;border:2px solid var(--accent2);background:var(--accent2);cursor:pointer;transition:all 0.2s;position:relative;}
-.benny::after{content:'★';color:var(--bg);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;}
+.bennies-track{display:flex;gap:3px;align-items:center;}
+.benny{width:18px;height:18px;border-radius:50%;border:2px solid var(--accent2);background:var(--accent2);cursor:pointer;transition:all 0.2s;position:relative;flex-shrink:0;}
+.benny::after{content:'★';color:var(--bg);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:8px;}
 .benny.spent{background:transparent;border-color:var(--muted);opacity:0.4;}
 .benny.spent::after{color:var(--muted);}
-.btn-tiny{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;cursor:pointer;margin-left:5px;}
+.btn-tiny{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;cursor:pointer;}
 .btn-tiny:hover{border-color:var(--accent2);color:var(--accent2);}
 
-/* TABS */
-.tab{display:none;padding:16px;max-width:1400px;margin:0 auto;}
-.tab.active{display:block;}
-.section-header{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:3px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-.section-header::before{content:'';display:block;width:4px;height:18px;background:var(--accent);border-radius:2px;}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.mb{margin-bottom:16px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;}
+/* SHAKEN / FF TOGGLES */
+.tog-btn{padding:2px 7px;border-radius:3px;border:1px solid var(--border);background:var(--surface2);font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;color:var(--text-dim);white-space:nowrap;}
+.tog-btn.shaken-on{background:#1a1000;border-color:var(--accent2);color:var(--accent2);}
+.tog-btn.ff-on{background:#0a1520;border-color:var(--blue);color:var(--blue);}
+.tog-btn.ff-down{background:#1a0505;border-color:var(--red);color:var(--red);text-decoration:line-through;opacity:0.7;}
 
-/* ATTRS / SKILLS */
-.attr-table{width:100%;border-collapse:collapse;}
-.attr-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:0 6px 7px 0;text-align:left;}
-.attr-table td{padding:3px 0;}
-.aname{font-weight:700;font-size:15px;color:var(--heading);min-width:110px;}
-.die-cells{display:flex;gap:3px;align-items:center;}
-.die-dot{width:20px;height:20px;border-radius:3px;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
-.die-dot.filled{background:var(--accent);border-color:var(--accent);color:white;font-weight:bold;}
-.die-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent2);letter-spacing:1px;min-width:46px;text-align:right;}
+/* COMPACT WOUND/FATIGUE IN STAT BAR */
+.sb-track{display:flex;flex-direction:column;gap:2px;}
+.sb-track-row{display:flex;gap:2px;align-items:center;}
+.sb-track-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:600;min-width:36px;}
+.sb-box{width:20px;height:20px;border:2px solid var(--border);border-radius:3px;background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;font-size:7px;font-weight:700;color:var(--text-dim);}
+.sb-box:hover{border-color:var(--accent2);}
+.sb-box.wound-on{background:#3a1010;border-color:var(--red);color:var(--red);}
+.sb-box.fatigue-on{background:#1a1a0a;border-color:var(--accent2);color:var(--accent2);}
+.sb-box.incap-box{border-color:var(--muted);}
+.sb-box.incap-box.incap-on{background:var(--red);border-color:var(--red);color:white;}
+.sb-box.nos-box{opacity:0.45;border-style:dashed;}
 
-/* COMBAT TRACK */
-.track-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.track-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;margin-bottom:7px;}
-.track-boxes{display:flex;gap:5px;flex-wrap:wrap;}
-.tbox{width:44px;height:44px;border:2px solid var(--border);border-radius:4px;background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:10px;color:var(--text-dim);gap:1px;font-weight:600;}
-.tbox .pen{font-family:'Bebas Neue',sans-serif;font-size:16px;}
-.tbox:hover{border-color:var(--accent2);}
-.tbox.checked.wound{background:#3a1010;border-color:var(--red);color:var(--red);}
-.tbox.checked.fatigue{background:#1a1a0a;border-color:var(--accent2);color:var(--accent2);}
-.tbox.incap{border-color:var(--red);background:#200a0a;color:var(--red);}
-.tbox.incap.checked{background:var(--red);color:white;}
-.tbox.nos-ignored{opacity:0.6;border-style:dashed;}
-.pen-display{margin-top:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;display:flex;justify-content:space-between;align-items:flex-start;}
-.pval{font-family:'Share Tech Mono',monospace;font-size:20px;font-weight:bold;}
-.pval.danger{color:var(--red);}.pval.warning{color:var(--accent2);}.pval.ok{color:var(--green);}
-.incap-warn{background:#1a0505;border:2px solid var(--red);border-radius:6px;padding:10px 14px;color:var(--red);font-weight:700;text-align:center;margin-top:10px;font-size:15px;display:none;letter-spacing:1px;}
-.incap-warn.show{display:block;}
+/* MOBILE */
+@media(max-width:768px){
+  .nav-sub{display:none;}
+  .stat-bar-toggle{display:block;}
+  .stat-bar-inner.sb-collapsed{display:none;}
+  .stat-pill{border-right:none;}
+}
 
 /* HINDRANCES / EDGES */
 .hindrance-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
@@ -204,21 +198,25 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 <nav>
   <div class="nav-title">BOLO</div>
   <div class="nav-sub">Czarnian · <span id="nav-rank-display">Novice</span></div>
-  <button class="active" onclick="showTab('sheet',this)">Character</button>
-  <button onclick="showTab('progressions',this)">Progressions</button>
-  <button onclick="showTab('powers',this)">Power Tiers</button>
-  <button onclick="showTab('reference',this)">Reference</button>
-  <button onclick="showTab('roller',this)">Dice Roller</button>
+  <div class="nav-tabs">
+    <button class="active" onclick="showTab('sheet',this)">Character</button>
+    <button onclick="showTab('progressions',this)">Progressions</button>
+    <button onclick="showTab('powers',this)">Power Tiers</button>
+    <button onclick="showTab('reference',this)">Reference</button>
+    <button onclick="showTab('roller',this)">Dice Roller</button>
+  </div>
   <div class="nav-right">
     <span id="save-indicator" class="sync-status">Loading...</span>
-    <button id="sync-btn" class="sync-btn connect" onclick="handleSyncBtn()" title="Connect Google account to sync across devices">☁ Connect Sync</button>
-    <button class="reset-btn" onclick="exportSave()" title="Download save file">↓ Export</button>
-    <button class="reset-btn" onclick="importSave()" title="Load save file">↑ Import</button>
-    <button class="reset-btn" onclick="clearSave()">↺ Reset</button>
+    <button id="sync-btn" class="sync-btn connect" onclick="handleSyncBtn()" title="Connect Google account to sync across devices">☁ Sync</button>
+    <button class="reset-btn" onclick="exportSave()" title="Download save file">↓</button>
+    <button class="reset-btn" onclick="importSave()" title="Load save file">↑</button>
+    <button class="reset-btn" onclick="clearSave()" title="Reset">↺</button>
   </div>
 </nav>
 
-<div class="status-bar">
+<div class="stat-bar">
+  <button class="stat-bar-toggle" onclick="toggleStatBar()" id="stat-bar-toggle-btn">▼ Stats &amp; Tracking</button>
+  <div class="stat-bar-inner" id="stat-bar-inner">
   <div class="stat-pill"><span class="spl">Rank</span><span class="spv" id="sb-rank">—</span></div>
   <div class="stat-pill"><span class="spl">Parry</span><span class="spv" id="sb-parry">—</span></div>
   <div class="stat-pill"><span class="spl">Toughness</span><span class="spv green" id="sb-toughness">—</span></div>
@@ -229,7 +227,50 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
     <div class="bennies-track" id="bennies-track"></div>
     <button class="btn-tiny" onclick="addBenny()">+</button>
   </div>
-  <div class="stat-pill"><span class="spl">Wound Pen.</span><span class="spv danger" id="sb-wound-pen">0</span></div>
+
+  <!-- WOUNDS in status bar -->
+  <div class="stat-pill" style="flex-direction:column;align-items:flex-start;gap:4px;padding:6px 12px;">
+    <div class="sb-track">
+      <div class="sb-track-row">
+        <span class="sb-track-label">Wounds</span>
+        <div id="sb-wound-boxes" style="display:flex;gap:3px;"></div>
+        <div class="sb-box incap-box" id="sb-wound-incap" onclick="toggleIncap()" title="Incapacitated">✕</div>
+      </div>
+      <div class="sb-track-row">
+        <span class="sb-track-label">Fatigue</span>
+        <div class="sb-box" id="sb-fat-0" onclick="toggleFatigue(0)">-1</div>
+        <div class="sb-box" id="sb-fat-1" onclick="toggleFatigue(1)">-2</div>
+        <div class="sb-box incap-box" id="sb-fat-incap" onclick="toggleFatigueIncap()" title="Incapacitated">✕</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENALTIES -->
+  <div class="stat-pill" style="flex-direction:column;gap:2px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="spl">Wound Pen.</span><span class="spv danger" id="sb-wound-pen">0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="spl">Fatigue Pen.</span><span class="spv" id="sb-fat-pen" style="color:var(--text-dim)">0</span>
+    </div>
+    <div id="nos-indicator" style="display:none;font-size:10px;color:var(--green);letter-spacing:1px;text-transform:uppercase;"></div>
+  </div>
+
+  <!-- SHAKEN TOGGLE -->
+  <div class="stat-pill" style="flex-direction:column;gap:4px;">
+    <span class="spl">Shaken</span>
+    <button class="tog-btn" id="shaken-btn" onclick="toggleShaken()">No</button>
+  </div>
+
+  <!-- FORCE FIELD TOGGLE -->
+  <div class="stat-pill" style="flex-direction:column;gap:4px;">
+    <span class="spl">Force Field</span>
+    <button class="tog-btn" id="ff-btn" onclick="toggleFF()">Off</button>
+  </div>
+
+  <!-- INCAP WARNING inline -->
+  <div id="incap-warning" style="display:none;background:#1a0505;border:2px solid var(--red);border-radius:4px;padding:6px 12px;color:var(--red);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;">⚠ INCAPACITATED</div>
+  </div>
 </div>
 
 <!-- CHARACTER TAB -->
@@ -251,31 +292,22 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
       <div id="sp-summary"></div>
     </div>
     <div class="card mb">
-      <div class="section-header">Combat Status</div>
-      <div class="track-grid">
-        <div>
-          <div class="track-label" id="wound-track-label">Wounds (Max 3 before Incap)</div>
-          <div class="track-boxes" id="wound-boxes"></div>
-          <div class="pen-display">
-            <div>
-              <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Wound Penalty</div>
-              <div id="nos-indicator" style="display:none;font-size:11px;margin-top:3px;"></div>
-            </div>
-            <span class="pval ok" id="wound-pen-display">0</span>
+      <div class="section-header">Combat Notes</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;min-width:200px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:4px">Active Penalties</div>
+          <div style="display:flex;gap:20px;">
+            <div><div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Wound</div><div class="pval ok" id="wound-pen-display" style="font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:bold">0</div></div>
+            <div><div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Fatigue</div><div class="pval ok" id="fatigue-pen-display" style="font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:bold">0</div></div>
           </div>
-          <div class="incap-warn" id="incap-warning">⚠ INCAPACITATED — VIGOR ROLL OR DIE</div>
         </div>
-        <div>
-          <div class="track-label">Fatigue (Max 2 before Incap)</div>
-          <div class="track-boxes">
-            <div class="tbox fatigue" onclick="toggleFatigue(0)" id="fatigue-0"><span class="pen">-1</span><span style="font-size:9px">Fatigue</span></div>
-            <div class="tbox fatigue" onclick="toggleFatigue(1)" id="fatigue-1"><span class="pen">-2</span><span style="font-size:9px">Fatigue</span></div>
-            <div class="tbox incap" onclick="toggleFatigueIncap()" id="fatigue-incap"><span style="font-size:13px;font-weight:900">✕</span><span style="font-size:9px">INCAP</span></div>
-          </div>
-          <div class="pen-display">
-            <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Fatigue Penalty</div>
-            <span class="pval ok" id="fatigue-pen-display">0</span>
-          </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;min-width:220px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:6px">Force Field Status</div>
+          <div id="ff-status-detail" style="font-size:13px;color:var(--text-dim)">Force Field is off. Toughness at base.</div>
+        </div>
+        <div id="nos-card" style="display:none;background:#0a1a0a;border:1px solid var(--green);border-radius:4px;padding:10px 14px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:4px">★ Nerves of Steel</div>
+          <div id="nos-detail-text" style="font-size:13px;color:var(--text)"></div>
         </div>
       </div>
     </div>
@@ -470,6 +502,8 @@ const state = {
   woundIncap: false,
   fatigue: [false,false],
   fatigueIncap: false,
+  shaken: false,
+  forceField: false,
   loaded: false
 };
 
@@ -532,6 +566,23 @@ function computeToughness() {
 }
 
 function computeArmorBonus() { return getActivePower('Armor') ? 2 : 0; }
+
+function computeFFBonus() {
+  // FF active, power is on in sheet, and not Shaken
+  return (state.forceField && getActivePower('Force Field') && !state.shaken) ? 2 : 0;
+}
+
+function buildToughnessDisplay() {
+  const base = computeToughness();
+  const ar = computeArmorBonus();
+  const ff = computeFFBonus();
+  const total = base + ar + ff;
+  // Build parenthetical: e.g. (2 + 2FF) or (2) or nothing
+  if (ar > 0 && ff > 0) return `${total} (${ar} + ${ff}FF)`;
+  if (ar > 0)           return `${total} (${ar})`;
+  if (ff > 0)           return `${total} (+${ff}FF)`;
+  return `${total}`;
+}
 
 function computeCarryLimit() {
   const strLvl = computeAttrLevel('Strength');
@@ -791,17 +842,185 @@ function updateFatigueDisplay() {
 }
 
 // ============================================================
-// RENDER: STATUS BAR
+// WOUND / FATIGUE DISPLAY — now in status bar
 // ============================================================
+function renderWoundTrack() {
+  const {nosIgnore, maxWounds} = getWoundEdgeInfo();
+  const container = document.getElementById('sb-wound-boxes');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < maxWounds; i++) {
+    const ignored = i < nosIgnore;
+    const box = document.createElement('div');
+    box.className = `sb-box${state.wounds[i] ? ' wound-on' : ''}${ignored ? ' nos-box' : ''}`;
+    box.title = ignored ? `Wound ${i+1} (NOS ignores penalty)` : `Wound ${i+1}`;
+    box.onclick = () => toggleWound(i);
+    box.textContent = `-${i+1}`;
+    container.appendChild(box);
+  }
+}
+
+function updateWoundDisplay() {
+  renderWoundTrack();
+  const {nosIgnore, maxWounds} = getWoundEdgeInfo();
+  const wc = state.wounds.slice(0, maxWounds).filter(Boolean).length;
+  const ep = Math.max(0, wc - nosIgnore);
+  const pen = ep > 0 ? `-${ep}` : '0';
+
+  // Status bar wound penalty
+  const sbPen = document.getElementById('sb-wound-pen');
+  if (sbPen) { sbPen.textContent = pen; sbPen.style.color = wc >= maxWounds ? 'var(--red)' : ep > 0 ? 'var(--accent2)' : 'var(--text-dim)'; }
+
+  // Character tab penalty display
+  const wpd = document.getElementById('wound-pen-display');
+  if (wpd) { wpd.textContent = pen; wpd.className = 'pval ' + (wc >= maxWounds ? 'danger' : ep > 0 ? 'warning' : 'ok'); }
+
+  // Incap box
+  const incapBox = document.getElementById('sb-wound-incap');
+  if (incapBox) incapBox.classList.toggle('incap-on', state.woundIncap);
+
+  // Incap warning banner
+  const warn = document.getElementById('incap-warning');
+  if (warn) warn.style.display = (state.woundIncap || state.fatigueIncap) ? 'block' : 'none';
+
+  // NOS indicator
+  const ni = document.getElementById('nos-indicator');
+  if (ni) {
+    if (nosIgnore > 0) {
+      ni.style.display = 'block';
+      ni.textContent = nosIgnore === 2 ? '★ Imp. NOS: ignores first 2 penalties' : '★ NOS: ignores first penalty';
+    } else {
+      ni.style.display = 'none';
+    }
+  }
+
+  // NOS card in combat notes
+  const nosCard = document.getElementById('nos-card');
+  const nosText = document.getElementById('nos-detail-text');
+  if (nosCard && nosText) {
+    nosCard.style.display = nosIgnore > 0 ? 'block' : 'none';
+    nosText.textContent = nosIgnore === 2
+      ? 'Imp. Nerves of Steel active — first 2 Wound penalties ignored.'
+      : 'Nerves of Steel active — first Wound penalty ignored.';
+  }
+
+  // Auto-trigger Shaken if incapacitated
+  if (state.woundIncap && !state.shaken) {
+    state.shaken = true;
+    updateShakenDisplay();
+  }
+}
+
+function updateFatigueDisplay() {
+  const fc = state.fatigue.filter(Boolean).length;
+  const f0 = document.getElementById('sb-fat-0');
+  const f1 = document.getElementById('sb-fat-1');
+  const fi = document.getElementById('sb-fat-incap');
+  if (f0) f0.classList.toggle('fatigue-on', state.fatigue[0]);
+  if (f1) f1.classList.toggle('fatigue-on', state.fatigue[1]);
+  if (fi) fi.classList.toggle('incap-on', state.fatigueIncap);
+
+  const pen = fc > 0 ? `-${fc}` : '0';
+  const sbFp = document.getElementById('sb-fat-pen');
+  if (sbFp) { sbFp.textContent = pen; sbFp.style.color = fc >= 2 ? 'var(--red)' : fc > 0 ? 'var(--accent2)' : 'var(--text-dim)'; }
+
+  const fpd = document.getElementById('fatigue-pen-display');
+  if (fpd) { fpd.textContent = pen; fpd.className = 'pval ' + (fc >= 2 ? 'danger' : fc > 0 ? 'warning' : 'ok'); }
+
+  const warn = document.getElementById('incap-warning');
+  if (warn) warn.style.display = (state.woundIncap || state.fatigueIncap) ? 'block' : 'none';
+}
+
+// ============================================================
+// SHAKEN + FORCE FIELD TOGGLES
+// ============================================================
+function toggleShaken() {
+  state.shaken = !state.shaken;
+  if (state.shaken && state.forceField) {
+    // FF powers down when Shaken
+    state._ffBeforeShaken = true; // remember it was on
+  }
+  if (!state.shaken && state._ffBeforeShaken) {
+    // Restore FF when un-Shaken (player can manually toggle off if destroyed)
+    state._ffBeforeShaken = false;
+  }
+  updateShakenDisplay();
+  updateFFDisplay();
+  document.getElementById('sb-toughness').textContent = buildToughnessDisplay();
+  saveState();
+}
+
+function updateShakenDisplay() {
+  const btn = document.getElementById('shaken-btn');
+  if (!btn) return;
+  if (state.shaken) {
+    btn.textContent = 'SHAKEN';
+    btn.className = 'tog-btn shaken-on';
+  } else {
+    btn.textContent = 'No';
+    btn.className = 'tog-btn';
+  }
+}
+
+function toggleFF() {
+  state.forceField = !state.forceField;
+  state._ffBeforeShaken = false; // manual toggle clears auto-restore
+  updateFFDisplay();
+  document.getElementById('sb-toughness').textContent = buildToughnessDisplay();
+  saveState();
+}
+
+function updateFFDisplay() {
+  const btn = document.getElementById('ff-btn');
+  const detail = document.getElementById('ff-status-detail');
+  const ffPowerActive = !!getActivePower('Force Field');
+  const ffOn = state.forceField && ffPowerActive && !state.shaken;
+  const ffPoweredDown = state.forceField && ffPowerActive && state.shaken;
+
+  if (btn) {
+    if (!ffPowerActive) {
+      btn.textContent = 'No Power';
+      btn.className = 'tog-btn';
+      btn.disabled = true;
+    } else if (ffPoweredDown) {
+      btn.textContent = 'POWERED DOWN';
+      btn.className = 'tog-btn ff-down';
+      btn.disabled = false;
+    } else if (ffOn) {
+      btn.textContent = 'Active';
+      btn.className = 'tog-btn ff-on';
+      btn.disabled = false;
+    } else {
+      btn.textContent = 'Off';
+      btn.className = 'tog-btn';
+      btn.disabled = false;
+    }
+  }
+
+  if (detail) {
+    if (!ffPowerActive) {
+      detail.textContent = 'Force Field power not active in current tier.';
+      detail.style.color = 'var(--text-dim)';
+    } else if (ffPoweredDown) {
+      detail.innerHTML = '<span style="color:var(--red)">⚠ POWERED DOWN</span> — Shaken. Toughness reduced by 2.';
+    } else if (ffOn) {
+      detail.innerHTML = '<span style="color:var(--blue)">● Active</span> — Reducing all incoming damage by 2.';
+    } else {
+      detail.textContent = 'Force Field off. Toggle to activate.';
+      detail.style.color = 'var(--text-dim)';
+    }
+  }
+}
 function updateStatusBar() {
   const rank=computeRank();
   document.getElementById('sb-rank').textContent=rank;
   document.getElementById('nav-rank-display').textContent=rank;
   document.getElementById('sb-parry').textContent=computeParry();
-  const t=computeToughness(),ar=computeArmorBonus();
-  document.getElementById('sb-toughness').textContent=ar>0?`${t+ar}(${ar})`:`${t}`;
+  document.getElementById('sb-toughness').textContent=buildToughnessDisplay();
   document.getElementById('sb-carry').textContent=`${computeCarryLimit()} lbs`;
   updateWoundDisplay();
+  updateFatigueDisplay();
+  updateFFDisplay();
   renderWeapons();
   renderSPSummary();
   saveState();
@@ -1073,10 +1292,33 @@ function renderSkillQuickRef() {
 // ============================================================
 // WOUND / FATIGUE TOGGLES
 // ============================================================
-function toggleWound(i){const {maxWounds}=getWoundEdgeInfo();state.wounds[i]=!state.wounds[i];if(!state.wounds[i]){for(let j=i+1;j<maxWounds;j++)state.wounds[j]=false;state.woundIncap=false;}updateWoundDisplay();saveState();}
-function toggleIncap(){const {maxWounds}=getWoundEdgeInfo();state.woundIncap=!state.woundIncap;if(state.woundIncap)state.wounds=Array(maxWounds).fill(true);updateWoundDisplay();saveState();}
-function toggleFatigue(i){state.fatigue[i]=!state.fatigue[i];if(!state.fatigue[i]){for(let j=i+1;j<2;j++)state.fatigue[j]=false;state.fatigueIncap=false;}updateFatigueDisplay();saveState();}
-function toggleFatigueIncap(){state.fatigueIncap=!state.fatigueIncap;if(state.fatigueIncap)state.fatigue=[true,true];updateFatigueDisplay();saveState();}
+function toggleWound(i){
+  const {maxWounds}=getWoundEdgeInfo();
+  state.wounds[i]=!state.wounds[i];
+  if(!state.wounds[i]){for(let j=i+1;j<maxWounds;j++)state.wounds[j]=false;state.woundIncap=false;}
+  updateWoundDisplay();
+  document.getElementById('sb-toughness').textContent=buildToughnessDisplay();
+  saveState();
+}
+function toggleIncap(){
+  const {maxWounds}=getWoundEdgeInfo();
+  state.woundIncap=!state.woundIncap;
+  if(state.woundIncap)state.wounds=Array(maxWounds).fill(true);
+  updateWoundDisplay();
+  saveState();
+}
+function toggleFatigue(i){
+  state.fatigue[i]=!state.fatigue[i];
+  if(!state.fatigue[i]){for(let j=i+1;j<2;j++)state.fatigue[j]=false;state.fatigueIncap=false;}
+  updateFatigueDisplay();
+  saveState();
+}
+function toggleFatigueIncap(){
+  state.fatigueIncap=!state.fatigueIncap;
+  if(state.fatigueIncap)state.fatigue=[true,true];
+  updateFatigueDisplay();
+  saveState();
+}
 
 // ============================================================
 // NAV
@@ -1087,6 +1329,14 @@ function showTab(name,btn){
   document.getElementById('tab-'+name).classList.add('active');
   if(btn) btn.classList.add('active');
   if(name==='roller'&&state.loaded) renderSkillQuickRef();
+}
+
+function toggleStatBar(){
+  const inner=document.getElementById('stat-bar-inner');
+  const btn=document.getElementById('stat-bar-toggle-btn');
+  if(!inner||!btn)return;
+  const collapsed=inner.classList.toggle('sb-collapsed');
+  btn.textContent=(collapsed?'▶':'▼')+' Stats & Tracking';
 }
 
 // ============================================================
@@ -1101,6 +1351,8 @@ function fullRefresh() {
   renderEdges();
   renderArmor();
   renderGear();
+  updateShakenDisplay();
+  updateFFDisplay();
   updateStatusBar(); // calls renderWeapons, renderSPSummary, saveState
 }
 
@@ -1132,7 +1384,9 @@ function buildSavePayload() {
     wounds:      state.wounds,
     woundIncap:  state.woundIncap,
     fatigue:     state.fatigue,
-    fatigueIncap:state.fatigueIncap
+    fatigueIncap:state.fatigueIncap,
+    shaken:      state.shaken,
+    forceField:  state.forceField
   });
 }
 
@@ -1162,12 +1416,14 @@ function applyPayload(s) {
   if (s.starting)      s.starting.forEach((on, i) => { if (state.starting[i]) state.starting[i].on = on; });
   if (s.progressions)  s.progressions.forEach((c, i) => { if (state.progressions[i]) state.progressions[i].checked = c; });
   if (s.powers)        s.powers.forEach((a, i) => { if (state.powers[i]) state.powers[i].active = a; });
-  if (s.bennies !== undefined)     state.bennies = s.bennies;
-  if (s.maxBennies !== undefined)  state.maxBennies = s.maxBennies;
-  if (s.wounds)                    state.wounds = s.wounds;
-  if (s.woundIncap !== undefined)  state.woundIncap = s.woundIncap;
-  if (s.fatigue)                   state.fatigue = s.fatigue;
+  if (s.bennies !== undefined)      state.bennies = s.bennies;
+  if (s.maxBennies !== undefined)   state.maxBennies = s.maxBennies;
+  if (s.wounds)                     state.wounds = s.wounds;
+  if (s.woundIncap !== undefined)   state.woundIncap = s.woundIncap;
+  if (s.fatigue)                    state.fatigue = s.fatigue;
   if (s.fatigueIncap !== undefined) state.fatigueIncap = s.fatigueIncap;
+  if (s.shaken !== undefined)       state.shaken = s.shaken;
+  if (s.forceField !== undefined)   state.forceField = s.forceField;
 }
 
 // ── Google Sheets write ───────────────────────────────────────
