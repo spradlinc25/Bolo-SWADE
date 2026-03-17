@@ -147,6 +147,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .die-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent2);letter-spacing:1px;min-width:46px;text-align:right;}
 
 /* HINDRANCES / EDGES */
+.passive-item { opacity: 0.65; }
 .hindrance-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
 .hindrance-item.minor{border-left-color:var(--accent2);}
 .edge-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
@@ -268,6 +269,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 
 /* HINDRANCES / EDGES */
+.passive-item { opacity: 0.65; }
 .hindrance-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
 .hindrance-item.minor{border-left-color:var(--accent2);}
 .edge-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:9px 12px;font-size:14px;margin-bottom:7px;}
@@ -731,7 +733,8 @@ const state = {
 // ============================================================
 const DIE_NAMES = ['d4','d6','d8','d10','d12','d12+1','d12+2'];
 function dieFor(lvl) { return DIE_NAMES[Math.min(Math.max(lvl-1,0), DIE_NAMES.length-1)]; }
-function dieVal(lvl) { return [4,6,8,10,12,13,14][Math.min(Math.max(lvl-1,0),6)]; }
+function dieVal(lvl) { return [4,6,8,10,12,12,12][Math.min(Math.max(lvl-1,0),6)]; }
+function dieMod(lvl) { return Math.max(0, lvl - 5); } // returns +1 or +2 for d12+1/+2
 function hasEdge(name) {
   const n = name.toLowerCase().trim();
   return !!state.progressions.find(p => p.checked && (p.selection||'').toLowerCase().trim() === n);
@@ -955,8 +958,12 @@ function f(obj, ...keys) {
 // RENDER: ATTRS & SKILLS
 // ============================================================
 function renderDieDots(lvl) {
-  let h='<div class="die-cells">';
-  for(let i=1;i<=5;i++) h+=`<div class="die-dot${i===lvl?' filled':''}">${DIE_NAMES[i-1].replace('d','')}</div>`;
+  // Cap at 5 (d12) for dot display; d12+1/+2 still light up the d12 dot
+  const dotLvl = Math.min(lvl, 5);
+  const bonus = lvl > 5 ? `<span style="font-size:9px;color:var(--accent2);font-weight:700;margin-left:2px">+${lvl-5}</span>` : '';
+  let h='<div class="die-cells" style="display:flex;align-items:center">';
+  for(let i=1;i<=5;i++) h+=`<div class="die-dot${i===dotLvl?' filled':''}">${DIE_NAMES[i-1].replace('d','')}</div>`;
+  h += bonus;
   return h+'</div>';
 }
 
@@ -1000,34 +1007,82 @@ function toggleUnskilled() {
 // ============================================================
 function renderHindrances() {
   const el=document.getElementById('hindrances-list');
-  const bolo = state.hindrances.filter(h=>{
-    const bh = f(h,'bolohad','bolo_had','bolo');
-    return isTrue(bh);
-  });
+  const bolo = state.hindrances.filter(h=>isTrue(f(h,'bolohad','bolo_had','bolo')));
   if(!bolo.length){el.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No hindrances loaded.</div>';return;}
-  el.innerHTML = bolo.map(h=>{
-    const nm=f(h,'name'), sev=f(h,'severity'), eff=f(h,'effect');
-    const minor = sev && sev.toLowerCase().includes('minor') && !sev.toLowerCase().includes('major');
-    return `<div class="hindrance-item${minor?' minor':''}"><strong>${nm}</strong> (${sev}) — ${eff}</div>`;
-  }).join('');
+  const items = bolo.map(h=>{
+    const nm=f(h,'name')||'', sev=f(h,'severity')||'', eff=f(h,'effect')||'';
+    const minor = sev.toLowerCase().includes('minor') && !sev.toLowerCase().includes('major');
+    const cls = classifyHindrance(nm);
+    return {cls, html:`<div class="hindrance-item${minor?' minor':''} ${cls==='passive'?'passive-item':''}"><strong>${nm}</strong> (${sev}) — ${eff}</div>`};
+  });
+  el.innerHTML = edgeGroup(items);
+}
+
+function classifyEdge(name) {
+  const n = (name||'').toLowerCase().trim();
+  const passiveSet = new Set([
+    'brawler','martial artist','bruiser','martial warrior','brawny',
+    'block','improved block','tough as nails','tougher than nails',
+    'nerves of steel','improved nerves of steel','hard to kill',
+    'improved hard to kill','weapon master','master of arms',
+    'professional','expert','master','trademark weapon',
+  ]);
+  if (passiveSet.has(n)) return 'passive';
+  return 'active';
+}
+
+function classifyHindrance(name) {
+  const n = (name||'').toLowerCase().trim();
+  if (n.includes('wanted') || n.includes('alien form') || n.includes('enemy') || n.includes('poverty')) return 'passive';
+  return 'active';
+}
+
+function classifyPower(name) {
+  const n = (name||'').toLowerCase().trim();
+  const passivePowers = new Set([
+    'armor','toughness','super attribute','super skill','doesn't breathe',
+    'doesn't eat','doesn't sleep','ageless','hardy','fearless',
+    'construct','environmental resistance','immune to poison',
+    'immune to poison/disease','altered form',
+  ]);
+  for (const pp of passivePowers) { if (n.includes(pp)) return 'passive'; }
+  return 'active';
+}
+
+function edgeGroup(items) {
+  const active = items.filter(i=>i.cls==='active');
+  const passive = items.filter(i=>i.cls==='passive');
+  let html = '';
+  if (active.length) {
+    html += `<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin:6px 0 3px;font-weight:700">▶ Active</div>`;
+    active.forEach(i => { html += i.html; });
+  }
+  if (passive.length) {
+    html += `<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:8px 0 3px;font-weight:700">◼ Passive (reflected in stats)</div>`;
+    passive.forEach(i => { html += i.html; });
+  }
+  return html;
 }
 
 function renderEdges() {
   const el=document.getElementById('edges-list');
-  let html='';
+  const items = [];
   state.starting.forEach(s=>{
     if(s.on) {
-      const nm=f(s,'name'); const eff=f(s,'effect');
-      html+=`<div class="edge-item"><strong>${nm}</strong> — ${eff}</div>`;
+      const nm=f(s,'name')||''; const eff=f(s,'effect')||'';
+      const cls = classifyEdge(nm);
+      items.push({cls, html:`<div class="edge-item ${cls==='passive'?'passive-item':''}"><strong>${nm}</strong> — ${eff}</div>`});
     }
   });
   state.progressions.forEach(p=>{
-    const typ=f(p,'type'); const sel=f(p,'selection','name');
-    const eff=f(p,'effect');
-    if(p.checked && typ==='Edge')
-      html+=`<div class="edge-item"><strong>${sel}</strong> — ${eff}</div>`;
+    const typ=f(p,'type'); const sel=f(p,'selection','name')||'';
+    const eff=f(p,'effect')||'';
+    if(p.checked && typ==='Edge') {
+      const cls = classifyEdge(sel);
+      items.push({cls, html:`<div class="edge-item ${cls==='passive'?'passive-item':''}"><strong>${sel}</strong> — ${eff}</div>`});
+    }
   });
-  el.innerHTML = html || '<div style="color:var(--text-dim);font-style:italic;font-size:13px">No active edges.</div>';
+  el.innerHTML = items.length ? edgeGroup(items) : '<div style="color:var(--text-dim);font-style:italic;font-size:13px">No active edges.</div>';
 }
 
 // ============================================================
@@ -1050,14 +1105,22 @@ function renderSPSummary() {
   let html='';
   Object.values(byTier).forEach(group=>{
     html+=`<div class="sp-section"><div class="sp-section-header"><span class="sp-section-title">${group.title}</span><span style="font-size:11px;color:var(--text-dim)">Click power to toggle →</span></div>`;
-    group.powers.forEach(p=>{
-      const idx = state.powers.indexOf(p);
-      html+=`<div class="sp-row sp-on" onclick="togglePowerByIdx(${idx});renderSPSummary()">
-        <div class="sp-check">✓</div>
-        <div><div class="sp-name">${p.name}</div><div class="sp-detail">${p.effect}</div></div>
-        <div class="sp-spp">${p.spp} SPP</div>
-      </div>`;
-    });
+    const activePow = group.powers.filter(p=>classifyPower(p.name)==='active');
+    const passivePow = group.powers.filter(p=>classifyPower(p.name)==='passive');
+    if (activePow.length) {
+      html+=`<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin:4px 0 3px;font-weight:700">▶ Active</div>`;
+      activePow.forEach(p=>{
+        const idx=state.powers.indexOf(p);
+        html+=`<div class="sp-row sp-on" onclick="togglePowerByIdx(${idx});renderSPSummary()"><div class="sp-check">✓</div><div><div class="sp-name">${p.name}</div><div class="sp-detail">${p.effect}</div></div><div class="sp-spp">${p.spp} SPP</div></div>`;
+      });
+    }
+    if (passivePow.length) {
+      html+=`<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:8px 0 3px;font-weight:700">◼ Passive (reflected in stats)</div>`;
+      passivePow.forEach(p=>{
+        const idx=state.powers.indexOf(p);
+        html+=`<div class="sp-row sp-on" onclick="togglePowerByIdx(${idx});renderSPSummary()"><div class="sp-check">✓</div><div><div class="sp-name">${p.name}</div><div class="sp-detail">${p.effect}</div></div><div class="sp-spp">${p.spp} SPP</div></div>`;
+      });
+    }
     html+='</div>';
   });
   container.innerHTML=html;
@@ -1736,7 +1799,7 @@ function renderDiceButtons() {
   w.onclick=()=>rollDie(6,true); row.appendChild(w);
 }
 
-function rollDie(sides, forceWild=false) {
+function rollDie(sides, forceWild=false, diePlusMod=0) {
   const mod = parseInt(document.getElementById('roll-modifier').value)||0;
   const useWild = forceWild || document.getElementById('wild-toggle').checked;
 
@@ -1755,7 +1818,7 @@ function rollDie(sides, forceWild=false) {
   }
 
   const main = roll(sides);
-  const fm = main.total + mod;
+  const fm = main.total + mod + diePlusMod;
 
   // Build roll breakdown string e.g. "6+6+3=15"
   function breakdown(r, s) {
@@ -1764,7 +1827,8 @@ function rollDie(sides, forceWild=false) {
   }
 
   const aceLabel = main.aceCount >= 2 ? ` (${main.aceCount}× Ace!)` : main.aceCount === 1 ? ' (Ace!)' : '';
-  let detailParts = [`d${sides}: ${breakdown(main)}${aceLabel}`];
+  const dieLabel = diePlusMod > 0 ? `d${sides}+${diePlusMod}` : `d${sides}`;
+  let detailParts = [`${dieLabel}: ${breakdown(main)}${aceLabel}${diePlusMod>0?" + "+diePlusMod+" (die bonus)":""}`];
   if (mod !== 0) detailParts.push(`mod ${mod >= 0 ? '+' : ''}${mod}`);
 
   let fr = fm;
@@ -1804,14 +1868,92 @@ function rollDie(sides, forceWild=false) {
   re.innerHTML = `<div class="roll-num">${fr}</div><div><div class="roll-suc ${sc}">${st}</div><div class="roll-det">${finalDetail}</div></div>`;
 }
 
+function computeSkillMods() {
+  // Returns {skillName: [{label, value}]} from edges, hindrances, powers
+  const mods = {};
+  function addMod(skill, label, val) {
+    skill = skill.toLowerCase();
+    if (!mods[skill]) mods[skill] = [];
+    mods[skill].push({label, val});
+  }
+  // Hindrances with skill penalties
+  state.hindrances.filter(h=>isTrue(f(h,'bolohad','bolo_had','bolo'))).forEach(h=>{
+    const eff = (f(h,'effect')||'').toLowerCase();
+    const nm = f(h,'name')||'';
+    // Parse patterns like "-2 persuasion" or "persuasion -2"
+    const skillPenaltyRe = /([+-]?\d+)\s+to\s+([\w\s]+?)(?:\s+rolls?)?(?:\.|$|,)/gi;
+    let m;
+    while ((m = skillPenaltyRe.exec(eff)) !== null) {
+      const val = parseInt(m[1]);
+      const sk = m[2].trim();
+      addMod(sk, `${nm} (${val>=0?'+':''}${val})`, val);
+    }
+    // Outsider: -2 Persuasion
+    if (nm.toLowerCase().includes('outsider') && eff.includes('persuasion')) addMod('persuasion', 'Outsider (-2)', -2);
+    if (nm.toLowerCase().includes('all thumbs')) addMod('electronics', 'All Thumbs (-2)', -2);
+    if (nm.toLowerCase().includes('anemic')) addMod('vigor', 'Anemic (-2 vs Fatigue)', -2);
+    if (nm.toLowerCase().includes('bad eyes') && !nm.toLowerCase().includes('imp')) { addMod('shooting', 'Bad Eyes (-2)', -2); addMod('athletics', 'Bad Eyes thrown (-2)', -2); }
+    if (nm.toLowerCase().includes('clumsy')) { addMod('athletics', 'Clumsy (-2)', -2); addMod('stealth', 'Clumsy (-2)', -2); }
+    if (nm.toLowerCase().includes('hard of hearing')) addMod('notice', 'Hard of Hearing (-4 audio)', -4);
+    if (nm.toLowerCase().includes('yellow')) addMod('spirit', 'Yellow (-2 Fear)', -2);
+  });
+  // Starting edges with modifiers
+  state.starting.filter(s=>s.on).forEach(s=>{
+    const nm = (f(s,'name')||'').toLowerCase();
+    const eff = (f(s,'effect')||'').toLowerCase();
+    if (nm.includes('infravision')) addMod('notice', 'Infravision (halves dark penalty)', 0);
+  });
+  // Progression edges with modifiers
+  state.progressions.filter(p=>p.checked && f(p,'type')==='Edge').forEach(p=>{
+    const nm = (f(p,'selection','name')||'').toLowerCase();
+    if (nm.includes('alertness')) addMod('notice', 'Alertness (+2)', 2);
+    if (nm.includes('investigator')) { addMod('research', 'Investigator (+2)', 2); addMod('notice', 'Investigator (+2)', 2); }
+    if (nm.includes('streetwise')) addMod('persuasion', 'Streetwise (+2 criminal)', 2);
+    if (nm.includes('healer')) addMod('healing', 'Healer (+2)', 2);
+    if (nm.includes('steady hands')) addMod('shooting', 'Steady Hands (no running penalty)', 0);
+    if (nm.includes('marksman')) addMod('shooting', 'Marksman (+2 if no move)', 2);
+    if (nm.includes('dead shot')) addMod('shooting', 'Dead Shot (dbl damage raise)', 0);
+    if (nm.includes('ace')) addMod('driving', 'Ace (+2)', 2);
+    if (nm.includes('woodsman')) { addMod('survival', 'Woodsman (+2)', 2); addMod('stealth', 'Woodsman (+2 wild)', 2); }
+    if (nm.includes('thief')) { addMod('stealth', 'Thief (+2)', 2); addMod('thievery', 'Thief (+2)', 2); }
+    if (nm.includes('charismatic')) addMod('persuasion', 'Charismatic (+2)', 2);
+    if (nm.includes('scholar')) { addMod('academics', 'Scholar (+2)', 2); addMod('science', 'Scholar (+2)', 2); }
+    if (nm.includes('jack-of-all')) { addMod('notice', 'Jack-of-All (no unskilled penalty)', 0); }
+  });
+  // Active powers with skill effects
+  state.powers.filter(p=>p.active).forEach(p=>{
+    const nm = (p.name||'').toLowerCase();
+    if (nm.includes('awareness')) addMod('notice', `Awareness (ignores ${parseInt(p.base)||1} attack penalties)`, 0);
+    if (nm.includes('genius')) addMod('com. knowledge', 'Genius (free reroll)', 0);
+  });
+  return mods;
+}
+
 function renderSkillQuickRef() {
+  const mods = computeSkillMods();
   const all=[...state.attrs.map(a=>({name:a.name,isAttr:true})),...state.skills.map(s=>({name:s.name,isAttr:false}))];
-  let html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:7px;margin-top:10px">';
+  let html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:7px;margin-top:10px">';
   all.forEach(item=>{
     const lvl=item.isAttr?computeAttrLevel(item.name):computeSkillLevel(item.name);
-    const die=dieFor(lvl); const sides=dieVal(lvl);
+    if (!item.isAttr && lvl === 0) return; // hide unskilled from quick ref
+    const die=dieFor(lvl);
+    const sides=dieVal(lvl);
+    const dm=dieMod(lvl);
     const col=item.isAttr?'var(--blue)':'var(--accent2)';
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 11px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="rollDie(${sides})"><span style="font-weight:600">${item.name}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:${col}">${die}</span></div>`;
+    const skillMods = mods[item.name.toLowerCase()]||[];
+    const totalBonus = skillMods.reduce((s,m)=>s+m.val,0);
+    const bonusStr = totalBonus!==0 ? `<span style="font-size:11px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'}"> (${totalBonus>0?'+':''}${totalBonus})</span>` : '';
+    const modLines = skillMods.map(m=>`<div style="font-size:10px;color:var(--text-dim);padding-left:4px">↳ ${m.label}</div>`).join('');
+    const hasToggle = skillMods.length > 0;
+    const toggleId = `skmod-${item.name.replace(/[^a-z]/gi,'').toLowerCase()}`;
+    html+=`<div style="background:var(--surface2);border:1px solid ${hasToggle?'var(--accent2)':'var(--border)'};border-radius:4px;padding:7px 11px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="rollDie(${sides},false,${dm})">
+        <span style="font-weight:600">${item.name}${bonusStr}</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:${col}">${die}</span>
+      </div>
+      ${hasToggle?`<div id="${toggleId}" style="display:none;margin-top:4px;border-top:1px solid var(--border);padding-top:4px">${modLines}</div>
+      <div onclick="document.getElementById('${toggleId}').style.display=document.getElementById('${toggleId}').style.display==='none'?'block':'none'" style="text-align:center;font-size:9px;color:var(--text-dim);cursor:pointer;margin-top:4px;letter-spacing:1px;text-transform:uppercase">▾ modifiers</div>`:''}
+    </div>`;
   });
   html+='</div>';
   document.getElementById('skill-quick-ref').innerHTML=html;
@@ -2201,7 +2343,12 @@ async function loadAllSheets() {
 
     // ── Populate state (headers now match exactly) ───────────
     state.attrs        = attrsData;
-    state.skills       = skillsData;
+    // Filter out note rows (name starts with ⚠ or base is not a number)
+    state.skills = skillsData.filter(s => {
+      const nm = (s.name||'').trim();
+      if (!nm || nm.startsWith('⚠') || nm.startsWith('NOTE')) return false;
+      return true;
+    });
     state.starting     = startingData.map(s=>({...s, on: isTrue(s.defaulton)}));
     state.progressions = progData.map(p=>({...p, checked: false}));
     state.powerTiers   = tierData;
