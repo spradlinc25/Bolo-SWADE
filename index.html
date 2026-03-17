@@ -987,26 +987,29 @@ function renderSkills() {
     if (!state.showUnskilled && !trained) return;
     const dispLvl = trained ? Math.max(lvl, base) : 1;
 
-    // Modifier annotation for this skill
+    // Modifier annotation — clickable toggle showing sources
     const skillMods = mods[s.name.toLowerCase()]||[];
     const totalBonus = skillMods.reduce((acc,m)=>acc+m.val, 0);
-    const modSuffix = totalBonus !== 0
-      ? `<span style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'};margin-left:4px">(${totalBonus>0?'+':''}${totalBonus} unarmed)</span>`
-      : skillMods.length > 0
-        ? `<span style="font-size:9px;color:var(--text-dim);margin-left:4px">*</span>`
-        : '';
-    // For Fighting specifically, label is "unarmed" — for others just show the bonus
-    const modLabel = s.name.toLowerCase() === 'fighting' && totalBonus !== 0
-      ? `<span style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'};margin-left:4px">(${totalBonus>0?'+':''}${totalBonus} unarmed)</span>`
-      : totalBonus !== 0
-        ? `<span style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'};margin-left:4px">(${totalBonus>0?'+':''}${totalBonus})</span>`
-        : skillMods.length > 0
-          ? `<span style="font-size:9px;color:var(--accent2);margin-left:4px" title="${skillMods.map(m=>m.label).join(', ')}">*</span>`
-          : '';
     const unskLabel = !trained ? '<span style="font-size:9px;color:var(--muted);margin-left:4px">(d4-2)</span>' : '';
 
+    let modLabel = '';
+    if (skillMods.length > 0) {
+      const bonusColor = totalBonus > 0 ? 'var(--green)' : totalBonus < 0 ? 'var(--red)' : 'var(--accent2)';
+      const bonusText = totalBonus !== 0
+        ? `${totalBonus > 0 ? '+' : ''}${totalBonus}`
+        : '✦';
+      const toggleId = 'skm-' + s.name.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+      const srcLines = skillMods.map(m =>
+        `<div style="font-size:10px;color:var(--text-dim);padding:1px 0 1px 8px">↳ ${m.label}</div>`
+      ).join('');
+      modLabel = `<span onclick="event.stopPropagation();var el=document.getElementById('${toggleId}');el.style.display=el.style.display==='none'?'block':'none'"
+        style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${bonusColor};margin-left:5px;cursor:pointer;border-bottom:1px dotted ${bonusColor}"
+        title="Click to see sources">(${bonusText})</span>
+        <div id="${toggleId}" style="display:none;margin-top:2px">${srcLines}</div>`;
+    }
+
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="aname">${s.name}${unskLabel}${modLabel}</td><td colspan="5">${renderDieDots(dispLvl)}</td><td class="die-val" style="text-align:right;font-size:18px;${!trained?'color:var(--muted)':''}">${trained?dieFor(dispLvl):'d4-2'}</td>`;
+    tr.innerHTML=`<td class="aname" style="vertical-align:top">${s.name}${unskLabel}${modLabel}</td><td colspan="5" style="vertical-align:top;padding-top:2px">${renderDieDots(dispLvl)}</td><td class="die-val" style="text-align:right;font-size:18px;vertical-align:top;${!trained?'color:var(--muted)':''}">${trained?dieFor(dispLvl):'d4-2'}</td>`;
     tb.appendChild(tr);
   });
   const btn = document.getElementById('unskilled-toggle-btn');
@@ -1179,6 +1182,12 @@ function computeWeapons() {
   const hasMA=hasStart('Martial Artist') || hasEdge('Martial Artist');
   const hasBruiser=hasEdge('Bruiser');
   const hasMW=hasEdge('Martial Warrior');
+  // Compute unarmed skill modifier for display in weapon skill label
+  // MW supersedes MA — use highest only
+  const unarmedMod = hasMW ? 2 : hasMA ? 1 : 0;
+  const fightingLabel = unarmedMod > 0
+    ? `Fighting ${fDie} <span style="font-size:10px;color:var(--green)">(+${unarmedMod} unarmed)</span>`
+    : `Fighting ${fDie}`;
   let fistBonus=null;
   if(hasBrawler) fistBonus='d4';
   if(hasMA)      fistBonus='d6';
@@ -1195,7 +1204,7 @@ function computeWeapons() {
   const fistNote = `AP 0. Breakdown: ${fistBreakdown.join(', ')}.`;
 
   const computed=[];
-  computed.push({name:'Fists',damage:fistBonus?`${strDie}+${fistBonus}`:strDie,skillLabel:`Fighting ${fDie}`,tags:hasMA?['Natural Weapon']:[],notes:fistNote,upgraded:fistBonus&&fistBonus!=='d4',source:'Racial/Edges'});
+  computed.push({name:'Fists',damage:fistBonus?`${strDie}+${fistBonus}`:strDie,skillLabel:fightingLabel,tags:hasMA?['Natural Weapon']:[],notes:fistNote,upgraded:fistBonus&&fistBonus!=='d4',source:'Racial/Edges'});
 
   const mp=getActivePower('Melee Attack');
   if(mp){
@@ -1205,7 +1214,7 @@ function computeWeapons() {
     const enhBreakdown = [...fistBreakdown];
     enhBreakdown.push(`+${pd} Melee Attack (Tier ${mp.tier||'?'}, Heavy Weapon)`);
     const enhNote = `Heavy Weapon — bypasses Heavy Armor. Breakdown: ${enhBreakdown.join(', ')}.`;
-    computed.push({name:'Enhanced Fists',damage:fistBonus?`${strDie}+${fistBonus}+${pd}`:`${strDie}+${pd}`,skillLabel:`Fighting ${fDie}`,tags:['Natural Weapon','Heavy Weapon'],notes:enhNote,upgraded:true,source:'Melee Attack Power'});
+    computed.push({name:'Enhanced Fists',damage:fistBonus?`${strDie}+${fistBonus}+${pd}`:`${strDie}+${pd}`,skillLabel:fightingLabel,tags:['Natural Weapon','Heavy Weapon'],notes:enhNote,upgraded:true,source:'Melee Attack Power'});
   }
   // Add acquired non-dynamic weapons from sheet
   state.allWeapons.filter(w=>!isTrue(w.dynamic)&&isTrue(w.acquired)).forEach(w=>{
@@ -1217,9 +1226,19 @@ function computeWeapons() {
 function renderWeapons() {
   const weapons=computeWeapons();
   let html=`<table class="weapon-table"><thead><tr><th>Weapon</th><th>Damage</th><th>Skill</th><th>Tags / Notes</th></tr></thead><tbody>`;
+  const wMods = computeSkillMods();
   weapons.forEach(w=>{
     const tags=w.tags.map(t=>`<span class="wtag ${t==='Heavy Weapon'?'heavy':t==='Natural Weapon'?'natural':''}">${t}</span>`).join('');
-    html+=`<tr><td><div class="wname">${w.name}</div><span class="wsource">${w.source}</span></td><td><div class="wdmg${w.upgraded?' up':''}">${w.damage}</div></td><td><div style="font-size:13px;color:var(--text-dim)">${w.skillLabel}</div></td><td><div>${tags}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">${w.notes}</div></td></tr>`;
+    // For sheet weapons (not dynamic), append skill mod note if applicable
+    let skillDisplay = w.skillLabel;
+    if (w.skill && !w.skillLabel.includes('(+') && !w.skillLabel.includes('(-')) {
+      const sm = wMods[(w.skill||'').toLowerCase()]||[];
+      const sb = sm.reduce((a,m)=>a+m.val,0);
+      if (sb !== 0) {
+        skillDisplay += ` <span style="font-size:10px;color:${sb>0?'var(--green)':'var(--red)'}">(${sb>0?'+':''}${sb})</span>`;
+      }
+    }
+    html+=`<tr><td><div class="wname">${w.name}</div><span class="wsource">${w.source}</span></td><td><div class="wdmg${w.upgraded?' up':''}">${w.damage}</div></td><td><div style="font-size:13px;color:var(--text-dim)">${skillDisplay}</div></td><td><div>${tags}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">${w.notes||''}</div></td></tr>`;
   });
   html+='</tbody></table>';
   document.getElementById('weapons-table').innerHTML=html;
@@ -1951,10 +1970,12 @@ function computeSkillMods() {
     if (nm.includes('danger sense'))  addMod('notice',      'Danger Sense (+2 ambush)', 2);
     if (nm.includes('infravision'))   addMod('notice',      'Infravision (halves dark penalty)', 0);
     // ── Combat — Fighting ───────────────────────────────────
-    if (nm.includes('martial artist') && !nm.includes('warrior'))
-                                      addMod('fighting',    'Martial Artist (+1 unarmed)', 1);
-    if (nm.includes('martial warrior'))
-                                      addMod('fighting',    'Martial Warrior (+2 unarmed)', 2);
+    // Martial Warrior supersedes Martial Artist — don't double-stack
+    if (nm.includes('martial warrior')) {
+      addMod('fighting', 'Martial Warrior (+2 unarmed)', 2);
+    } else if (nm.includes('martial artist')) {
+      addMod('fighting', 'Martial Artist (+1 unarmed)', 1);
+    }
     if (nm.includes('brawler') && !nm.includes('improved'))
                                       addMod('fighting',    'Brawler (nat. weapon tag)', 0);
     // ── Combat — Shooting ───────────────────────────────────
