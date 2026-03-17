@@ -743,22 +743,87 @@ function computeToughness() {
   return t;
 }
 
-function computeArmorBonus() { return getActivePower('Armor') ? 2 : 0; }
+// ── Armor location parsing ────────────────────────────────────
+// Parses 'location' field into an array of slot names
+// Handles: "Torso", "Torso,Arms", "Torso,Arms,Legs", "Full", "All"
+const ARMOR_SLOTS = ['Head','Torso','Arms','Legs'];
+
+function parseArmorLocations(locStr) {
+  if (!locStr) return [];
+  const s = locStr.trim().toLowerCase();
+  if (s === 'full' || s === 'all') return [...ARMOR_SLOTS];
+  return locStr.split(',').map(l => l.trim()).filter(l =>
+    ARMOR_SLOTS.some(sl => sl.toLowerCase() === l.toLowerCase())
+  ).map(l => ARMOR_SLOTS.find(sl => sl.toLowerCase() === l.toLowerCase()));
+}
+
+// Returns equipped armor items from sheet (isTrue(equipped))
+function getEquippedArmor() {
+  return state.allArmor.filter(a => {
+    const nm = String(a.name||'').trim();
+    // Skip the legacy slot rows (Head/Torso/Arms/Legs with no armor value context)
+    // and skip reference-only rows
+    return isTrue(a.equipped) && nm && !ARMOR_SLOTS.includes(nm);
+  });
+}
+
+// Compute effective armor per slot, applying SWADE stacking rules:
+// Multiple items on the same slot: highest = full, others = half (round down)
+function computeArmorBySlot() {
+  const equipped = getEquippedArmor();
+  const slotItems = {}; // slot -> array of armorvalue numbers
+  ARMOR_SLOTS.forEach(s => slotItems[s] = []);
+
+  equipped.forEach(a => {
+    const locs = parseArmorLocations(a.location||'');
+    const val = parseInt(a.armorvalue)||0;
+    locs.forEach(loc => slotItems[loc].push(val));
+  });
+
+  // Apply stacking: sort descending, first = full, rest = half rounded down
+  const result = {};
+  ARMOR_SLOTS.forEach(slot => {
+    const vals = slotItems[slot].sort((a,b) => b-a);
+    if (!vals.length) { result[slot] = 0; return; }
+    result[slot] = vals[0] + vals.slice(1).reduce((s,v) => s + Math.floor(v/2), 0);
+  });
+  return result;
+}
+
+// Total armor bonus = average of all covered slots (torso is the reference for Toughness)
+// SWADE: worn armor adds to Toughness based on torso coverage
+// If no torso armor, use highest single slot value as fallback
+function computeArmorBonus() {
+  // Super Power Armor always adds 2
+  const powerArmor = getActivePower('Armor') ? 2 : 0;
+
+  const slots = computeArmorBySlot();
+  // Torso is the primary Toughness-affecting slot in SWADE
+  const wornArmor = slots['Torso'] || 0;
+
+  return powerArmor + wornArmor;
+}
 
 function computeFFBonus() {
-  // FF active, power is on in sheet, and not Shaken
   return (state.forceField && getActivePower('Force Field') && !state.shaken) ? 2 : 0;
 }
 
 function buildToughnessDisplay() {
   const base = computeToughness();
-  const ar = computeArmorBonus();
+  const powerAr = getActivePower('Armor') ? 2 : 0;
+  const slots = computeArmorBySlot();
+  const wornAr = slots['Torso'] || 0;
+  const ar = powerAr + wornAr;
   const ff = computeFFBonus();
   const total = base + ar + ff;
-  // Build parenthetical: e.g. (2 + 2FF) or (2) or nothing
-  if (ar > 0 && ff > 0) return `${total} (${ar} + ${ff}FF)`;
-  if (ar > 0)           return `${total} (${ar})`;
-  if (ff > 0)           return `${total} (+${ff}FF)`;
+
+  // Build parenthetical breakdown
+  const parts = [];
+  if (wornAr > 0) parts.push(`${wornAr}W`);   // W = worn
+  if (powerAr > 0) parts.push(`${powerAr}P`);  // P = power
+  if (ff > 0) parts.push(`${ff}FF`);
+
+  if (parts.length) return `${total} (${parts.join(' + ')})`;
   return `${total}`;
 }
 
@@ -948,9 +1013,36 @@ function renderWeapons() {
 // ============================================================
 function renderArmor() {
   const tb = document.getElementById('armor-body');
-  // First 4 rows of Armor tab are Bolo's equipped slots (Head/Torso/Arms/Legs)
-  const boloSlots = state.allArmor.slice(0, 4);
-  tb.innerHTML = boloSlots.map(a=>`<tr><td class="aname">${a.name||'—'}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">${a.armorvalue||'0'}</td><td style="font-size:12px;color:var(--text-dim)">${a.notes||''}</td></tr>`).join('');
+  const equipped = getEquippedArmor();
+  const slots = computeArmorBySlot();
+
+  if (!equipped.length) {
+    tb.innerHTML = ARMOR_SLOTS.map(slot =>
+      `<tr><td class="aname">${slot}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">0</td><td style="font-size:12px;color:var(--text-dim)">Unarmored</td></tr>`
+    ).join('');
+    return;
+  }
+
+  // Build slot → items map for display
+  const slotMap = {};
+  ARMOR_SLOTS.forEach(s => slotMap[s] = []);
+  equipped.forEach(a => {
+    parseArmorLocations(a.location||'').forEach(loc => slotMap[loc].push(a));
+  });
+
+  tb.innerHTML = ARMOR_SLOTS.map(slot => {
+    const items = slotMap[slot];
+    const val = slots[slot] || 0;
+    if (!items.length) {
+      return `<tr><td class="aname">${slot}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--text-dim)">0</td><td style="font-size:12px;color:var(--text-dim)">Unarmored</td></tr>`;
+    }
+    const itemNames = items.map((a,i) => {
+      const v = parseInt(a.armorvalue)||0;
+      const effective = i === 0 ? v : Math.floor(v/2);
+      return `${a.name}${i>0?` (×½=${effective})`:''}`;
+    }).join(', ');
+    return `<tr><td class="aname">${slot}</td><td style="font-family:'Share Tech Mono',monospace;color:var(--green);font-weight:bold">+${val}</td><td style="font-size:12px;color:var(--text-dim)">${itemNames}</td></tr>`;
+  }).join('');
 }
 
 // ============================================================
