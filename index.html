@@ -386,8 +386,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   <div class="nav-sub">Czarnian · <span id="nav-rank-display">Novice</span></div>
   <div class="nav-tabs">
     <button class="active" onclick="showTab('sheet',this)">Character</button>
-    <button onclick="showTab('progressions',this)">Progressions</button>
-    <button onclick="showTab('powers',this)">Power Tiers</button>
+    <button onclick="showTab('progressions',this)">Advances</button>
+    <button id="nav-powers-btn" onclick="showTab('powers',this)">Power Tiers</button>
     <button onclick="showTab('reference',this)">Reference</button>
     <button onclick="showTab('roller',this)">Dice Roller</button>
   </div>
@@ -406,7 +406,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   <div class="stat-pill"><span class="spl">Rank</span><span class="spv" id="sb-rank">—</span></div>
   <div class="stat-pill"><span class="spl">Parry</span><span class="spv" id="sb-parry">—</span></div>
   <div class="stat-pill"><span class="spl">Toughness</span><span class="spv green" id="sb-toughness">—</span></div>
-  <div class="stat-pill"><span class="spl">Pace</span><span class="spv">6</span></div>
+  <div class="stat-pill"><span class="spl">Pace</span><span class="spv" id="sb-pace">6</span></div>
   <div class="stat-pill"><span class="spl">Carry</span><span class="spv" id="sb-carry">—</span></div>
   <div class="stat-pill">
     <span class="spl">Bennies</span>
@@ -449,9 +449,15 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   </div>
 
   <!-- FORCE FIELD TOGGLE -->
-  <div class="stat-pill" style="flex-direction:column;gap:4px;">
+  <div class="stat-pill" id="ff-pill" style="flex-direction:column;gap:4px;">
     <span class="spl">Force Field</span>
     <button class="tog-btn" id="ff-btn" onclick="toggleFF()">Off</button>
+  </div>
+
+  <!-- FORCE FIELD DR DISPLAY -->
+  <div class="stat-pill" id="ff-dr-pill" style="display:none;">
+    <span class="spl">FF Dmg Red.</span>
+    <span class="spv blue" id="ff-dr-value">—</span>
   </div>
 
   <!-- INCAP WARNING inline -->
@@ -479,7 +485,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
         <div class="card" style="flex:1"><div class="section-header">Edges</div><div id="edges-list"></div></div>
       </div>
     </div>
-    <div class="card mb">
+    <div class="card mb" id="sp-summary-card">
       <div class="section-header">Active Super Powers</div>
       <div id="sp-summary"></div>
     </div>
@@ -493,8 +499,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
             <div><div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Fatigue</div><div class="pval ok" id="fatigue-pen-display" style="font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:bold">0</div></div>
           </div>
         </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;min-width:220px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:6px">Force Field Status</div>
+        <div id="ff-combat-notes" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;min-width:220px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:6px">Force Field — Damage Reduction</div>
           <div id="ff-status-detail" style="font-size:13px;color:var(--text-dim)">Force Field is off. Toughness at base.</div>
         </div>
         <div id="nos-card" style="display:none;background:#0a1a0a;border:1px solid var(--green);border-radius:4px;padding:10px 14px;">
@@ -521,9 +527,19 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 
 <!-- PROGRESSIONS TAB -->
 <div id="tab-progressions" class="tab">
-  <div id="prog-loading" class="loading"><span class="loading-spinner"></span>Loading progressions...</div>
+  <div id="prog-loading" class="loading"><span class="loading-spinner"></span>Loading advances...</div>
   <div id="prog-content" style="display:none">
-    <div class="section-header" style="margin-bottom:16px">Advance-by-Advance Roadmap</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div class="section-header" style="margin-bottom:0;border:none;padding-bottom:0">Advances</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 14px;font-family:'Share Tech Mono',monospace;">
+          <span style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Advances: </span><span id="adv-count" style="font-size:16px;color:var(--accent2);font-weight:bold">0</span><span style="font-size:10px;color:var(--text-dim)"> / <span id="adv-total">0</span></span>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 14px;">
+          <span style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Rank: </span><span id="adv-rank" style="font-size:14px;font-weight:bold;color:var(--accent2)">Novice</span>
+        </div>
+      </div>
+    </div>
     <div class="prog-tier">
       <div class="tier-badge" style="border-color:var(--text-dim);color:var(--text-dim)">Starting (Toggle to Test)</div>
       <div id="starting-list"></div>
@@ -704,6 +720,8 @@ const state = {
   fatigueIncap: false,
   shaken: false,
   forceField: false,
+  pace: 6,
+  size: 0,
   loaded: false
 };
 
@@ -776,7 +794,9 @@ function computeParry() {
   const fLvl = computeSkillLevel('Fighting');
   let p = 2 + Math.floor(dieVal(fLvl)/2);
   if(hasStart('Martial Artist')) p += 1;
-  if(hasEdge('Martial Warrior'))  p += 1;
+  if(hasEdge('Martial Warrior')) p += 1;
+  if(hasEdge('Imp. Block'))      p += 2;
+  else if(hasEdge('Block'))      p += 1;
   return p;
 }
 
@@ -784,7 +804,10 @@ function computeToughness() {
   const vigLvl = computeAttrLevel('Vigor');
   let t = 2 + Math.floor(dieVal(vigLvl)/2);
   if(hasStart('Brawler (Racial)')) t += 1;
-  if(hasEdge('Bruiser')) t += 1;
+  if(hasEdge('Brawler'))           t += 1; // non-racial version
+  if(hasEdge('Bruiser'))           t += 1;
+  if(hasEdge('Brawny'))            t += 1; // Brawny gives Size+1 = Toughness+1
+  t += (state.size || 0);                  // Size modifier from State tab
   const tp = getActivePower('Toughness');
   if(tp) t += parseInt(tp.base)||0;
   return t;
@@ -841,35 +864,38 @@ function computeArmorBySlot() {
 // SWADE: worn armor adds to Toughness based on torso coverage
 // If no torso armor, use highest single slot value as fallback
 function computeArmorBonus() {
-  // Super Power Armor always adds 2
-  const powerArmor = getActivePower('Armor') ? 2 : 0;
-
+  const ap = getActivePower('Armor');
+  // Armor power: +2 Toughness per level (base field = number of levels)
+  const powerArmor = ap ? (parseInt(ap.base)||1) * 2 : 0;
   const slots = computeArmorBySlot();
-  // Torso is the primary Toughness-affecting slot in SWADE
   const wornArmor = slots['Torso'] || 0;
-
-  return powerArmor + wornArmor;
+  // Per SPC rules: Armor power does NOT stack with worn armor — use the higher value
+  return Math.max(powerArmor, wornArmor);
 }
 
-function computeFFBonus() {
-  return (state.forceField && getActivePower('Force Field') && !state.shaken) ? 2 : 0;
+function computeFFDR() {
+  // Force Field = damage reduction, not Toughness bonus
+  // Each level (base field) reduces incoming damage by 1 point
+  const ffp = getActivePower('Force Field');
+  if (!ffp || !state.forceField || state.shaken) return 0;
+  return parseInt(ffp.base) || 1;
 }
 
 function buildToughnessDisplay() {
   const base = computeToughness();
-  const powerAr = getActivePower('Armor') ? 2 : 0;
+  const ap = getActivePower('Armor');
+  const powerAr = ap ? (parseInt(ap.base)||1) * 2 : 0;
   const slots = computeArmorBySlot();
   const wornAr = slots['Torso'] || 0;
-  const ar = powerAr + wornAr;
-  const ff = computeFFBonus();
-  const total = base + ar + ff;
+  // Force Field is damage reduction — NOT added to Toughness
+  // Use higher of power armor vs worn armor (don't stack per SPC rules)
+  const arBonus = Math.max(powerAr, wornAr);
+  const total = base + arBonus;
 
-  // Build parenthetical breakdown
   const parts = [];
-  if (wornAr > 0) parts.push(`${wornAr}W`);   // W = worn
-  if (powerAr > 0) parts.push(`${powerAr}P`);  // P = power
-  if (ff > 0) parts.push(`${ff}FF`);
-
+  if (arBonus > 0) {
+    parts.push(powerAr >= wornAr ? `${arBonus}P` : `${arBonus}W`);
+  }
   if (parts.length) return `${total} (${parts.join(' + ')})`;
   return `${total}`;
 }
@@ -893,6 +919,10 @@ function computeRank() {
   if(checked>=8)  return 'Veteran';
   if(checked>=4)  return 'Seasoned';
   return 'Novice';
+}
+
+function rankColor(rank) {
+  return {Novice:'var(--blue)',Seasoned:'var(--green)',Veteran:'var(--accent2)',Heroic:'var(--accent)',Legendary:'#cc44ff'}[rank]||'var(--text)';
 }
 
 // ============================================================
@@ -1111,7 +1141,28 @@ function renderGear() {
 }
 
 // ============================================================
-// RENDER: WOUND TRACK
+// CONDITIONAL VISIBILITY
+// ============================================================
+function updateConditionalVisibility() {
+  const hasPowers = state.powerTiers.length > 0;
+  const hasFF = state.powers.some(p => (f(p,'name','power')||'').toLowerCase().includes('force field'));
+
+  // Power Tiers nav button
+  const powersBtn = document.getElementById('nav-powers-btn');
+  if (powersBtn) powersBtn.style.display = hasPowers ? '' : 'none';
+
+  // Active Super Powers card on Character tab
+  const spCard = document.getElementById('sp-summary-card');
+  if (spCard) spCard.style.display = hasPowers ? '' : 'none';
+
+  // Force Field pill in status bar
+  const ffPill = document.getElementById('ff-pill');
+  if (ffPill) ffPill.style.display = hasFF ? '' : 'none';
+
+  // Force Field status block in Combat Notes
+  const ffNotes = document.getElementById('ff-combat-notes');
+  if (ffNotes) ffNotes.style.display = hasFF ? '' : 'none';
+}
 // ============================================================
 function renderWoundTrack() {
   const {nosIgnore,maxWounds}=getWoundEdgeInfo();
@@ -1290,50 +1341,56 @@ function toggleFF() {
 function updateFFDisplay() {
   const btn = document.getElementById('ff-btn');
   const detail = document.getElementById('ff-status-detail');
-  const ffPowerActive = !!getActivePower('Force Field');
+  const drPill = document.getElementById('ff-dr-pill');
+  const drValue = document.getElementById('ff-dr-value');
+  const ffp = getActivePower('Force Field');
+  const ffPowerActive = !!ffp;
+  const dr = ffp ? (parseInt(ffp.base)||1) : 0;
   const ffOn = state.forceField && ffPowerActive && !state.shaken;
   const ffPoweredDown = state.forceField && ffPowerActive && state.shaken;
 
+  // Toggle button
   if (btn) {
     if (!ffPowerActive) {
-      btn.textContent = 'No Power';
-      btn.className = 'tog-btn';
-      btn.disabled = true;
+      btn.textContent = 'No Power'; btn.className = 'tog-btn'; btn.disabled = true;
     } else if (ffPoweredDown) {
-      btn.textContent = 'POWERED DOWN';
-      btn.className = 'tog-btn ff-down';
-      btn.disabled = false;
+      btn.textContent = 'POWERED DOWN'; btn.className = 'tog-btn ff-down'; btn.disabled = false;
     } else if (ffOn) {
-      btn.textContent = 'Active';
-      btn.className = 'tog-btn ff-on';
-      btn.disabled = false;
+      btn.textContent = 'Active'; btn.className = 'tog-btn ff-on'; btn.disabled = false;
     } else {
-      btn.textContent = 'Off';
-      btn.className = 'tog-btn';
-      btn.disabled = false;
+      btn.textContent = 'Off'; btn.className = 'tog-btn'; btn.disabled = false;
     }
   }
 
+  // DR pill in status bar — only visible when FF is actively on
+  if (drPill && drValue) {
+    drPill.style.display = ffOn ? '' : 'none';
+    drValue.textContent = `DR ${dr}`;
+  }
+
+  // Combat notes detail
   if (detail) {
     if (!ffPowerActive) {
       detail.textContent = 'Force Field power not active in current tier.';
       detail.style.color = 'var(--text-dim)';
     } else if (ffPoweredDown) {
-      detail.innerHTML = '<span style="color:var(--red)">⚠ POWERED DOWN</span> — Shaken. Toughness reduced by 2.';
+      detail.innerHTML = `<span style="color:var(--red)">⚠ POWERED DOWN</span> — Shaken. DR ${dr} lost until recovered.`;
     } else if (ffOn) {
-      detail.innerHTML = '<span style="color:var(--blue)">● Active</span> — Reducing all incoming damage by 2.';
+      detail.innerHTML = `<span style="color:var(--blue)">● Active</span> — Reducing all incoming damage by ${dr}. Not Toughness — applied after hit lands.`;
     } else {
-      detail.textContent = 'Force Field off. Toggle to activate.';
+      detail.textContent = `Force Field off (DR ${dr} when active). Toggle to activate.`;
       detail.style.color = 'var(--text-dim)';
     }
   }
 }
 function updateStatusBar() {
   const rank=computeRank();
+  const rankEl=document.getElementById('nav-rank-display');
   document.getElementById('sb-rank').textContent=rank;
-  document.getElementById('nav-rank-display').textContent=rank;
+  if(rankEl){ rankEl.textContent=rank; rankEl.style.color=rankColor(rank); }
   document.getElementById('sb-parry').textContent=computeParry();
   document.getElementById('sb-toughness').textContent=buildToughnessDisplay();
+  document.getElementById('sb-pace').textContent=state.pace||6;
   document.getElementById('sb-carry').textContent=`${computeCarryLimit()} lbs`;
   updateWoundDisplay();
   updateFatigueDisplay();
@@ -1385,6 +1442,18 @@ function renderStarting() {
 
 function renderProgressions() {
   const container=document.getElementById('prog-list'); container.innerHTML='';
+
+  // Update advance counter
+  const total = state.progressions.length;
+  const checked = state.progressions.filter(p=>p.checked).length;
+  const rank = computeRank();
+  const advCount = document.getElementById('adv-count');
+  const advTotal = document.getElementById('adv-total');
+  const advRank  = document.getElementById('adv-rank');
+  if (advCount) advCount.textContent = checked;
+  if (advTotal) advTotal.textContent = total;
+  if (advRank)  { advRank.textContent = rank; advRank.style.color = rankColor(rank); }
+
   const ranks=['Novice','Seasoned','Veteran','Heroic','Legendary'];
   ranks.forEach(rank=>{
     const items=state.progressions.filter(p=>p.rank===rank);
@@ -1776,6 +1845,7 @@ function fullRefresh() {
   renderEdges();
   renderArmor();
   renderGear();
+  updateConditionalVisibility();
   updateShakenDisplay();
   updateFFDisplay();
   updateStatusBar(); // calls renderWeapons, renderSPSummary, saveState
@@ -2081,7 +2151,7 @@ async function loadAllSheets() {
       attrsData, skillsData, startingData, progData,
       tierData, powersData, hindrancesData,
       weaponsData, armorData, gearData,
-      edgesRefData, hindrancesRefData, spData
+      edgesRefData, hindrancesRefData, spData, charStateData
     ] = await Promise.all([
       fetchSheet('Attributes'), fetchSheet('Skills'),
       fetchSheet('Starting'),   fetchSheet('Progressions'),
@@ -2090,7 +2160,7 @@ async function loadAllSheets() {
       fetchSheet('Weapons'),    fetchSheet('Armor'),
       fetchSheet('Gear'),
       fetchSheet('Edges'),      fetchSheet('Hindrances'),
-      fetchSheet('SPCPowers')
+      fetchSheet('SPCPowers'),  fetchSheet('State')
     ]);
 
     // ── Populate state (headers now match exactly) ───────────
@@ -2109,6 +2179,15 @@ async function loadAllSheets() {
     state.spPowers         = spData;
     state.weaponsRef       = weaponsData;
     state.armorRef         = armorData;
+
+    // Read flat character config from State tab (pace, size)
+    if (charStateData && charStateData.length) {
+      const stateRow = (key) => charStateData.find(r => (r.key||'').toLowerCase().trim() === key);
+      const paceRow = stateRow('pace');
+      const sizeRow = stateRow('size');
+      if (paceRow && paceRow.value) state.pace = parseInt(paceRow.value) || 6;
+      if (sizeRow && sizeRow.value) state.size = parseInt(sizeRow.value) || 0;
+    }
 
     // Restore session state — try cloud first if connected, else localStorage
     if (isConnected) {
@@ -2142,6 +2221,7 @@ async function loadAllSheets() {
     renderPowerTiers();
     renderDiceButtons();
     updateFatigueDisplay();
+    updateConditionalVisibility();
     updateStatusBar();
     renderEdgesRef();
     renderHindrancesRef();
