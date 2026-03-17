@@ -1018,32 +1018,58 @@ function renderHindrances() {
   el.innerHTML = edgeGroup(items);
 }
 
+// ── Classify helpers: read sheet 'active' column first, fallback to defaults ──
+
 function classifyEdge(name) {
   const n = (name||'').toLowerCase().trim();
+  // Check Edges reference library for sheet-defined classification
+  const ref = state.edgesRef.find(e => (e.name||'').toLowerCase().trim() === n);
+  if (ref && ref.active) return ref.active.toLowerCase() === 'passive' ? 'passive' : 'active';
+  // Also check starting edges
+  const st = state.starting.find(s => (f(s,'name')||'').toLowerCase().trim() === n);
+  if (st && st.active) return st.active.toLowerCase() === 'passive' ? 'passive' : 'active';
+  // Fallback: hardcoded defaults
   const passiveSet = new Set([
     'brawler','martial artist','bruiser','martial warrior','brawny',
     'block','improved block','tough as nails','tougher than nails',
     'nerves of steel','improved nerves of steel','hard to kill',
     'improved hard to kill','weapon master','master of arms',
     'professional','expert','master','trademark weapon',
+    'alertness','attractive','very attractive','arcane background',
+    'ambidextrous','elan','fast healer','fleet-footed',
+    'luck','great luck','quick','rich','filthy rich','scholar','healer',
   ]);
-  if (passiveSet.has(n)) return 'passive';
-  return 'active';
+  return passiveSet.has(n) ? 'passive' : 'active';
 }
 
 function classifyHindrance(name) {
   const n = (name||'').toLowerCase().trim();
-  if (n.includes('wanted') || n.includes('alien form') || n.includes('enemy') || n.includes('poverty')) return 'passive';
-  return 'active';
+  // Check Hindrances library for sheet-defined classification
+  const ref = state.hindrances.find(h => (h.name||'').toLowerCase().trim() === n);
+  if (ref && ref.active) return ref.active.toLowerCase() === 'passive' ? 'passive' : 'active';
+  // Fallback
+  const passiveSet = new Set([
+    'wanted','alien form','enemy','poverty','vow','loyal',
+    'greedy','mean','stubborn','ugly','young','small',
+    'elderly','illiterate','mild mannered','heroic',
+  ]);
+  return passiveSet.has(n) ? 'passive' : 'active';
 }
 
 function classifyPower(name) {
   const n = (name||'').toLowerCase().trim();
+  // Check SPCPowers library for sheet-defined classification
+  const ref = state.spPowers.find(p => (p.name||'').toLowerCase().trim() === n);
+  if (ref && ref.active) return ref.active.toLowerCase() === 'passive' ? 'passive' : 'active';
+  // For character powers, check by partial match against spc library
+  const refPartial = state.spPowers.find(p => n.includes((p.name||'').toLowerCase().trim()) || (p.name||'').toLowerCase().trim().includes(n));
+  if (refPartial && refPartial.active) return refPartial.active.toLowerCase() === 'passive' ? 'passive' : 'active';
+  // Fallback: hardcoded
   const passivePowers = new Set([
     'armor','toughness','super attribute','super skill',"doesn't breathe",
     "doesn't eat","doesn't sleep",'ageless','hardy','fearless',
     'construct','environmental resistance','immune to poison',
-    'immune to poison/disease','altered form',
+    'immune to poison/disease','altered form','absorption',
   ]);
   for (const pp of passivePowers) { if (n.includes(pp)) return 'passive'; }
   return 'active';
