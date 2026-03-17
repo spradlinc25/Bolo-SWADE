@@ -85,7 +85,12 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .tab{padding:10px;}
   .card{padding:10px;}
   .mb{margin-bottom:10px;}
-  /* 2-col → 1-col on mobile */
+  /* Reference — stack to single col, keep horizontal table scroll */
+  .ref-grid{grid-template-columns:1fr;}
+  .ref-wrap{overflow-x:auto;}
+  .ref-table{min-width:500px;}
+  .ref-search{font-size:13px;padding:6px 10px;}
+  /* Char top grid — stack to single col */
   .char-top-grid{grid-template-columns:1fr !important;}
   /* Attrs/Skills — tighter rows */
   .attr-table td{padding:2px 0;}
@@ -213,7 +218,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .ref-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:6px 10px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;}
 .ref-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
 .ref-table tr:hover td{background:var(--surface2);}
-.ref-wrap{max-height:600px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;}
+.ref-wrap{max-height:600px;overflow-y:auto;overflow-x:auto;border:1px solid var(--border);border-radius:4px;}
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
 
 /* DICE */
 .dice-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px;}
@@ -289,7 +295,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tier{margin-bottom:20px;}
 .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
 .tier-badge.novice{border-color:#4dabf7;color:#4dabf7;}.tier-badge.seasoned{border-color:#3ddc84;color:#3ddc84;}.tier-badge.veteran{border-color:#f4a436;color:#f4a436;}.tier-badge.heroic{border-color:#e85d26;color:#e85d26;}.tier-badge.legendary{border-color:#cc44ff;color:#cc44ff;}
-.prog-row{display:grid;grid-template-columns:36px 1fr 110px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+
 .prog-row:hover{border-color:var(--accent2);}
 .prog-row.checked{background:#0f1a0f;border-color:var(--green);}
 .prog-row.checked .prog-sel{color:var(--green);}
@@ -299,7 +305,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-pre{font-size:11px;color:var(--text-dim);}
 .prog-tbadge{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:2px 7px;border:1px solid var(--border);border-radius:3px;text-align:center;color:var(--text-dim);}
 .prog-tbadge.attribute{border-color:var(--blue);color:var(--blue);}.prog-tbadge.skill{border-color:var(--accent2);color:var(--accent2);}.prog-tbadge.edge{border-color:var(--accent);color:var(--accent);}.prog-tbadge.open{border-color:#cc44ff;color:#cc44ff;}
-.prog-eff{font-size:12px;color:var(--text-dim);}
+
 .starting-row{display:grid;grid-template-columns:36px 1fr 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .starting-row:hover{border-color:var(--accent2);}
 .starting-row.checked{background:#0f150f;border-color:var(--green);}
@@ -327,13 +333,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .col-h{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);text-align:center;}
 
 /* REFERENCE TABS */
-.ref-search{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;padding:8px 14px;border-radius:4px;margin-bottom:12px;outline:none;}
-.ref-search:focus{border-color:var(--accent2);}
-.ref-table{width:100%;border-collapse:collapse;font-size:13px;}
-.ref-table th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;padding:6px 10px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;}
-.ref-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
-.ref-table tr:hover td{background:var(--surface2);}
-.ref-wrap{max-height:600px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;}
+
 
 /* DICE */
 .dice-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px;}
@@ -523,7 +523,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 <div id="tab-reference" class="tab">
   <div id="ref-loading" class="loading"><span class="loading-spinner"></span>Loading reference data...</div>
   <div id="ref-content" style="display:none">
-    <div class="grid-2 mb">
+    <div class="ref-grid">
       <div>
         <div class="section-header">Edges Library</div>
         <input class="ref-search" id="edge-search" placeholder="Search edges..." oninput="filterTable('edge-search','edges-ref-table')">
@@ -549,7 +549,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
         <tbody id="sp-ref-body"></tbody>
       </table></div>
     </div>
-    <div class="grid-2 mb">
+    <div class="ref-grid">
       <div>
         <div class="section-header">Weapons Library</div>
         <input class="ref-search" id="weap-search" placeholder="Search weapons..." oninput="filterTable('weap-search','weapons-ref-table')">
@@ -1284,10 +1284,6 @@ function renderProgressions() {
 // ============================================================
 function renderPowerTiers() {
   const container=document.getElementById('power-list-container'); container.innerHTML='';
-
-  // Debug: log what we actually have
-  console.log('PowerTiers:', state.powerTiers.map(t=>({tier:t.tier,title:t.title})));
-  console.log('Powers tiers:', [...new Set(state.powers.map(p=>p.tier))]);
 
   state.powerTiers.forEach(tier=>{
     // Use parseInt for comparison — handles "1", " 1", 1, "1.0" etc.
