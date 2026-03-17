@@ -772,10 +772,10 @@ function computeSkillLevel(name) {
   let lvl = parseInt(s.base)||0;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    const isSkill = p.type==='Skill'||p.type==='Skill x2'||p.type==='Skill (Above Attr / x2)';
-    const isX2 = p.type==='Skill x2'||p.type==='Skill (Above Attr / x2)';
+    const isSkill = p.type==='Skill'||p.type==='Skill (Above Attr)'||p.type==='Skill x2'||p.type==='Skill (Above Attr / x2)';
+    // All skill types give 1 die raise — "Above Attr" just costs more advances, same result
     if(isSkill && p.selection && p.selection.toLowerCase().includes(name.toLowerCase()))
-      lvl += isX2 ? 2 : 1;
+      lvl += 1;
   });
   return Math.min(5,lvl);
 }
@@ -975,13 +975,14 @@ function renderSkills() {
   state.skills.forEach(s=>{
     const base = parseInt(s.base)||0;
     const lvl = computeSkillLevel(s.name);
-    const trained = lvl > 0; // has base d4 OR has been advanced
-    const showU = (s.show_unskilled||'').toLowerCase() !== 'false';
-    // Hide if: filter is on AND skill is untrained AND not flagged to always show
-    if (!state.showUnskilled && !trained && !showU) return;
+    // Trained = has a starting base die (core 5) OR has advances in it
+    const trained = base > 0 || lvl > 0;
+    // Hide unskilled: filter on AND not trained (base=0, no advances)
+    if (!state.showUnskilled && !trained) return;
     const tr=document.createElement('tr');
-    const unskLabel = !trained ? '<span style="font-size:9px;color:var(--text-dim);margin-left:4px">(d4-2)</span>' : '';
-    tr.innerHTML=`<td class="aname">${s.name}${unskLabel}</td><td colspan="5">${renderDieDots(Math.max(lvl,1))}</td><td class="die-val" style="text-align:right;font-size:18px;${!trained?'color:var(--muted)':''}">${trained?dieFor(lvl):'d4-2'}</td>`;
+    const unskLabel = !trained ? '<span style="font-size:9px;color:var(--muted);margin-left:4px">(d4-2)</span>' : '';
+    const dispLvl = trained ? Math.max(lvl, base) : 1; // show at least d4 if trained
+    tr.innerHTML=`<td class="aname">${s.name}${unskLabel}</td><td colspan="5">${renderDieDots(dispLvl)}</td><td class="die-val" style="text-align:right;font-size:18px;${!trained?'color:var(--muted)':''}">${trained?dieFor(dispLvl):'d4-2'}</td>`;
     tb.appendChild(tr);
   });
   const btn = document.getElementById('unskilled-toggle-btn');
@@ -2222,8 +2223,7 @@ async function loadAllSheets() {
       const sizeRow = stateRow('size');
       if (paceRow && paceRow.value) state.pace = parseInt(paceRow.value) || 6;
       if (sizeRow && sizeRow.value) state.size = parseInt(sizeRow.value) || 0;
-      const suRow = stateRow('show_unskilled');
-      if (suRow) state.showUnskilled = suRow.value !== 'FALSE' && suRow.value !== 'false';
+      // show_unskilled is managed locally, not stored in sheet
     }
 
     // Restore session state — try cloud first if connected, else localStorage
