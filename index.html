@@ -75,8 +75,10 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .nav-title{font-size:16px;padding-right:6px;margin-right:4px;}
   .nav-tabs{width:100%;order:1;overflow-x:auto;border-bottom:none;}
   nav button{font-size:11px;padding:9px 7px;letter-spacing:0;}
-  .nav-right{order:2;width:100%;border-top:1px solid var(--border);padding:3px 0;background:#0d0f13;justify-content:flex-end;}
-  #save-indicator{display:inline;}
+  .nav-right{order:2;width:100%;border-top:1px solid var(--border);padding:2px 0;background:#0d0f13;justify-content:flex-end;gap:3px;}
+  #save-indicator{display:inline;font-size:8px;}
+  .sync-btn{font-size:8px;padding:2px 5px;}
+  .reset-btn{font-size:8px;padding:2px 5px;}
   /* Stat bar collapse */
   .stat-bar-toggle{display:block;}
   .stat-bar-inner.sb-collapsed{display:none;}
@@ -87,8 +89,11 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .mb{margin-bottom:10px;}
   /* Reference — stack to single col, keep horizontal table scroll */
   .ref-grid{grid-template-columns:1fr;}
-  .ref-wrap{overflow-x:auto;}
-  .ref-table{min-width:500px;}
+  .ref-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .ref-table{min-width:420px;font-size:11px;}
+  .ref-table td,.ref-table th{padding:5px 6px;}
+  #sp-ref-table{min-width:320px;}
+  #sp-ref-table .sp-notes-col{display:none;}
   .ref-search{font-size:13px;padding:6px 10px;}
   /* Char top grid — stack to single col */
   .char-top-grid{grid-template-columns:1fr !important;}
@@ -545,7 +550,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
       <div class="section-header">Super Powers Library</div>
       <input class="ref-search" id="sp-search" placeholder="Search powers..." oninput="filterTable('sp-search','sp-ref-table')">
       <div class="ref-wrap"><table class="ref-table" id="sp-ref-table">
-        <thead><tr><th>Power</th><th>Cost</th><th>Type</th><th>Summary</th><th>Notes</th><th>Source</th></tr></thead>
+        <thead><tr><th>Power</th><th>Cost</th><th>Type</th><th>Summary</th><th class="sp-notes-col">Notes</th><th>Source</th></tr></thead>
         <tbody id="sp-ref-body"></tbody>
       </table></div>
     </div>
@@ -624,6 +629,13 @@ function parseCSV(text) {
   return rows;
 }
 
+
+// Robust boolean check — handles TRUE, true, True, 1, yes, checked from Google Sheets checkboxes
+function isTrue(val) {
+  if (!val) return false;
+  const v = String(val).trim().toLowerCase();
+  return v === 'true' || v === '1' || v === 'yes' || v === 'checked';
+}
 async function fetchSheet(name) {
   const resp = await fetch(csvUrl(name));
   if (!resp.ok) throw new Error(`Failed to fetch ${name}: ${resp.status}`);
@@ -829,7 +841,7 @@ function renderHindrances() {
   const el=document.getElementById('hindrances-list');
   const bolo = state.hindrances.filter(h=>{
     const bh = f(h,'bolohad','bolo_had','bolo');
-    return bh==='TRUE'||bh==='true'||bh==='1';
+    return isTrue(bh);
   });
   if(!bolo.length){el.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No hindrances loaded.</div>';return;}
   el.innerHTML = bolo.map(h=>{
@@ -914,7 +926,7 @@ function computeWeapons() {
     computed.push({name:'Enhanced Fists',damage:fistBonus?`${strDie}+${fistBonus}+${pd}`:`${strDie}+${pd}`,skillLabel:`Fighting ${fDie}`,tags:['Natural Weapon','Heavy Weapon'],notes:mp.effect,upgraded:true,source:'Melee Attack Power'});
   }
   // Add acquired non-dynamic weapons from sheet
-  state.allWeapons.filter(w=>w.dynamic!=='TRUE'&&w.acquired==='TRUE').forEach(w=>{
+  state.allWeapons.filter(w=>!isTrue(w.dynamic)&&isTrue(w.acquired)).forEach(w=>{
     computed.push({name:w.name,damage:w.damage,skillLabel:`${w.skill} ${dieFor(computeSkillLevel(w.skill))}`,tags:(w.tags||'').split(',').filter(Boolean),notes:w.notes,upgraded:false,source:w.source});
   });
   return computed;
@@ -946,7 +958,7 @@ function renderArmor() {
 // ============================================================
 function renderGear() {
   const el = document.getElementById('gear-section');
-  const acquired = state.allGear.filter(g=>g.acquired==='TRUE');
+  const acquired = state.allGear.filter(g=>isTrue(g.acquired));
   if(!acquired.length){
     el.innerHTML='<div style="color:var(--text-dim);font-style:italic;font-size:13px">No gear acquired yet. Mark items as acquired in the Google Sheet.</div>';
     return;
@@ -1357,17 +1369,18 @@ function renderSPRef() {
     const sum = f(p,'summary','description','effect');
     const notes = f(p,'notes','note');
     const src = f(p,'source','page','src');
-    tr.innerHTML=`<td style="font-weight:700">${nm}</td><td style="font-family:'Share Tech Mono',monospace">${cost}</td><td>${ctype}</td><td>${sum}</td><td style="color:var(--text-dim)">${notes}</td><td style="color:var(--text-dim)">${src}</td>`;
+    tr.innerHTML=`<td style="font-weight:700">${nm}</td><td style="font-family:'Share Tech Mono',monospace">${cost}</td><td>${ctype}</td><td>${sum}</td><td class="sp-notes-col" style="color:var(--text-dim)">${notes}</td><td style="color:var(--text-dim)">${src}</td>`;
     tb.appendChild(tr);
   });
 }
 function renderArmorRef() {
   const tb=document.getElementById('armor-ref-body'); tb.innerHTML='';
   state.armorRef.forEach(a=>{
+    const nm = String(f(a,'name','location','armor')||'').trim();
+    if(!nm || isTrue(nm) || nm.toLowerCase()==='false') return;
     const tr=document.createElement('tr');
     const bookCls=(f(a,'book')||'SWADE').toUpperCase()==='SPC'?'spc':'swade';
-    const nm = f(a,'location','name','armor','armor_name','item');
-    const val = f(a,'armorvalue','armor_value','armor','value');
+    const val = f(a,'armorvalue','armor_value','value');
     const wt = f(a,'weight','wt');
     const notes = f(a,'notes','note','description');
     const book = f(a,'book')||'SWADE';
@@ -1378,9 +1391,12 @@ function renderArmorRef() {
 function renderWeaponsRef() {
   const tb=document.getElementById('weapons-ref-body'); tb.innerHTML='';
   state.weaponsRef.forEach(w=>{
+    // Skip rows where name looks like a checkbox value or is empty
+    const nm = String(w.name||'').trim();
+    if(!nm || nm==='TRUE' || nm==='FALSE' || nm==='true' || nm==='false') return;
     const tr=document.createElement('tr');
     const bookCls=(w.book||'SWADE').toUpperCase()==='SPC'?'spc':'swade';
-    tr.innerHTML=`<td style="font-weight:700">${w.name||''}</td><td style="font-family:'Share Tech Mono',monospace">${w.damage||''}</td><td>${w.skill||''}</td><td style="color:var(--text-dim)">${w.notes||''}</td><td><span class="book-tag ${bookCls}">${w.book||'SWADE'}</span></td>`;
+    tr.innerHTML=`<td style="font-weight:700">${nm}</td><td style="font-family:'Share Tech Mono',monospace">${w.damage||''}</td><td>${w.skill||''}</td><td style="color:var(--text-dim)">${w.notes||''}</td><td><span class="book-tag ${bookCls}">${w.book||'SWADE'}</span></td>`;
     tb.appendChild(tr);
   });
 }
@@ -1870,10 +1886,10 @@ async function loadAllSheets() {
     // ── Populate state (headers now match exactly) ───────────
     state.attrs        = attrsData;
     state.skills       = skillsData;
-    state.starting     = startingData.map(s=>({...s, on: s.defaulton==='TRUE'}));
+    state.starting     = startingData.map(s=>({...s, on: isTrue(s.defaulton)}));
     state.progressions = progData.map(p=>({...p, checked: false}));
     state.powerTiers   = tierData;
-    state.powers       = powersData.map(p=>({...p, active: p.defaultactive==='TRUE'}));
+    state.powers       = powersData.map(p=>({...p, active: isTrue(p.defaultactive)}));
     state.hindrances   = hindrancesData;
     state.allWeapons   = weaponsData;
     state.allArmor     = armorData;
