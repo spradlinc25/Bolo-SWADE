@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#0a0c0f;--surface:#111418;--surface2:#181c22;--border:#2a3040;--accent:#e85d26;--accent2:#f4a436;--green:#3ddc84;--blue:#4dabf7;--red:#ff4444;--muted:#4a5568;--text:#c8d3e0;--text-dim:#7a8aa0;--heading:#ffffff;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;overflow-x:hidden;}
 
 /* NAV — sticky, slim, always visible */
 nav{background:#0d0f13;border-bottom:2px solid var(--accent);display:flex;align-items:center;position:sticky;top:0;z-index:100;padding:0 10px;flex-wrap:wrap;min-height:40px;}
@@ -71,10 +71,10 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 @media(max-width:768px){
   /* Nav — tabs on row 1 full width, sync buttons wrap to row 2 */
   .nav-sub{display:none;}
-  nav{padding:0 6px;}
-  .nav-title{font-size:16px;padding-right:6px;margin-right:4px;}
-  .nav-tabs{width:100%;order:1;overflow-x:auto;border-bottom:none;}
-  nav button{font-size:11px;padding:9px 7px;letter-spacing:0;}
+  nav{padding:0 4px;flex-wrap:wrap;}
+  .nav-title{font-size:15px;padding-right:6px;margin-right:3px;line-height:36px;}
+  .nav-tabs{width:100%;order:1;overflow-x:auto;border-bottom:none;-webkit-overflow-scrolling:touch;}
+  nav button{font-size:10px;padding:8px 6px;letter-spacing:0;white-space:nowrap;}
   .nav-right{order:2;width:100%;border-top:1px solid var(--border);padding:2px 0;background:#0d0f13;justify-content:flex-end;gap:3px;}
   #save-indicator{display:inline;font-size:8px;}
   .sync-btn{font-size:8px;padding:2px 5px;}
@@ -84,24 +84,25 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .stat-bar-inner.sb-collapsed{display:none;}
   .stat-pill{border-right:none;}
   /* Tighten tab content padding */
-  .tab{padding:10px;}
+  .tab{padding:8px;}
   .card{padding:10px;}
   .mb{margin-bottom:10px;}
-  /* Reference — stack to single col, keep horizontal table scroll */
+  /* Reference — stack to single col, tables scroll horizontally within their container */
   .ref-grid{grid-template-columns:1fr;}
-  .ref-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .ref-table{min-width:420px;font-size:11px;}
-  .ref-table td,.ref-table th{padding:5px 6px;}
-  #sp-ref-table{min-width:320px;}
+  .ref-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}
+  .ref-table{min-width:380px;font-size:11px;width:max-content;}
+  .ref-table td,.ref-table th{padding:4px 6px;}
+  /* SP table is narrower — 4 visible cols */
+  #sp-ref-table{min-width:280px;}
   #sp-ref-table .sp-notes-col{display:none;}
   .ref-search{font-size:13px;padding:6px 10px;}
   /* Char top grid — stack to single col */
   .char-top-grid{grid-template-columns:1fr !important;}
   /* Attrs/Skills — tighter rows */
   .attr-table td{padding:2px 0;}
-  .aname{font-size:13px;min-width:90px;}
-  .die-dot{width:17px;height:17px;font-size:7px;}
-  .die-val{font-size:16px;min-width:36px;}
+  .aname{font-size:13px;min-width:80px;}
+  .die-dot{width:16px;height:16px;font-size:7px;}
+  .die-val{font-size:15px;min-width:32px;}
   .grid-2{grid-template-columns:1fr;}
   /* Progressions — collapse to 2-col, show inline desc, hide desktop cols */
   .prog-row{grid-template-columns:32px 1fr;}
