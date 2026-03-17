@@ -1050,8 +1050,8 @@ function renderSPSummary() {
 function computeWeapons() {
   const strDie=dieFor(computeAttrLevel('Strength'));
   const fDie=dieFor(computeSkillLevel('Fighting'));
-  const hasBrawler=hasStart('Brawler (Racial)');
-  const hasMA=hasStart('Martial Artist');
+  const hasBrawler=hasStart('Brawler (Racial)') || hasEdge('Brawler');
+  const hasMA=hasStart('Martial Artist') || hasEdge('Martial Artist');
   const hasBruiser=hasEdge('Bruiser');
   const hasMW=hasEdge('Martial Warrior');
   let fistBonus=null;
@@ -1059,13 +1059,28 @@ function computeWeapons() {
   if(hasMA)      fistBonus='d6';
   if(hasBruiser&&fistBonus==='d6') fistBonus='d8';
   if(hasMW&&fistBonus==='d8')      fistBonus='d10';
+
+  // Build fist damage breakdown note
+  const fistBreakdown = [];
+  fistBreakdown.push(`${strDie} Strength`);
+  if(hasBrawler) fistBreakdown.push(`+d4 Brawler`);
+  if(hasMA)      fistBreakdown.push(`→d6 Martial Artist`);
+  if(hasBruiser) fistBreakdown.push(`→d8 Bruiser`);
+  if(hasMW)      fistBreakdown.push(`→d10 Martial Warrior`);
+  const fistNote = `AP 0. Breakdown: ${fistBreakdown.join(', ')}.`;
+
   const computed=[];
-  computed.push({name:'Fists',damage:fistBonus?`${strDie}+${fistBonus}`:strDie,skillLabel:`Fighting ${fDie}`,tags:hasMA?['Natural Weapon']:[],notes:'AP 0.',upgraded:fistBonus&&fistBonus!=='d6',source:'Racial/Edges'});
+  computed.push({name:'Fists',damage:fistBonus?`${strDie}+${fistBonus}`:strDie,skillLabel:`Fighting ${fDie}`,tags:hasMA?['Natural Weapon']:[],notes:fistNote,upgraded:fistBonus&&fistBonus!=='d4',source:'Racial/Edges'});
+
   const mp=getActivePower('Melee Attack');
   if(mp){
     const extraDice=Math.floor((parseInt(mp.base)||0)/2);
     const pd=Array(extraDice).fill('d6').join('+');
-    computed.push({name:'Enhanced Fists',damage:fistBonus?`${strDie}+${fistBonus}+${pd}`:`${strDie}+${pd}`,skillLabel:`Fighting ${fDie}`,tags:['Natural Weapon','Heavy Weapon'],notes:mp.effect,upgraded:true,source:'Melee Attack Power'});
+    // Build enhanced fist breakdown note
+    const enhBreakdown = [...fistBreakdown];
+    enhBreakdown.push(`+${pd} Melee Attack (Tier ${mp.tier||'?'}, Heavy Weapon)`);
+    const enhNote = `Heavy Weapon — bypasses Heavy Armor. Breakdown: ${enhBreakdown.join(', ')}.`;
+    computed.push({name:'Enhanced Fists',damage:fistBonus?`${strDie}+${fistBonus}+${pd}`:`${strDie}+${pd}`,skillLabel:`Fighting ${fDie}`,tags:['Natural Weapon','Heavy Weapon'],notes:enhNote,upgraded:true,source:'Melee Attack Power'});
   }
   // Add acquired non-dynamic weapons from sheet
   state.allWeapons.filter(w=>!isTrue(w.dynamic)&&isTrue(w.acquired)).forEach(w=>{
@@ -2154,7 +2169,7 @@ async function loadAllSheets() {
       edgesRefData, hindrancesRefData, spData, charStateData
     ] = await Promise.all([
       fetchSheet('Attributes'), fetchSheet('Skills'),
-      fetchSheet('Starting'),   fetchSheet('Progressions'),
+      fetchSheet('Starting'),   fetchSheet('Advances'),
       fetchSheet('PowerTiers'), fetchSheet('Powers'),
       fetchSheet('Hindrances'),
       fetchSheet('Weapons'),    fetchSheet('Armor'),
