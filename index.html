@@ -979,17 +979,34 @@ function renderAttrs() {
 
 function renderSkills() {
   const tb=document.getElementById('skill-body'); tb.innerHTML='';
+  const mods = computeSkillMods();
   state.skills.forEach(s=>{
     const base = parseInt(s.base)||0;
     const lvl = computeSkillLevel(s.name);
-    // Trained = has a starting base die (core 5) OR has advances in it
     const trained = base > 0 || lvl > 0;
-    // Hide unskilled: filter on AND not trained (base=0, no advances)
     if (!state.showUnskilled && !trained) return;
-    const tr=document.createElement('tr');
+    const dispLvl = trained ? Math.max(lvl, base) : 1;
+
+    // Modifier annotation for this skill
+    const skillMods = mods[s.name.toLowerCase()]||[];
+    const totalBonus = skillMods.reduce((acc,m)=>acc+m.val, 0);
+    const modSuffix = totalBonus !== 0
+      ? `<span style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'};margin-left:4px">(${totalBonus>0?'+':''}${totalBonus} unarmed)</span>`
+      : skillMods.length > 0
+        ? `<span style="font-size:9px;color:var(--text-dim);margin-left:4px">*</span>`
+        : '';
+    // For Fighting specifically, label is "unarmed" — for others just show the bonus
+    const modLabel = s.name.toLowerCase() === 'fighting' && totalBonus !== 0
+      ? `<span style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'};margin-left:4px">(${totalBonus>0?'+':''}${totalBonus} unarmed)</span>`
+      : totalBonus !== 0
+        ? `<span style="font-size:10px;font-family:'Share Tech Mono',monospace;color:${totalBonus>0?'var(--green)':'var(--red)'};margin-left:4px">(${totalBonus>0?'+':''}${totalBonus})</span>`
+        : skillMods.length > 0
+          ? `<span style="font-size:9px;color:var(--accent2);margin-left:4px" title="${skillMods.map(m=>m.label).join(', ')}">*</span>`
+          : '';
     const unskLabel = !trained ? '<span style="font-size:9px;color:var(--muted);margin-left:4px">(d4-2)</span>' : '';
-    const dispLvl = trained ? Math.max(lvl, base) : 1; // show at least d4 if trained
-    tr.innerHTML=`<td class="aname">${s.name}${unskLabel}</td><td colspan="5">${renderDieDots(dispLvl)}</td><td class="die-val" style="text-align:right;font-size:18px;${!trained?'color:var(--muted)':''}">${trained?dieFor(dispLvl):'d4-2'}</td>`;
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="aname">${s.name}${unskLabel}${modLabel}</td><td colspan="5">${renderDieDots(dispLvl)}</td><td class="die-val" style="text-align:right;font-size:18px;${!trained?'color:var(--muted)':''}">${trained?dieFor(dispLvl):'d4-2'}</td>`;
     tb.appendChild(tr);
   });
   const btn = document.getElementById('unskilled-toggle-btn');
@@ -1923,28 +1940,44 @@ function computeSkillMods() {
     if (nm.toLowerCase().includes('hard of hearing')) addMod('notice', 'Hard of Hearing (-4 audio)', -4);
     if (nm.toLowerCase().includes('yellow')) addMod('spirit', 'Yellow (-2 Fear)', -2);
   });
-  // Starting edges with modifiers
-  state.starting.filter(s=>s.on).forEach(s=>{
-    const nm = (f(s,'name')||'').toLowerCase();
-    const eff = (f(s,'effect')||'').toLowerCase();
-    if (nm.includes('infravision')) addMod('notice', 'Infravision (halves dark penalty)', 0);
-  });
-  // Progression edges with modifiers
-  state.progressions.filter(p=>p.checked && f(p,'type')==='Edge').forEach(p=>{
-    const nm = (f(p,'selection','name')||'').toLowerCase();
-    if (nm.includes('alertness')) addMod('notice', 'Alertness (+2)', 2);
-    if (nm.includes('investigator')) { addMod('research', 'Investigator (+2)', 2); addMod('notice', 'Investigator (+2)', 2); }
-    if (nm.includes('streetwise')) addMod('persuasion', 'Streetwise (+2 criminal)', 2);
-    if (nm.includes('healer')) addMod('healing', 'Healer (+2)', 2);
-    if (nm.includes('steady hands')) addMod('shooting', 'Steady Hands (no running penalty)', 0);
-    if (nm.includes('marksman')) addMod('shooting', 'Marksman (+2 if no move)', 2);
-    if (nm.includes('dead shot')) addMod('shooting', 'Dead Shot (dbl damage raise)', 0);
-    if (nm.includes('ace')) addMod('driving', 'Ace (+2)', 2);
-    if (nm.includes('woodsman')) { addMod('survival', 'Woodsman (+2)', 2); addMod('stealth', 'Woodsman (+2 wild)', 2); }
-    if (nm.includes('thief')) { addMod('stealth', 'Thief (+2)', 2); addMod('thievery', 'Thief (+2)', 2); }
-    if (nm.includes('charismatic')) addMod('persuasion', 'Charismatic (+2)', 2);
-    if (nm.includes('scholar')) { addMod('academics', 'Scholar (+2)', 2); addMod('science', 'Scholar (+2)', 2); }
-    if (nm.includes('jack-of-all')) { addMod('notice', 'Jack-of-All (no unskilled penalty)', 0); }
+  // Starting edges with modifiers — check both starting and progression sources
+  const allActiveEdges = [
+    ...state.starting.filter(s=>s.on).map(s=>({nm:(f(s,'name')||'').toLowerCase(), eff:(f(s,'effect')||'').toLowerCase()})),
+    ...state.progressions.filter(p=>p.checked && f(p,'type')==='Edge').map(p=>({nm:(f(p,'selection','name')||'').toLowerCase(), eff:(f(p,'effect')||'').toLowerCase()})),
+  ];
+  allActiveEdges.forEach(({nm, eff})=>{
+    // ── Awareness / perception ──────────────────────────────
+    if (nm.includes('alertness'))     addMod('notice',      'Alertness (+2)', 2);
+    if (nm.includes('danger sense'))  addMod('notice',      'Danger Sense (+2 ambush)', 2);
+    if (nm.includes('infravision'))   addMod('notice',      'Infravision (halves dark penalty)', 0);
+    // ── Combat — Fighting ───────────────────────────────────
+    if (nm.includes('martial artist') && !nm.includes('warrior'))
+                                      addMod('fighting',    'Martial Artist (+1 unarmed)', 1);
+    if (nm.includes('martial warrior'))
+                                      addMod('fighting',    'Martial Warrior (+2 unarmed)', 2);
+    if (nm.includes('brawler') && !nm.includes('improved'))
+                                      addMod('fighting',    'Brawler (nat. weapon tag)', 0);
+    // ── Combat — Shooting ───────────────────────────────────
+    if (nm.includes('steady hands'))  addMod('shooting',    'Steady Hands (no running penalty)', 0);
+    if (nm.includes('marksman'))      addMod('shooting',    'Marksman (+2 if no move)', 2);
+    if (nm.includes('dead shot'))     addMod('shooting',    'Dead Shot (dbl damage raise)', 0);
+    // ── Social ──────────────────────────────────────────────
+    if (nm.includes('charismatic'))   addMod('persuasion',  'Charismatic (+2)', 2);
+    if (nm.includes('streetwise'))    addMod('persuasion',  'Streetwise (+2 criminal)', 2);
+    if (nm.includes('strong willed')) { addMod('intimidation','Strong Willed (+2)', 2); addMod('taunt','Strong Willed (+2)', 2); }
+    // ── Knowledge / Research ────────────────────────────────
+    if (nm.includes('investigator'))  { addMod('research',  'Investigator (+2)', 2); addMod('notice','Investigator (+2 research)', 2); }
+    if (nm.includes('scholar'))       { addMod('academics', 'Scholar (+2)', 2); addMod('science','Scholar (+2)', 2); }
+    if (nm.includes('jack-of-all'))   addMod('notice',      'Jack-of-All (no unskilled penalty)', 0);
+    // ── Vehicles ────────────────────────────────────────────
+    if (nm.includes('ace'))           { addMod('driving',   'Ace (+2)', 2); addMod('piloting','Ace (+2)', 2); addMod('boating','Ace (+2)', 2); }
+    // ── Survival / Stealth ──────────────────────────────────
+    if (nm.includes('woodsman'))      { addMod('survival',  'Woodsman (+2)', 2); addMod('stealth','Woodsman (+2 wild)', 2); }
+    if (nm.includes('thief'))         { addMod('stealth',   'Thief (+2)', 2); addMod('thievery','Thief (+2)', 2); }
+    // ── Healing ─────────────────────────────────────────────
+    if (nm.includes('healer'))        addMod('healing',     'Healer (+2)', 2);
+    if (nm.includes('liquid courage') && eff.includes('vigor'))
+                                      addMod('vigor',       'Liquid Courage (+1 die type)', 0);
   });
   // Active powers with skill effects
   state.powers.filter(p=>p.active).forEach(p=>{
