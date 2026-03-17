@@ -93,9 +93,11 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
   .die-dot{width:17px;height:17px;font-size:7px;}
   .die-val{font-size:16px;min-width:36px;}
   .grid-2{grid-template-columns:1fr;}
-  /* Progressions */
+  /* Progressions — collapse to 2-col, show inline desc, hide desktop cols */
   .prog-row{grid-template-columns:32px 1fr;}
-  .prog-eff,.prog-tbadge{display:none;}
+  .prog-col-desktop{display:none;}
+  .prog-eff-mobile{display:block;}
+  .prog-tbadge{display:inline-block;}
 }
 
 /* TABS */
@@ -165,7 +167,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tier{margin-bottom:20px;}
 .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
 .tier-badge.novice{border-color:#4dabf7;color:#4dabf7;}.tier-badge.seasoned{border-color:#3ddc84;color:#3ddc84;}.tier-badge.veteran{border-color:#f4a436;color:#f4a436;}.tier-badge.heroic{border-color:#e85d26;color:#e85d26;}.tier-badge.legendary{border-color:#cc44ff;color:#cc44ff;}
-.prog-row{display:grid;grid-template-columns:36px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+.prog-row{display:grid;grid-template-columns:36px 1fr 110px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .prog-row:hover{border-color:var(--accent2);}
 .prog-row.checked{background:#0f1a0f;border-color:var(--green);}
 .prog-row.checked .prog-sel{color:var(--green);}
@@ -176,6 +178,8 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tbadge{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:2px 7px;border:1px solid var(--border);border-radius:3px;text-align:center;color:var(--text-dim);}
 .prog-tbadge.attribute{border-color:var(--blue);color:var(--blue);}.prog-tbadge.skill{border-color:var(--accent2);color:var(--accent2);}.prog-tbadge.edge{border-color:var(--accent);color:var(--accent);}.prog-tbadge.open{border-color:#cc44ff;color:#cc44ff;}
 .prog-eff{font-size:12px;color:var(--text-dim);}
+.prog-eff-mobile{display:none;font-size:12px;color:var(--text-dim);margin-top:3px;}
+.prog-col-desktop{display:block;}
 .starting-row{display:grid;grid-template-columns:36px 1fr 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .starting-row:hover{border-color:var(--accent2);}
 .starting-row.checked{background:#0f150f;border-color:var(--green);}
@@ -285,7 +289,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tier{margin-bottom:20px;}
 .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
 .tier-badge.novice{border-color:#4dabf7;color:#4dabf7;}.tier-badge.seasoned{border-color:#3ddc84;color:#3ddc84;}.tier-badge.veteran{border-color:#f4a436;color:#f4a436;}.tier-badge.heroic{border-color:#e85d26;color:#e85d26;}.tier-badge.legendary{border-color:#cc44ff;color:#cc44ff;}
-.prog-row{display:grid;grid-template-columns:36px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+.prog-row{display:grid;grid-template-columns:36px 1fr 110px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .prog-row:hover{border-color:var(--accent2);}
 .prog-row.checked{background:#0f1a0f;border-color:var(--green);}
 .prog-row.checked .prog-sel{color:var(--green);}
@@ -1255,17 +1259,19 @@ function renderProgressions() {
 
       const row=document.createElement('div');
       row.className='prog-row'+(p.checked?' checked':'');
+      // Desktop: 4 columns — check | name+prereq+badge | type badge | description
+      // Mobile: collapses to 2 columns via CSS, all info stacks in col 2
       row.innerHTML=`
         <div class="prog-chk">${p.checked?'✓':''}</div>
         <div style="min-width:0">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <span class="prog-sel">${p.selection}</span>
-            <span class="prog-tbadge ${tc}">${p.type}</span>
-            ${sourceBadge}
+            <span class="prog-sel">${p.selection}</span>${sourceBadge}
           </div>
-          <div class="prog-pre" style="margin-top:2px">${p.prereq}</div>
-          <div class="prog-eff" style="margin-top:2px">${desc}</div>
-        </div>`;
+          <div class="prog-pre">${p.prereq}</div>
+          <div class="prog-eff prog-eff-mobile">${desc}</div>
+        </div>
+        <div class="prog-tbadge ${tc} prog-col-desktop">${p.type}</div>
+        <div class="prog-eff prog-col-desktop">${desc}</div>`;
       row.onclick=()=>{state.progressions[gi].checked=!state.progressions[gi].checked;fullRefresh();};
       tier.appendChild(row);
     });
