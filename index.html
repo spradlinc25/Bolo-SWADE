@@ -165,7 +165,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tier{margin-bottom:20px;}
 .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
 .tier-badge.novice{border-color:#4dabf7;color:#4dabf7;}.tier-badge.seasoned{border-color:#3ddc84;color:#3ddc84;}.tier-badge.veteran{border-color:#f4a436;color:#f4a436;}.tier-badge.heroic{border-color:#e85d26;color:#e85d26;}.tier-badge.legendary{border-color:#cc44ff;color:#cc44ff;}
-.prog-row{display:grid;grid-template-columns:36px 1fr 110px 160px 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+.prog-row{display:grid;grid-template-columns:36px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .prog-row:hover{border-color:var(--accent2);}
 .prog-row.checked{background:#0f1a0f;border-color:var(--green);}
 .prog-row.checked .prog-sel{color:var(--green);}
@@ -285,7 +285,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
 .prog-tier{margin-bottom:20px;}
 .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);margin-bottom:10px;display:inline-block;}
 .tier-badge.novice{border-color:#4dabf7;color:#4dabf7;}.tier-badge.seasoned{border-color:#3ddc84;color:#3ddc84;}.tier-badge.veteran{border-color:#f4a436;color:#f4a436;}.tier-badge.heroic{border-color:#e85d26;color:#e85d26;}.tier-badge.legendary{border-color:#cc44ff;color:#cc44ff;}
-.prog-row{display:grid;grid-template-columns:36px 1fr 110px 160px 1fr;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
+.prog-row{display:grid;grid-template-columns:36px 1fr;align-items:start;gap:10px;padding:9px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);margin-bottom:5px;cursor:pointer;transition:all 0.2s;}
 .prog-row:hover{border-color:var(--accent2);}
 .prog-row.checked{background:#0f1a0f;border-color:var(--green);}
 .prog-row.checked .prog-sel{color:var(--green);}
@@ -1195,9 +1195,20 @@ function renderBennies() {
   const track=document.getElementById('bennies-track'); track.innerHTML='';
   for(let i=0;i<state.maxBennies;i++){
     const b=document.createElement('div');
-    b.className='benny'+(i>=state.bennies?' spent':'');
-    b.title=i<state.bennies?'Click to spend':'Spent';
-    b.onclick=()=>{if(i<state.bennies){state.bennies--;renderBennies();saveState();}};
+    const active = i < state.bennies;
+    b.className='benny'+(active?'':' spent');
+    b.title=active?'Click to spend':'Click to restore';
+    b.onclick=()=>{
+      if(i < state.bennies) {
+        // Spend: clicking an active benny
+        state.bennies--;
+      } else if(i === state.bennies) {
+        // Restore: clicking the first spent benny restores one
+        state.bennies++;
+      }
+      renderBennies();
+      saveState();
+    };
     track.appendChild(b);
   }
 }
@@ -1228,9 +1239,33 @@ function renderProgressions() {
     items.forEach(p=>{
       const gi=state.progressions.indexOf(p);
       const tc=p.type==='Attribute'?'attribute':p.type.startsWith('Skill')?'skill':p.type==='Edge'?'edge':'open';
+
+      // Look up edge details from reference library
+      let desc = p.effect || '';
+      let source = '';
+      if(p.type==='Edge') {
+        const edgeRef = state.edgesRef.find(e=>e.name && e.name.toLowerCase()===p.selection.toLowerCase());
+        if(edgeRef) {
+          desc = edgeRef.effect || desc;
+          source = edgeRef.book || edgeRef.source || '';
+        }
+      }
+      const bookCls = source.toUpperCase()==='SPC'?'spc':'swade';
+      const sourceBadge = source ? `<span class="book-tag ${bookCls}" style="margin-left:6px">${source}</span>` : '';
+
       const row=document.createElement('div');
       row.className='prog-row'+(p.checked?' checked':'');
-      row.innerHTML=`<div class="prog-chk">${p.checked?'✓':''}</div><div><div class="prog-sel">${p.selection}</div><div class="prog-pre">${p.prereq}</div></div><div class="prog-tbadge ${tc}">${p.type}</div><div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center">Adv #${p.adv}</div><div class="prog-eff">${p.effect}</div>`;
+      row.innerHTML=`
+        <div class="prog-chk">${p.checked?'✓':''}</div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span class="prog-sel">${p.selection}</span>
+            <span class="prog-tbadge ${tc}">${p.type}</span>
+            ${sourceBadge}
+          </div>
+          <div class="prog-pre" style="margin-top:2px">${p.prereq}</div>
+          <div class="prog-eff" style="margin-top:2px">${desc}</div>
+        </div>`;
       row.onclick=()=>{state.progressions[gi].checked=!state.progressions[gi].checked;fullRefresh();};
       tier.appendChild(row);
     });
