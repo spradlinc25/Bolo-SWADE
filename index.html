@@ -476,7 +476,7 @@ nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
         <table class="attr-table"><thead><tr><th>Attribute</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="attr-body"></tbody></table>
         <div style="border-top:1px solid var(--border);margin:12px 0 10px;"></div>
-        <div class="section-header">Skills</div>
+        <div class="section-header" style="justify-content:space-between"><span>Skills</span><button onclick="toggleUnskilled()" id="unskilled-toggle-btn" class="reset-btn" style="font-size:10px;padding:2px 8px;top:0;position:relative" title="Show or hide unskilled skills">Hide Unskilled</button></div>
         <table class="attr-table"><thead><tr><th>Skill</th><th colspan="5" style="text-align:center">Die Steps</th><th style="text-align:right">Current</th></tr></thead>
         <tbody id="skill-body"></tbody></table>
       </div>
@@ -722,6 +722,7 @@ const state = {
   forceField: false,
   pace: 6,
   size: 0,
+  showUnskilled: true,
   loaded: false
 };
 
@@ -766,12 +767,15 @@ function computeAttrLevel(name) {
 
 function computeSkillLevel(name) {
   const s = state.skills.find(x => x.name && x.name.toLowerCase()===name.toLowerCase());
-  if(!s) return 1;
-  let lvl = parseInt(s.base)||1;
+  if(!s) return 0;
+  // base=0 means unskilled, base=1 means d4 trained
+  let lvl = parseInt(s.base)||0;
   state.progressions.forEach(p=>{
     if(!p.checked) return;
-    if((p.type==='Skill'||p.type==='Skill x2') && p.selection && p.selection.toLowerCase().includes(name.toLowerCase()))
-      lvl += (p.type==='Skill x2') ? 2 : 1;
+    const isSkill = p.type==='Skill'||p.type==='Skill x2'||p.type==='Skill (Above Attr / x2)';
+    const isX2 = p.type==='Skill x2'||p.type==='Skill (Above Attr / x2)';
+    if(isSkill && p.selection && p.selection.toLowerCase().includes(name.toLowerCase()))
+      lvl += isX2 ? 2 : 1;
   });
   return Math.min(5,lvl);
 }
@@ -969,11 +973,25 @@ function renderAttrs() {
 function renderSkills() {
   const tb=document.getElementById('skill-body'); tb.innerHTML='';
   state.skills.forEach(s=>{
-    const lvl=computeSkillLevel(s.name);
+    const base = parseInt(s.base)||0;
+    const lvl = computeSkillLevel(s.name);
+    const trained = lvl > 0; // has base d4 OR has been advanced
+    const showU = (s.show_unskilled||'').toLowerCase() !== 'false';
+    // Hide if: filter is on AND skill is untrained AND not flagged to always show
+    if (!state.showUnskilled && !trained && !showU) return;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="aname">${s.name}</td><td colspan="5">${renderDieDots(lvl)}</td><td class="die-val" style="text-align:right;font-size:18px">${dieFor(lvl)}</td>`;
+    const unskLabel = !trained ? '<span style="font-size:9px;color:var(--text-dim);margin-left:4px">(d4-2)</span>' : '';
+    tr.innerHTML=`<td class="aname">${s.name}${unskLabel}</td><td colspan="5">${renderDieDots(Math.max(lvl,1))}</td><td class="die-val" style="text-align:right;font-size:18px;${!trained?'color:var(--muted)':''}">${trained?dieFor(lvl):'d4-2'}</td>`;
     tb.appendChild(tr);
   });
+  const btn = document.getElementById('unskilled-toggle-btn');
+  if (btn) btn.textContent = state.showUnskilled ? 'Hide Unskilled' : 'Show All';
+}
+
+function toggleUnskilled() {
+  state.showUnskilled = !state.showUnskilled;
+  renderSkills();
+  saveState();
 }
 
 // ============================================================
@@ -1891,6 +1909,7 @@ function buildSavePayload() {
     powers:      state.powers.map(p => p.active),
     bennies:     state.bennies,
     maxBennies:  state.maxBennies,
+    showUnskilled: state.showUnskilled,
     wounds:      state.wounds,
     woundIncap:  state.woundIncap,
     fatigue:     state.fatigue,
@@ -1934,6 +1953,7 @@ function applyPayload(s) {
   if (s.fatigueIncap !== undefined) state.fatigueIncap = s.fatigueIncap;
   if (s.shaken !== undefined)       state.shaken = s.shaken;
   if (s.forceField !== undefined)   state.forceField = s.forceField;
+  if (s.showUnskilled !== undefined) state.showUnskilled = s.showUnskilled;
 }
 
 // ── Google Sheets write ───────────────────────────────────────
@@ -2202,6 +2222,8 @@ async function loadAllSheets() {
       const sizeRow = stateRow('size');
       if (paceRow && paceRow.value) state.pace = parseInt(paceRow.value) || 6;
       if (sizeRow && sizeRow.value) state.size = parseInt(sizeRow.value) || 0;
+      const suRow = stateRow('show_unskilled');
+      if (suRow) state.showUnskilled = suRow.value !== 'FALSE' && suRow.value !== 'false';
     }
 
     // Restore session state — try cloud first if connected, else localStorage
